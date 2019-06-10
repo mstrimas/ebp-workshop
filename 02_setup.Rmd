@@ -1,0 +1,55 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Setup {#setup}
+
+Before we dive into writing code, let's take a few minutes to ensure our systems are correctly set up with all the correct software and R packages. Devoting some time to this up front will reduce errors and make troubleshooting easier later in the workshop.
+
+Start by opening a browser window with three tabs pointing to the following websites:
+
+1. The [eBird homepage](https://ebird.org)
+2. The [auk website](https://cornelllabofornithology.github.io/auk/). This R package is used to access eBird data and we'll be using the website to access help and resources.
+3. The [etherpad](https://public.etherpad-mozilla.org/p/ebp) for this workshop. This is a collaborative notepad similar to Google Docs, which we can use to share code and links.
+
+**Green sticky when done.**
+
+Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, [update R](https://cloud.r-project.org/). **Green sticky when done, red sticky if you have an old version and need help updating.**
+
+Next, to install all the packages required for this workshop and part II, run the following code:
+
+```{r eval = FALSE}
+install.packages("remotes")
+remotes::install_github("mstrimas/ebppackages")
+```
+
+As mentioned in the introduction, the `auk` package uses the unix command line tool AWK to extract data from eBird. AWK comes installed by default on Mac OS and Linux systems, but Windows users will need to install it. To do so, install the [Cygwin software](https://cygwin.com/install.html). **Green sticky when installed or on Mac/Linux**.
+
+Run the following code to test that `auk` is installed correctly and AWK is working:
+
+```{r eval = FALSE}
+library(auk)
+library(tidyverse)
+
+tf <- tempfile()
+system.file("extdata/ebd-sample.txt", package = "auk") %>% 
+  auk_ebd() %>%
+  auk_species(species = c("Canada Jay", "Blue Jay")) %>%
+  auk_country(country = c("US", "Canada")) %>%
+  auk_bbox(bbox = c(-100, 37, -80, 52)) %>%
+  auk_date(date = c("2012-01-01", "2012-12-31")) %>%
+  auk_time(start_time = c("06:00", "09:00")) %>%
+  auk_duration(duration = c(0, 60)) %>%
+  auk_complete() %>% 
+  auk_filter(tf) %>% 
+  read_ebd() %>% 
+  pull(common_name) %>% 
+  message()
+unlink(tf)
+```
+
+It should print `Blue Jay`. **Green sticky if you're getting "Blue Jay" and no errors, red otherwise.**
+
+If you're running into any setup issues that can't be resolved, use RStudio Cloud for this workshop instead.

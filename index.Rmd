@@ -1,0 +1,15 @@
+--- 
+knit: "bookdown::render_book"
+title: "eBird Best Practices I"
+author: "Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+output: bookdown::gitbook
+documentclass: book
+github-repo: mstrimas/ebp-workshop
+description: "eBird Best Practices I: eBird Data Extraction and Processing in R"
+---
+
+# Welcome {-}
+
+These lessons are part of a workshop given at AOS 2019 in Anchorage on eBird Best Practices. Part I of the workshop covers extracting and processing eBird data with R. The content of this workshop is also covered in the free online book [eBird Best Practices](http://strimas.com/ebird-best-practices).
