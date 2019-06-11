@@ -12,24 +12,37 @@ Start by opening a browser window with three tabs pointing to the following webs
 
 1. The [eBird homepage](https://ebird.org)
 2. The [auk website](https://cornelllabofornithology.github.io/auk/). This R package is used to access eBird data and we'll be using the website to access help and resources.
-3. The [etherpad](https://public.etherpad-mozilla.org/p/ebp) for this workshop. This is a collaborative notepad similar to Google Docs, which we can use to share code and links.
+3. The [etherpad](https://public.etherpad-mozilla.org/p/ebp) for this workshop. This is a collaborative notepad similar to Google Docs, which we can use to share code and links. Make sure you can edit the document.
 
-**Green sticky when done.**
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  <p>Are all tabs correctly opened? Can you edit the etherpad?</p>
+</div>
 
-Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, [update R](https://cloud.r-project.org/). **Green sticky when done, red sticky if you have an old version and need help updating.**
+Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, [update R](https://cloud.r-project.org/). 
 
-Next, to install all the packages required for this workshop and part II, run the following code:
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  <p>Is your R version at least 3.5.0? Do you need help updating?</p>
+</div>
 
-```{r eval = FALSE}
+Create a new RStudio project called `ebird-best-practices`. Next, install all the packages required for this workshop and part II, by running the following code:
+
+```{r setup-install, eval = FALSE}
 install.packages("remotes")
 remotes::install_github("mstrimas/ebppackages")
 ```
 
-As mentioned in the introduction, the `auk` package uses the unix command line tool AWK to extract data from eBird. AWK comes installed by default on Mac OS and Linux systems, but Windows users will need to install it. To do so, install the [Cygwin software](https://cygwin.com/install.html). **Green sticky when installed or on Mac/Linux**.
+As mentioned in the introduction, the `auk` package uses the unix command line tool AWK to extract data from eBird. AWK comes installed by default on Mac OS and Linux systems, but Windows users will need to install it. To do so, install the [Cygwin software](https://cygwin.com/install.html).
+
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  <p>Is AWK installed?</p>
+</div>
 
 Run the following code to test that `auk` is installed correctly and AWK is working:
 
-```{r eval = FALSE}
+```{r setup-test, eval = FALSE}
 library(auk)
 library(tidyverse)
 
@@ -50,6 +63,64 @@ system.file("extdata/ebd-sample.txt", package = "auk") %>%
 unlink(tf)
 ```
 
-It should print `Blue Jay`. **Green sticky if you're getting "Blue Jay" and no errors, red otherwise.**
+It should print `Blue Jay`.
+
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  <p>Did "Blue Jay" print without errors?</p>
+</div>
 
 If you're running into any setup issues that can't be resolved, use RStudio Cloud for this workshop instead.
+
+## Tidyverse {#setup-tidyverse}
+
+Throughout this workshop, we'll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as `dplyr` and `ggplot2` are part of the Tidyverse. I'll try to explain any functions I use as they come up; however, there's one important operator from the Tidyverse that needs to be explaied up front: the pipe operator `%>%`. The pipe operator takes the expression to the left of it and "pipes" it into the first argument of the expression on the right.
+
+```{r setup-tidyverse-pipe}
+# without pipe
+mean(1:10)
+# with pipe
+1:10 %>% mean()
+```
+
+The value of the pipe operator becomes more clean when we have several operations in a row.
+
+```{r  setup-tidyverse-morepipe}
+# without pipes
+ran_norm <- rnorm(10, sd = 5)
+ran_norm_pos <- abs(ran_norm)
+ran_norm_sort <- sort(ran_norm_pos)
+ran_norm_round <- round(ran_norm_sort, digits = 1)
+ran_norm_round
+# with pipes
+rnorm(10, sd = 5) %>% 
+  abs() %>% 
+  sort() %>% 
+  round(digits = 1)
+```
+
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  <p>Any questions about the pipe?</p>
+</div>
+
+
+<div class="exercise">
+  <h2>Exercise</h2>
+  Rewrite the following code using pipes:
+
+```{r setup-tidyverse-ex, eval = FALSE}
+round(exp(diff(log(runif(10, min = 0.5)))), 1)
+```
+
+<button class="solution">Solution</button>
+<div class="solution-content">
+```{r setup-tidyverse-sol}
+runif(10, min = 0.5) %>% 
+  log() %>% 
+  exp() %>% 
+  round(digits = 1)
+```
+</div>
+
+</div>

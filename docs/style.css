@@ -50,22 +50,25 @@ pre code {
   margin: 0 -5px 0 -5px !important;
 }
 
-.tip {
+/*
+.exercise {
   background-color: #7ae78e20;
-  padding: 0 5px 5px 5px;
+  padding: 0 0 5px 5px;
   border: 1px solid;
   border-color: #7ae78e;
   border-radius: 4px;
   margin: 15px 5px 10px 0;
 }
 
-.tip h2 {
-  padding: 5px;
+.exercise h2 {
+  padding: 5px 0 5px 5px;
   font-size: 1em !important;
   background-color: #7ae78e;
   border-color: #7ae78e;
-  margin: 0 -5px 0 -5px !important;
+  margin-top: 0 !important;
+  margin-left: -5px !important;
 }
+ */
  
  
  .solution {
