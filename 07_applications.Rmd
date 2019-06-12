@@ -1,0 +1,11 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Applications {#applications}
+
+## Frequency trajectories {#applications-trajectory}
+
+## Maps {#applications-maps}

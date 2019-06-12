@@ -1,5 +1,5 @@
 bookdown::gitbook:
-  css: style.css
+  css: assets/css/style.css
   config:
     toc:
       collapse: section
@@ -10,4 +10,4 @@ bookdown::gitbook:
       link: https://github.com/mstrimas/ebp-workshop/edit/master/%s
       text: "Edit"
   includes:
-    after_body: solution.html
+    after_body: assets/js/solution.html

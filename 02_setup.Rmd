@@ -16,14 +16,14 @@ Start by opening a browser window with three tabs pointing to the following webs
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  <p>Are all tabs correctly opened? Can you edit the etherpad?</p>
+  Are all tabs correctly opened? Can you edit the etherpad?
 </div>
 
 Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, [update R](https://cloud.r-project.org/). 
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  <p>Is your R version at least 3.5.0? Do you need help updating?</p>
+  Is your R version at least 3.5.0? Do you need help updating R?
 </div>
 
 Create a new RStudio project called `ebird-best-practices`. Next, install all the packages required for this workshop and part II, by running the following code:
@@ -37,12 +37,12 @@ As mentioned in the introduction, the `auk` package uses the unix command line t
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  <p>Is AWK installed?</p>
+  Is AWK installed?
 </div>
 
 Run the following code to test that `auk` is installed correctly and AWK is working:
 
-```{r setup-test, eval = FALSE}
+```{r setup-test}
 library(auk)
 library(tidyverse)
 
@@ -67,7 +67,7 @@ It should print `Blue Jay`.
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  <p>Did "Blue Jay" print without errors?</p>
+  Did "Blue Jay" print without errors?
 </div>
 
 If you're running into any setup issues that can't be resolved, use RStudio Cloud for this workshop instead.
@@ -101,7 +101,7 @@ rnorm(10, sd = 5) %>%
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  <p>Any questions about the pipe?</p>
+  Any questions about the pipe?
 </div>
 
 
@@ -115,12 +115,13 @@ round(exp(diff(log(runif(10, min = 0.5)))), 1)
 
 <button class="solution">Solution</button>
 <div class="solution-content">
+
 ```{r setup-tidyverse-sol}
 runif(10, min = 0.5) %>% 
   log() %>% 
   exp() %>% 
   round(digits = 1)
 ```
-</div>
 
+</div>
 </div>

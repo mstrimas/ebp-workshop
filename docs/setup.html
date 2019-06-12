@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-10" />
+<meta name="date" content="2019-06-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -113,7 +113,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="assets/css/style.css" type="text/css" />
 </head>
 
 <body>
@@ -135,6 +135,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#setup-tidyverse"><i class="fa fa-check"></i><b>2.1</b> Tidyverse</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>3</b> Data Access</a></li>
+<li class="chapter" data-level="4" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>4</b> Filtering</a><ul>
+<li class="chapter" data-level="4.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>4.1</b> Defining filters</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>4.1.1</b> Complete checklists</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>4.2</b> Execute filters</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>5</b> Importing Data</a><ul>
+<li class="chapter" data-level="5.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>5.1</b> Group checklists</a></li>
+<li class="chapter" data-level="5.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>5.2</b> Taxonomy</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>6</b> Presence-absence Data</a><ul>
+<li class="chapter" data-level="6.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>6.1</b> Filtering</a></li>
+<li class="chapter" data-level="6.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>6.2</b> Zero-filling</a></li>
+<li class="chapter" data-level="6.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>6.3</b> Tidying up</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>7</b> Applications</a><ul>
+<li class="chapter" data-level="7.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>7.1</b> Frequency trajectories</a></li>
+<li class="chapter" data-level="7.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>7.2</b> Maps</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
+<li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
+<li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.3</b> Land cover covariates</a></li>
+<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-multi"><i class="fa fa-check"></i><b>8.4</b> Dealing with multiple species</a></li>
+<li class="chapter" data-level="8.5" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.5</b> Reducing file size</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -165,21 +191,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>
 Checkpoint
 </h2>
-<p>
-Are all tabs correctly opened? Can you edit the etherpad?
-</p>
+<p>Are all tabs correctly opened? Can you edit the etherpad?</p>
 </div>
 <p>Next <a href="https://www.rstudio.com/products/rstudio/download/#download">install or update RStudio</a>, then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, <a href="https://cloud.r-project.org/">update R</a>.</p>
 <div class="checkpoint">
 <h2>
 Checkpoint
 </h2>
-<p>
-Is your R version at least 3.5.0? Do you need help updating?
-</p>
+<p>Is your R version at least 3.5.0? Do you need help updating R?</p>
 </div>
-<p>Create a new RStudio project called <code>ebird-best-practices</code>.</p>
-<p>Next, to install all the packages required for this workshop and part II, run the following code:</p>
+<p>Create a new RStudio project called <code>ebird-best-practices</code>. Next, install all the packages required for this workshop and part II, by running the following code:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)
 remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mstrimas/ebppackages&quot;</span>)</code></pre>
 <p>As mentioned in the introduction, the <code>auk</code> package uses the unix command line tool AWK to extract data from eBird. AWK comes installed by default on Mac OS and Linux systems, but Windows users will need to install it. To do so, install the <a href="https://cygwin.com/install.html">Cygwin software</a>.</p>
@@ -187,9 +208,7 @@ remotes<span class="op">::</span><span class="kw">install_github</span>(<span cl
 <h2>
 Checkpoint
 </h2>
-<p>
-Is AWK installed?
-</p>
+<p>Is AWK installed?</p>
 </div>
 <p>Run the following code to test that <code>auk</code> is installed correctly and AWK is working:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
@@ -215,9 +234,7 @@ tf &lt;-<span class="st"> </span><span class="kw">tempfile</span>()
 <h2>
 Checkpoint
 </h2>
-<p>
-Did “Blue Jay” print without errors?
-</p>
+<p>Did “Blue Jay” print without errors?</p>
 </div>
 <p>If you’re running into any setup issues that can’t be resolved, use RStudio Cloud for this workshop instead.</p>
 <div id="setup-tidyverse" class="section level2">
@@ -247,17 +264,14 @@ ran_norm_round
 <h2>
 Checkpoint
 </h2>
-<p>
-Any questions about the pipe?
-</p>
+<p>Any questions about the pipe?</p>
 </div>
 <div class="exercise">
 <h2>
 Exercise
 </h2>
 <p>Rewrite the following code using pipes:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">exp</span>(<span class="kw">diff</span>(<span class="kw">log</span>(<span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>)))), <span class="dv">1</span>)
-<span class="co">#&gt; [1] 0.9 1.1 0.9 1.0 1.2 0.6 1.4 1.2 1.0</span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">round</span>(<span class="kw">exp</span>(<span class="kw">diff</span>(<span class="kw">log</span>(<span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>)))), <span class="dv">1</span>)</code></pre>
 <button class="solution">
 Solution
 </button>
@@ -266,7 +280,7 @@ Solution
 <span class="st">  </span><span class="kw">log</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">exp</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)
-<span class="co">#&gt;  [1] 0.7 0.9 0.7 0.6 0.5 0.5 0.7 0.8 0.8 0.7</span></code></pre>
+<span class="co">#&gt;  [1] 0.9 0.8 0.9 0.8 0.8 0.9 0.5 0.7 0.9 0.8</span></code></pre>
 </div>
 </div>
 

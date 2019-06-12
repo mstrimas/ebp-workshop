@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-10" />
+<meta name="date" content="2019-06-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="setup.html">
-
+<link rel="next" href="filter.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -113,7 +113,7 @@ code span.vs { color: #4070a0; } /* VerbatimString */
 code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
-<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="assets/css/style.css" type="text/css" />
 </head>
 
 <body>
@@ -135,6 +135,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#setup-tidyverse"><i class="fa fa-check"></i><b>2.1</b> Tidyverse</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>3</b> Data Access</a></li>
+<li class="chapter" data-level="4" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>4</b> Filtering</a><ul>
+<li class="chapter" data-level="4.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>4.1</b> Defining filters</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>4.1.1</b> Complete checklists</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>4.2</b> Execute filters</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>5</b> Importing Data</a><ul>
+<li class="chapter" data-level="5.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>5.1</b> Group checklists</a></li>
+<li class="chapter" data-level="5.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>5.2</b> Taxonomy</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>6</b> Presence-absence Data</a><ul>
+<li class="chapter" data-level="6.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>6.1</b> Filtering</a></li>
+<li class="chapter" data-level="6.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>6.2</b> Zero-filling</a></li>
+<li class="chapter" data-level="6.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>6.3</b> Tidying up</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>7</b> Applications</a><ul>
+<li class="chapter" data-level="7.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>7.1</b> Frequency trajectories</a></li>
+<li class="chapter" data-level="7.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>7.2</b> Maps</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
+<li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
+<li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.3</b> Land cover covariates</a></li>
+<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-multi"><i class="fa fa-check"></i><b>8.4</b> Dealing with multiple species</a></li>
+<li class="chapter" data-level="8.5" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.5</b> Reducing file size</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -155,31 +181,71 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="access" class="section level1">
 <h1><span class="header-section-number">Lesson 3</span> Data Access</h1>
 <p>The complete eBird database is provided via the <a href="https://ebird.org/science/download-ebird-data-products">eBird Basic Dataset (EBD)</a>, a large tab-separated text file. To start working with eBird data, we need to download this file. To access the EBD, you will need to <a href="https://secure.birds.cornell.edu/cassso/account/create">create an eBird account</a> and sign in to eBird. Once signed in, from the <a href="https://ebird.org/">eBird homepage</a>, click on the <a href="https://ebird.org/science">Science tab</a> then scroll down to click on <a href="https://ebird.org/science/download-ebird-data-products">Using eBird for science</a> in the right-hand menu. This page compiles links to a variety datasets, tools, and educational material for using eBird data to do science; it’s a great resource!</p>
-<p><img src="images/03_access_science.png" /></p>
+<p><img src="assets/img/03_access_science.png" /></p>
 <p>On the following page, proceed to the eBird Basic Dataset page. If you haven’t already done so, you will need to submit a request to access the EBD. You can do this after the workshop if you haven’t already done so. From this page you can download the eBird Basic Dataset, a large tab-separated text file that contains (nearly) every eBird observation. In this file, each row corresponds to an observation of a species on a checklist. On this page, you can also download the Sampling Event Data. In this file, each row corresponds to a checklist rather than a species observation. We’ll see why this file is important later in the workshop.</p>
-<p><img src="images/03_access_ebd.png" /></p>
+<p><img src="assets/img/03_access_ebd.png" /></p>
 <p>The EBD is huge, so <strong>don’t download these files now</strong>. Instead, we’ll be working with a small subset of the data today, which can be downloaded from the following links:</p>
 <ul>
-<li>eBird Basic Dataset: <a href="https://github.com/mstrimas/ebp-workshop/raw/master/data/ebd_relApr-2019_workshop.tar" class="uri">https://github.com/mstrimas/ebp-workshop/raw/master/data/ebd_relApr-2019_workshop.tar</a></li>
-<li>Sampling Event Data: <a href="https://github.com/mstrimas/ebp-workshop/raw/master/data/ebd_sampling_relApr-2019_workshop.tar" class="uri">https://github.com/mstrimas/ebp-workshop/raw/master/data/ebd_sampling_relApr-2019_workshop.tar</a></li>
+<li>eBird Basic Dataset: <a href="https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_relApr-2019_workshop.tar" class="uri">https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_relApr-2019_workshop.tar</a></li>
+<li>Sampling Event Data: <a href="https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_sampling_relApr-2019_workshop.tar" class="uri">https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_sampling_relApr-2019_workshop.tar</a></li>
 </ul>
+<p>This subset contains data from Yucatan Peninsula (Guatemala, Belize, and five Mexican sates) from 2015-2016.</p>
 <p>The files will be in <code>.tar</code> format, and should be unarchived. The resulting directories will contain files with extension <code>.txt.gz</code>, these files should be uncompressed (on Windows use <a href="https://www.7-zip.org/">7-Zip</a>, on Mac use the default system uncompression utility) to produce two text files (<code>ebd_relApr-2019_workshop.txt</code> and <code>ebd_sampling_relApr-2019_workshop.txt</code>). Move these files to a sensible, central location on your computer. When working with the full dataset, the EBD will be over 200 GB! If this is too large to fit on your computer, it can be stored on an external hard drive. We’ll also talk later in the workshop about some ways of avoiding downloading the EBD.</p>
-<p><strong>Green post it once you’re done, red post it if you’re having trouble</strong></p>
-<p>Let’s take a look at this dataset. If we were working with the full EBD, we don’t have enough memory to read in the whole file, but we can always read a small subset. Open a new R script (<code>03_access.R</code>) and read in the first few lines:</p>
+<div class="checkpoint">
+<h2>
+Checkpoint
+</h2>
+<p>Are the files downloaded and unarchived into a central location?</p>
+</div>
+<p>Let’s take a look at this dataset. If we were working with the full EBD, we wouldn’t have enough memory to read in the whole file, but we can always read a small subset. Open a new R script (<code>01_ebrid-data.R</code>) and read in the first few lines:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(readr)
+<span class="kw">library</span>(auk)
 
-ebd_top &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="st">&quot;~/data/ebird/ebd_relApr-2019_workshop.txt&quot;</span>, <span class="dt">n_max =</span> <span class="dv">5</span>)</code></pre>
+ebd_top &lt;-<span class="st"> </span><span class="kw">read_tsv</span>(<span class="st">&quot;~/data/ebird/ebd_2015-2016_yucatan.txt&quot;</span>, <span class="dt">n_max =</span> <span class="dv">5</span>)</code></pre>
 <p>View this data frame within RStudio. Scroll over to the <code>SAMPLING EVENT DATA</code> column and note the value: <code>S21914547</code>. With this code we can access any non-private checklist via the website by appending it to <code>https://ebird.org/view/checklist/</code>. <a href="https://ebird.org/view/checklist/S21914547">Look at the checklist online</a> and compare it to the EBD. Notice three things that distiguish eBird data from other citizen science data:</p>
 <ol style="list-style-type: decimal">
 <li>eBird collects data on the observation process, including the survey protocol used and effort information. This facilitates more robust analyses because we can account for variation in the observation process.</li>
 <li>Complete checklists enable non-detection to be inferred from the data. Without this, there’s no way to distinguish whether a species was not observered or just not reported.</li>
 </ol>
 <p>For these reasons, we refer to complete eBird checklists as <strong>semi-structured</strong> to distinguish from both most unstructured citizen science data and traditional structure scientific surveys.</p>
-<p><strong>Exercise: </strong> Take a few minutes to explore the EBD and compare it to the checklists online.</p>
+<div class="exercise">
+<h2>
+Exercise
+</h2>
+<p>Take a few minutes to explore the EBD and compare it to the checklists online.</p>
+</div>
 <p>Notice above that we had to reference the full path to the text files. In general, it’s best to avoid using absolute paths in R scripts because it makes them less portable–if you’re sharing the files with someone else, they’ll need to change the file paths to point to the location at which they’ve stored the eBird data. The R package <code>auk</code> provides a workaround for this, by allowing users to set an environment variable (<code>EDB_PATH</code>) that points to the directory where you’ve stored the eBird data. To set this variable, use the function <a href="https://cornelllabofornithology.github.io/auk/reference/auk_set_ebd_path.html"><code>auk_set_ebd_path()</code></a>. For example, if the EBD and Sampling Event Data files are in <code>~/data/ebird/</code>, use:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
-
-<span class="kw">auk_set_ebd_path</span>(<span class="st">&quot;~/data/ebird/&quot;</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_set_ebd_path</span>(<span class="st">&quot;~/data/ebird/&quot;</span>)</code></pre>
+<p>The function <code>auk_ebd()</code> creates an R object referencing the EBD text file. Now that we’ve set up an EBD path, we can reference the EBD directly within <code>auk_ebd()</code> even though it’s not in our working directory.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>)
+<span class="co">#&gt; Input </span>
+<span class="co">#&gt;   EBD: /Users/mes335/data/ebird/ebd_2015-2016_yucatan.txt </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Output </span>
+<span class="co">#&gt;   Filters not executed</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Filters </span>
+<span class="co">#&gt;   Species: all</span>
+<span class="co">#&gt;   Countries: all</span>
+<span class="co">#&gt;   States: all</span>
+<span class="co">#&gt;   BCRs: all</span>
+<span class="co">#&gt;   Bounding box: full extent</span>
+<span class="co">#&gt;   Date: all</span>
+<span class="co">#&gt;   Start time: all</span>
+<span class="co">#&gt;   Last edited date: all</span>
+<span class="co">#&gt;   Protocol: all</span>
+<span class="co">#&gt;   Project code: all</span>
+<span class="co">#&gt;   Duration: all</span>
+<span class="co">#&gt;   Distance travelled: all</span>
+<span class="co">#&gt;   Records with breeding codes only: no</span>
+<span class="co">#&gt;   Complete checklists only: no</span></code></pre>
+<p>You should now see the EBD text file referenced as <code>Input</code> in this <code>auk_ebd</code> object. The remainder of the information printed will be the topic of the next section.</p>
+<div class="checkpoint">
+<h2>
+Checkpoint
+</h2>
+<p>Were you able to create an <code>auk_ebd</code> object from the EBD text?</p>
+</div>
 
 </div>
 <script>
@@ -203,8 +269,8 @@ for (i = 0; i < coll.length; i++) {
           </div>
         </div>
       </div>
-<a href="setup.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="setup.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="filter.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Lesson 6 Presence-absence Data | eBird Best Practices I</title>
+  <meta name="description" content="Lesson 6 Presence-absence Data | eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta name="generator" content="bookdown 0.11.1 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Lesson 6 Presence-absence Data | eBird Best Practices I" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Lesson 6 Presence-absence Data | eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta name="github-repo" content="mstrimas/ebp-workshop" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Lesson 6 Presence-absence Data | eBird Best Practices I" />
+  
+  <meta name="twitter:description" content="Lesson 6 Presence-absence Data | eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  
+
+<meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
+
+
+<meta name="date" content="2019-06-12" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="import.html">
+<link rel="next" href="applications.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="assets/css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">eBird Best Practices Workshop</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
+<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="setup.html"><a href="setup.html"><i class="fa fa-check"></i><b>2</b> Setup</a><ul>
+<li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#setup-tidyverse"><i class="fa fa-check"></i><b>2.1</b> Tidyverse</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>3</b> Data Access</a></li>
+<li class="chapter" data-level="4" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>4</b> Filtering</a><ul>
+<li class="chapter" data-level="4.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>4.1</b> Defining filters</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>4.1.1</b> Complete checklists</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>4.2</b> Execute filters</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>5</b> Importing Data</a><ul>
+<li class="chapter" data-level="5.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>5.1</b> Group checklists</a></li>
+<li class="chapter" data-level="5.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>5.2</b> Taxonomy</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>6</b> Presence-absence Data</a><ul>
+<li class="chapter" data-level="6.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>6.1</b> Filtering</a></li>
+<li class="chapter" data-level="6.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>6.2</b> Zero-filling</a></li>
+<li class="chapter" data-level="6.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>6.3</b> Tidying up</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>7</b> Applications</a><ul>
+<li class="chapter" data-level="7.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>7.1</b> Frequency trajectories</a></li>
+<li class="chapter" data-level="7.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>7.2</b> Maps</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
+<li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
+<li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.3</b> Land cover covariates</a></li>
+<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-multi"><i class="fa fa-check"></i><b>8.4</b> Dealing with multiple species</a></li>
+<li class="chapter" data-level="8.5" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.5</b> Reducing file size</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">eBird Best Practices I</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="presabs" class="section level1">
+<h1><span class="header-section-number">Lesson 6</span> Presence-absence Data</h1>
+<p>Up to this point we’ve been working with presence-only data. The EBD, and eBird checklist in general, only explicitly record positive observations of species. However, if we limit ourselves to complete checklists, we can fill in the implied zero counts for any checklists on which a given species isn’t explicitly reported to presence-absence data. We refer to this process as <strong>zero-filling</strong> the eBird data.</p>
+<p>Zero-filling relies on the Sampling Event Data, which is a tab-seperated text file containing checklist-level information. This file contains the full population of checklists in the eBird database. If we apply exactly the same set of filters to both the EBD and the Sampling Event Data we can assume that any checklist with no observations for a given species in the EBD should get a zero-count record added to the dataset. So, producing Presence-absence eBird data is a two-step process:</p>
+<ol style="list-style-type: decimal">
+<li>Simultaneously filter the EBD and Sampling Event Data, making sure to only use complete checklists.</li>
+<li>Read both files into R and zero-fill the EBD using the full population of checklists from the Sampling Event Data.</li>
+</ol>
+<div class="tip">
+<h2>
+Tip
+</h2>
+<p>When we say “presence-absence” what we really mean by absence is that the species was not detected, it’s entirely possible that the species was presented but the observer didn’t detect it.</p>
+</div>
+<div id="presabs-filter" class="section level2">
+<h2><span class="header-section-number">6.1</span> Filtering</h2>
+<p>Simultaneously filtering the EBD and Sampling Event Data is done in almost the exact same way as filtering the EBD alone. The only difference is that we provide both files to <code>auk_ebd()</code> and two corresponding output files to <code>auk_filter()</code>. For example, we can extract all American Flamingo observations from January in the Mexican state of Yucatán in preparation for zero-filling:</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
+<span class="kw">library</span>(dplyr)
+
+f_ebd &lt;-<span class="st"> &quot;data/ebd_amefla.txt&quot;</span>
+f_sed &lt;-<span class="st"> &quot;data/sed_amefla.txt&quot;</span>
+ebd_filt &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>, 
+                    <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;American Flamingo&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_state</span>(<span class="st">&quot;MX-YUC&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_date</span>(<span class="kw">c</span>(<span class="st">&quot;*-01-01&quot;</span>, <span class="st">&quot;*-01-31&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(f_ebd, <span class="dt">file_sampling =</span> f_sed)</code></pre>
+<p>We now have two output files that have been extract using the same set of filters, apart from the species filter, which only applies to the EBD. We can read these files into R individually:</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd_only &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(f_ebd)
+sed_only &lt;-<span class="st"> </span><span class="kw">read_sampling</span>(f_sed)
+<span class="kw">n_distinct</span>(ebd_only<span class="op">$</span>checklist_id)
+<span class="co">#&gt; [1] 51</span>
+<span class="kw">n_distinct</span>(sed_only<span class="op">$</span>checklist_id)
+<span class="co">#&gt; [1] 336</span></code></pre>
+<p>So, we have 336 checklists in the Sampling Event Data and, of those, 51 have Ocellated Turkey observations on them.</p>
+<div class="exercise">
+<h2>
+Exercise
+</h2>
+<p>You’re studying Hooded Warblers wintering (November-February) in Belize. Extract eBird data in preparation for zero-filling, then read in the results and explore them. Hint: consult the Details section of the documentation for <code>auk_date()</code> to see how to filter a range of dates that wrap around the year end.</p>
+<button class="solution">Solution</button>
+<div class="solution-content">
+<pre class="sourceCode r"><code class="sourceCode r">f_ebd_hw &lt;-<span class="st"> &quot;data/ebd_hoowar.txt&quot;</span>
+f_sed_hw &lt;-<span class="st"> &quot;data/sed_hoowar.txt&quot;</span>
+ebd_filt &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>, 
+                    <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Hooded Warbler&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;BZ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># when using wildcards, dates can wrap around the year end</span>
+<span class="st">  </span><span class="kw">auk_date</span>(<span class="kw">c</span>(<span class="st">&quot;*-11-01&quot;</span>, <span class="st">&quot;*-02-29&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(f_ebd_hw, <span class="dt">file_sampling =</span> f_sed_hw)
+<span class="co"># import the data</span>
+ebd_only_hw &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(f_ebd_hw)
+sed_only_hw &lt;-<span class="st"> </span><span class="kw">read_sampling</span>(f_sed_hw)</code></pre>
+</div>
+</div>
+</div>
+<div id="presabs-zerofill" class="section level2">
+<h2><span class="header-section-number">6.2</span> Zero-filling</h2>
+<p>Now that we have these two datasets, containing checklist and species information, we can use the function <code>auk_zerofill()</code> to combine them to produce presence-absence data. This function also imports the data and handles group checklists and taxonomic rollup automatically, we just have to pass it the paths to the two files. Let’s do this with the American Flamingo data.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_ebd, <span class="dt">sampling_events =</span> f_sed)
+ebd_zf
+<span class="co">#&gt; Zero-filled EBD: 336 unique checklists, for 1 species.</span></code></pre>
+<p>By default, <code>auk_zerofill()</code> returns the data as a list of two dataframes: <code>sampling_events</code> contains all the checklist and <code>observations</code> contains just the counts and presence-absence data for each species on each checklist. This compact format reduces the size of the data because checklist information isn’t replicated for every species observation.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(ebd_zf<span class="op">$</span>observations)
+<span class="co">#&gt; Observations: 336</span>
+<span class="co">#&gt; Variables: 4</span>
+<span class="co">#&gt; $ checklist_id      &lt;chr&gt; &quot;G1089999&quot;, &quot;G1092350&quot;, &quot;G1095290&quot;, &quot;G1095467&quot;…</span>
+<span class="co">#&gt; $ scientific_name   &lt;chr&gt; &quot;Phoenicopterus ruber&quot;, &quot;Phoenicopterus ruber&quot;…</span>
+<span class="co">#&gt; $ observation_count &lt;chr&gt; &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;3&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;…</span>
+<span class="co">#&gt; $ species_observed  &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE…</span>
+<span class="kw">glimpse</span>(ebd_zf<span class="op">$</span>sampling_events)
+<span class="co">#&gt; Observations: 336</span>
+<span class="co">#&gt; Variables: 31</span>
+<span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S27296139&quot;, &quot;S27164098&quot;, &quot;S27171657&quot;,…</span>
+<span class="co">#&gt; $ last_edited_date          &lt;chr&gt; &quot;2018-08-06 17:50:11&quot;, &quot;2016-01-27 19:…</span>
+<span class="co">#&gt; $ country                   &lt;chr&gt; &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;…</span>
+<span class="co">#&gt; $ country_code              &lt;chr&gt; &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;M…</span>
+<span class="co">#&gt; $ state                     &lt;chr&gt; &quot;Yucatán&quot;, &quot;Yucatán&quot;, &quot;Yucatán&quot;, &quot;Yuca…</span>
+<span class="co">#&gt; $ state_code                &lt;chr&gt; &quot;MX-YUC&quot;, &quot;MX-YUC&quot;, &quot;MX-YUC&quot;, &quot;MX-YUC&quot;…</span>
+<span class="co">#&gt; $ county                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ county_code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ iba_code                  &lt;chr&gt; &quot;MX_186&quot;, &quot;MX_186&quot;, NA, NA, &quot;MX_186&quot;, …</span>
+<span class="co">#&gt; $ bcr_code                  &lt;int&gt; 55, NA, 56, 56, NA, 56, 55, 55, 55, 56…</span>
+<span class="co">#&gt; $ usfws_code                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ atlas_block               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ locality                  &lt;chr&gt; &quot;CSF1&quot;, &quot;Rio Lagartos (pueblo)&quot;, &quot;Rese…</span>
+<span class="co">#&gt; $ locality_id               &lt;chr&gt; &quot;L3629436&quot;, &quot;L1850457&quot;, &quot;L3620341&quot;, &quot;L…</span>
+<span class="co">#&gt; $ locality_type             &lt;chr&gt; &quot;P&quot;, &quot;H&quot;, &quot;H&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;P&quot;, &quot;H&quot;…</span>
+<span class="co">#&gt; $ latitude                  &lt;dbl&gt; 21.6, 21.6, 20.6, 21.4, 21.6, 20.7, 21…</span>
+<span class="co">#&gt; $ longitude                 &lt;dbl&gt; -88.2, -88.2, -88.2, -88.2, -88.2, -88…</span>
+<span class="co">#&gt; $ observation_date          &lt;date&gt; 2016-01-30, 2016-01-27, 2016-01-27, 2…</span>
+<span class="co">#&gt; $ time_observations_started &lt;chr&gt; &quot;07:00:00&quot;, &quot;15:50:00&quot;, &quot;07:25:00&quot;, &quot;0…</span>
+<span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obs539688&quot;, &quot;obs439237&quot;, &quot;obs106177&quot;,…</span>
+<span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S27296139&quot;, &quot;S27164098&quot;, &quot;S27171657&quot;,…</span>
+<span class="co">#&gt; $ protocol_type             &lt;chr&gt; &quot;Stationary&quot;, &quot;Traveling&quot;, &quot;Traveling&quot;…</span>
+<span class="co">#&gt; $ protocol_code             &lt;chr&gt; &quot;P21&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P2…</span>
+<span class="co">#&gt; $ project_code              &lt;chr&gt; &quot;EBIRD_MEX&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD&quot;, &quot;EB…</span>
+<span class="co">#&gt; $ duration_minutes          &lt;int&gt; 10, 303, 180, 10, 10, 240, 10, 150, 60…</span>
+<span class="co">#&gt; $ effort_distance_km        &lt;dbl&gt; NA, 2.000, 11.104, NA, NA, 1.000, NA, …</span>
+<span class="co">#&gt; $ effort_area_ha            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ number_observers          &lt;int&gt; 1, 2, 7, 2, 1, 1, 1, 1, 2, 4, 1, 1, 3,…</span>
+<span class="co">#&gt; $ all_species_reported      &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…</span>
+<span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ trip_comments             &lt;chr&gt; NA, NA, &quot;2.1 miles walked, 4.8 driven …</span></code></pre>
+<p>However, in this case object size isn’t an issue, and it’s easier to work with a single dataframe, so we can collapse the data with:</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd_zf_df &lt;-<span class="st"> </span><span class="kw">collapse_zerofill</span>(ebd_zf)
+<span class="kw">glimpse</span>(ebd_zf_df)
+<span class="co">#&gt; Observations: 336</span>
+<span class="co">#&gt; Variables: 34</span>
+<span class="co">#&gt; $ checklist_id              &lt;chr&gt; &quot;S27296139&quot;, &quot;S27164098&quot;, &quot;S27171657&quot;,…</span>
+<span class="co">#&gt; $ last_edited_date          &lt;chr&gt; &quot;2018-08-06 17:50:11&quot;, &quot;2016-01-27 19:…</span>
+<span class="co">#&gt; $ country                   &lt;chr&gt; &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;, &quot;Mexico&quot;…</span>
+<span class="co">#&gt; $ country_code              &lt;chr&gt; &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;MX&quot;, &quot;M…</span>
+<span class="co">#&gt; $ state                     &lt;chr&gt; &quot;Yucatán&quot;, &quot;Yucatán&quot;, &quot;Yucatán&quot;, &quot;Yuca…</span>
+<span class="co">#&gt; $ state_code                &lt;chr&gt; &quot;MX-YUC&quot;, &quot;MX-YUC&quot;, &quot;MX-YUC&quot;, &quot;MX-YUC&quot;…</span>
+<span class="co">#&gt; $ county                    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ county_code               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ iba_code                  &lt;chr&gt; &quot;MX_186&quot;, &quot;MX_186&quot;, NA, NA, &quot;MX_186&quot;, …</span>
+<span class="co">#&gt; $ bcr_code                  &lt;int&gt; 55, NA, 56, 56, NA, 56, 55, 55, 55, 56…</span>
+<span class="co">#&gt; $ usfws_code                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ atlas_block               &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ locality                  &lt;chr&gt; &quot;CSF1&quot;, &quot;Rio Lagartos (pueblo)&quot;, &quot;Rese…</span>
+<span class="co">#&gt; $ locality_id               &lt;chr&gt; &quot;L3629436&quot;, &quot;L1850457&quot;, &quot;L3620341&quot;, &quot;L…</span>
+<span class="co">#&gt; $ locality_type             &lt;chr&gt; &quot;P&quot;, &quot;H&quot;, &quot;H&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;P&quot;, &quot;H&quot;…</span>
+<span class="co">#&gt; $ latitude                  &lt;dbl&gt; 21.6, 21.6, 20.6, 21.4, 21.6, 20.7, 21…</span>
+<span class="co">#&gt; $ longitude                 &lt;dbl&gt; -88.2, -88.2, -88.2, -88.2, -88.2, -88…</span>
+<span class="co">#&gt; $ observation_date          &lt;date&gt; 2016-01-30, 2016-01-27, 2016-01-27, 2…</span>
+<span class="co">#&gt; $ time_observations_started &lt;chr&gt; &quot;07:00:00&quot;, &quot;15:50:00&quot;, &quot;07:25:00&quot;, &quot;0…</span>
+<span class="co">#&gt; $ observer_id               &lt;chr&gt; &quot;obs539688&quot;, &quot;obs439237&quot;, &quot;obs106177&quot;,…</span>
+<span class="co">#&gt; $ sampling_event_identifier &lt;chr&gt; &quot;S27296139&quot;, &quot;S27164098&quot;, &quot;S27171657&quot;,…</span>
+<span class="co">#&gt; $ protocol_type             &lt;chr&gt; &quot;Stationary&quot;, &quot;Traveling&quot;, &quot;Traveling&quot;…</span>
+<span class="co">#&gt; $ protocol_code             &lt;chr&gt; &quot;P21&quot;, &quot;P22&quot;, &quot;P22&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P2…</span>
+<span class="co">#&gt; $ project_code              &lt;chr&gt; &quot;EBIRD_MEX&quot;, &quot;EBIRD_MEX&quot;, &quot;EBIRD&quot;, &quot;EB…</span>
+<span class="co">#&gt; $ duration_minutes          &lt;int&gt; 10, 303, 180, 10, 10, 240, 10, 150, 60…</span>
+<span class="co">#&gt; $ effort_distance_km        &lt;dbl&gt; NA, 2.000, 11.104, NA, NA, 1.000, NA, …</span>
+<span class="co">#&gt; $ effort_area_ha            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ number_observers          &lt;int&gt; 1, 2, 7, 2, 1, 1, 1, 1, 2, 4, 1, 1, 3,…</span>
+<span class="co">#&gt; $ all_species_reported      &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TR…</span>
+<span class="co">#&gt; $ group_identifier          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</span>
+<span class="co">#&gt; $ trip_comments             &lt;chr&gt; NA, NA, &quot;2.1 miles walked, 4.8 driven …</span>
+<span class="co">#&gt; $ scientific_name           &lt;chr&gt; &quot;Phoenicopterus ruber&quot;, &quot;Phoenicopteru…</span>
+<span class="co">#&gt; $ observation_count         &lt;chr&gt; &quot;0&quot;, &quot;5&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;…</span>
+<span class="co">#&gt; $ species_observed          &lt;lgl&gt; FALSE, TRUE, FALSE, FALSE, FALSE, FALS…</span></code></pre>
+<p>Notice that in addition to the <code>observation_count</code> column, we now have a binary <code>species_observered</code> column specifying whether or not the species was observered on this checklist. You can also automatically collapse the data by using the <code>collapse = TRUE</code> argument to <code>auk_zerofill()</code>.</p>
+<div class="exercise">
+<h2>
+Exercise
+</h2>
+<p>Zero-fill and collapse the Hooded Warbler data you extracted in the previous exercise.</p>
+<button class="solution">Solution</button>
+<div class="solution-content">
+<pre class="sourceCode r"><code class="sourceCode r">ebd_zf_hw &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_ebd_hw, f_sed_hw)</code></pre>
+</div>
+</div>
+<div class="tip">
+<h2>
+Tip
+</h2>
+<p>Whenever you’re zero-filling data it’s critical that you think about region and season (i.e. where and when) in addition to just the species. If you don’t do that, you’ll zero-fill the entire global EBD and your computer will explode. For example, consider a highly localized species like the <a href="https://ebird.org/species/cozvir1">Cozumel Vireo</a>, endemic to the small island of Cozumel off the coast of Mexico. Let’s try just filtering on species.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd_cozvir &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>, 
+                    <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Cozumel Vireo&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/ebd_cozvir.txt&quot;</span>, <span class="st">&quot;data/sed_cozvir.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_zerofill</span>(<span class="dt">collapse =</span> <span class="ot">TRUE</span>)
+<span class="kw">table</span>(ebd_cozvir<span class="op">$</span>species_observed)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; FALSE  TRUE </span>
+<span class="co">#&gt; 35487   127</span></code></pre>
+<p>What we have here is the entire EBD (36 million checklists!) for a species that only occurs on one small island. In this situation, you would be better to identify the boundaries of the island and use <code>auk_bbox()</code> to spatially subset the data.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd_cozvir &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>, 
+                      <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Cozumel Vireo&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># lng_min, lat_min, lng_max, lat_max</span>
+<span class="st">  </span><span class="kw">auk_bbox</span>(<span class="kw">c</span>(<span class="op">-</span><span class="fl">87.12</span>, <span class="fl">20.25</span>, <span class="fl">-86.68</span>, <span class="fl">20.63</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;ebd_cozvir.txt&quot;</span>, <span class="st">&quot;sed_cozvir.txt&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_zerofill</span>(<span class="dt">collapse =</span> <span class="ot">TRUE</span>)
+<span class="kw">table</span>(ebd_cozvir<span class="op">$</span>species_observed)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; FALSE  TRUE </span>
+<span class="co">#&gt;   744   127</span></code></pre>
+<p>We have the same number of positive observations, but have now drastically reduced the number of checklists without Cozumel Vireo observations.</p>
+</div>
+</div>
+<div id="presabs-tidy" class="section level2">
+<h2><span class="header-section-number">6.3</span> Tidying up</h2>
+<p>We now have a zero-filled presence-absence dataset with duplicate group checklists removed and all observations at the species level. There are couple remaining steps that we typically run to clean up the data. First, you may have noticed some cases where <code>observation_count</code> is <code>&quot;X&quot;</code> in the data. This is what eBirders enter for the count to indicate that they didn’t count the number of individuals for a given species.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">arrange</span>(ebd_zf_df, <span class="kw">desc</span>(observation_count)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(checklist_id, observation_count) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">head</span>(<span class="dv">10</span>)
+<span class="co">#&gt; # A tibble: 10 x 2</span>
+<span class="co">#&gt;   checklist_id observation_count</span>
+<span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;            </span>
+<span class="co">#&gt; 1 S27259643    X                </span>
+<span class="co">#&gt; 2 G1546995     X                </span>
+<span class="co">#&gt; 3 G1533133     85               </span>
+<span class="co">#&gt; 4 G1120861     8                </span>
+<span class="co">#&gt; 5 G1140974     8                </span>
+<span class="co">#&gt; 6 G1141753     690              </span>
+<span class="co">#&gt; # … with 4 more rows</span></code></pre>
+<p>It’s more appropriate to have this as <code>NA</code> rather than <code>&quot;X&quot;</code> and this will also allow us to convert the count column data type to integer rather than character. At this point, we’ll also assign an explicit distance of 0 to stationary checklists.</p>
+<pre class="sourceCode r"><code class="sourceCode r">zf_count &lt;-<span class="st"> </span>ebd_zf_df <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_count =</span> <span class="kw">if_else</span>(observation_count <span class="op">==</span><span class="st"> &quot;X&quot;</span>, 
+                                     <span class="ot">NA_character_</span>, observation_count),
+         <span class="dt">observation_count =</span> <span class="kw">as.integer</span>(observation_count),
+         <span class="dt">effort_distance_km =</span> <span class="kw">if_else</span>(protocol_type <span class="op">==</span><span class="st"> &quot;Stationary&quot;</span>, 
+                                      <span class="dv">0</span>, effort_distance_km))</code></pre>
+<p>Finally, depending on your application, you’ll likely want to do some further filtering of the data. For many uses, it’s a good idea to reduce the variation in detectability between checklists by imposing some constraints on the effort variables. For example, in part II of this workshop, we’ll restrict observations to those from checklists less than 5 hours long and 5 km in length, and with 10 or fewer observers.</p>
+<pre class="sourceCode r"><code class="sourceCode r">zf_effort &lt;-<span class="st"> </span>zf_count <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(duration_minutes <span class="op">&lt;=</span><span class="st"> </span><span class="dv">60</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span>,
+         effort_distance_km <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>,
+         number_observers <span class="op">&lt;=</span><span class="st"> </span><span class="dv">10</span>)
+<span class="kw">table</span>(zf_count<span class="op">$</span>species_observed)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; FALSE  TRUE </span>
+<span class="co">#&gt;   285    51</span>
+<span class="kw">table</span>(zf_effort<span class="op">$</span>species_observed)
+<span class="co">#&gt; </span>
+<span class="co">#&gt; FALSE  TRUE </span>
+<span class="co">#&gt;   264    24</span></code></pre>
+<p>We’ve reduced the amount of data, but also decreased the variability in effort, which will lead to better model performance if we use these data to model species distributions.</p>
+
+</div>
+</div>
+<script>
+var coll = document.getElementsByClassName("solution");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="import.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="applications.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mstrimas/ebp-workshop/edit/master/06_presabs.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

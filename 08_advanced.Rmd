@@ -1,0 +1,25 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Advanced Topics {#advanced}
+
+## Custom downloads {#advanced-custom}
+
+## Preparing for occupancy modeling {#advanced-unmarked}
+
+## Land cover covariates {#advanced-modis}
+
+## Dealing with multiple species {#advanced-multi}
+
+## Reducing file size {#advanced-size}
+
+
+
+```{r cleanup, echo = FALSE}
+unlink(list.files("data/", full.names = TRUE))
+```
+
+

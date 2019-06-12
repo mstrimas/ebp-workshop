@@ -2,8 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
-data/ebd_relApr-2019_yucatan.txt
-data/ebd_sampling_relApr-2019_yucatan.txt
-data/ebd_relApr-2019_workshop.txt
-data/ebd_sampling_relApr-2019_workshop.txt
-data/ebd-files
+raw-data/ebd_relApr-2019_yucatan.txt
+raw-data/ebd_sampling_relApr-2019_yucatan.txt
+raw-data/ebd_2015-2016_yucatan.txt
+raw-data/ebd_sampling_2015-2016_yucatan.txt
+raw-data/ebd-files
