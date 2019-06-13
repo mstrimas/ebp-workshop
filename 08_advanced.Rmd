@@ -55,7 +55,49 @@ We've produced exactly the same data as in Lesson \@ref(presabs); however, we've
 
 ## Preparing for occupancy modeling {#advanced-unmarked}
 
-One common use of eBird data is for occupancy modeling with the R package `unmarked`. This workshop won't cover occupancy modeling; however, `unmarked` requires data to be formatted in a very particular way and `auk` contains functions to prepare data in this way, which we'll cover in this lesson.
+One common use of eBird data is for occupancy modeling with the R package `unmarked`. This workshop won't cover occupancy modeling; however, `unmarked` requires data to be formatted in a very particular way and `auk` contains functions to prepare data in this way, which we'll cover in this lesson. We'll continue with the American Flamingo data from the previous section.
+
+First, we need to extract the subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated sampling events to a single site during a time frame over which the population can be considered closed. For example, let's define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data of this form.
+
+```{r advanced-unmarked-extract}
+visits <- filter_repeat_visits(ebd_zf, 
+                               min_obs = 2, max_obs = 10,
+                               annual_closure = TRUE,
+                               date_var = "observation_date",
+                               site_vars = c("latitude", "longitude", 
+                                             "observer_id"))
+# entire data set
+nrow(visits)
+# reduced data set
+nrow(ebd_zf)
+# how many individual sites there are
+n_distinct(visits$site)
+```
+
+Three new columns are added to the dataset when using the function `filter_repeat_visits()`: `site` is a unique site ID, `closure_id` identifies the primary period of closure (in this example the year), and `n_observations` is the number of visits to each site.
+
+Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by `unmarked`. The documentation for the `unmarked` function `formatWide()` outlines the details of this format. In the EBD, each row is a checklist; however, `unmarked` requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and habitat covariates. Finally, there are several groups of columns containing observation-level covariates, such as distance and duration. Each covariate gets a set of columns corresponding to the columns specifying the presence-absence of the species.
+
+![](assets/img/08_advanced_unmarked.png)
+
+The `auk` function `format_unmarked_occu()` takes care of the reformatting for you. `response` is the variable that you will be using as the response in occupancy modeling (e.g. `observation_count` or `species_observered`), `site_covs` are the site-level covariates, and `obs_covs` are the observation-level covariates.
+
+```{r}
+visits_um <- format_unmarked_occu(visits, 
+                                  site_id = "site", 
+                                  response = "species_observed",
+                                  site_covs = c("latitude", "longitude"),
+                                  obs_covs = c("time_observations_started", 
+                                               "duration_minutes", 
+                                               "effort_distance_km", 
+                                               "number_observers", 
+                                               "protocol_type"))
+```
+
+<div class="exercise">
+  <h2>Exercise</h2>
+  Explore both the `visits_um` and `visits` dataframes. They contain the same data in different formats. Try to understand how one dataframe was transformed into the other.
+</div>
 
 ## Reducing file size {#advanced-size}
 

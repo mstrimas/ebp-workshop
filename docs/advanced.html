@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-12" />
+<meta name="date" content="2019-06-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -157,9 +157,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
 <li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
-<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-multi"><i class="fa fa-check"></i><b>8.3</b> Dealing with multiple species</a></li>
-<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.4</b> Reducing file size</a></li>
-<li class="chapter" data-level="8.5" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.5</b> Land cover covariates</a></li>
+<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.3</b> Reducing file size</a></li>
+<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.4</b> Land cover covariates</a></li>
 </ul></li>
 </ul>
 
@@ -211,15 +210,48 @@ sed &lt;-<span class="st"> </span><span class="kw">read_sampling</span>(f_sed)</
 </div>
 <div id="advanced-unmarked" class="section level2">
 <h2><span class="header-section-number">8.2</span> Preparing for occupancy modeling</h2>
+<p>One common use of eBird data is for occupancy modeling with the R package <code>unmarked</code>. This workshop won’t cover occupancy modeling; however, <code>unmarked</code> requires data to be formatted in a very particular way and <code>auk</code> contains functions to prepare data in this way, which we’ll cover in this lesson. We’ll continue with the American Flamingo data from the previous section.</p>
+<p>First, we need to extract the subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated sampling events to a single site during a time frame over which the population can be considered closed. For example, let’s define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data of this form.</p>
+<pre class="sourceCode r"><code class="sourceCode r">visits &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebd_zf, 
+                               <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,
+                               <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,
+                               <span class="dt">date_var =</span> <span class="st">&quot;observation_date&quot;</span>,
+                               <span class="dt">site_vars =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>, 
+                                             <span class="st">&quot;observer_id&quot;</span>))
+<span class="co"># entire data set</span>
+<span class="kw">nrow</span>(visits)
+<span class="co">#&gt; [1] 112</span>
+<span class="co"># reduced data set</span>
+<span class="kw">nrow</span>(ebd_zf)
+<span class="co">#&gt; [1] 336</span>
+<span class="co"># how many individual sites there are</span>
+<span class="kw">n_distinct</span>(visits<span class="op">$</span>site)
+<span class="co">#&gt; [1] 39</span></code></pre>
+<p>Three new columns are added to the dataset when using the function <code>filter_repeat_visits()</code>: <code>site</code> is a unique site ID, <code>closure_id</code> identifies the primary period of closure (in this example the year), and <code>n_observations</code> is the number of visits to each site.</p>
+<p>Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by <code>unmarked</code>. The documentation for the <code>unmarked</code> function <code>formatWide()</code> outlines the details of this format. In the EBD, each row is a checklist; however, <code>unmarked</code> requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and habitat covariates. Finally, there are several groups of columns containing observation-level covariates, such as distance and duration. Each covariate gets a set of columns corresponding to the columns specifying the presence-absence of the species.</p>
+<p><img src="assets/img/08_advanced_unmarked.png" /></p>
+<p>The <code>auk</code> function <code>format_unmarked_occu()</code> takes care of the reformatting for you. <code>response</code> is the variable that you will be using as the response in occupancy modeling (e.g. <code>observation_count</code> or <code>species_observered</code>), <code>site_covs</code> are the site-level covariates, and <code>obs_covs</code> are the observation-level covariates.</p>
+<pre class="sourceCode r"><code class="sourceCode r">visits_um &lt;-<span class="st"> </span><span class="kw">format_unmarked_occu</span>(visits, 
+                                  <span class="dt">site_id =</span> <span class="st">&quot;site&quot;</span>, 
+                                  <span class="dt">response =</span> <span class="st">&quot;species_observed&quot;</span>,
+                                  <span class="dt">site_covs =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>),
+                                  <span class="dt">obs_covs =</span> <span class="kw">c</span>(<span class="st">&quot;time_observations_started&quot;</span>, 
+                                               <span class="st">&quot;duration_minutes&quot;</span>, 
+                                               <span class="st">&quot;effort_distance_km&quot;</span>, 
+                                               <span class="st">&quot;number_observers&quot;</span>, 
+                                               <span class="st">&quot;protocol_type&quot;</span>))</code></pre>
+<div class="exercise">
+<h2>
+Exercise
+</h2>
+<p>Explore both the <code>visits_um</code> and <code>visits</code> dataframes. They contain the same data in different formats. Try to understand how one dataframe was transformed into the other.</p>
 </div>
-<div id="advanced-multi" class="section level2">
-<h2><span class="header-section-number">8.3</span> Dealing with multiple species</h2>
 </div>
 <div id="advanced-size" class="section level2">
-<h2><span class="header-section-number">8.4</span> Reducing file size</h2>
+<h2><span class="header-section-number">8.3</span> Reducing file size</h2>
 </div>
 <div id="advanced-modis" class="section level2">
-<h2><span class="header-section-number">8.5</span> Land cover covariates</h2>
+<h2><span class="header-section-number">8.4</span> Land cover covariates</h2>
 
 </div>
 </div>
