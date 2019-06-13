@@ -157,7 +157,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
 <li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
 <li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
-<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.3</b> Reducing file size</a></li>
+<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.3</b> Reducing file size</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="advanced.html"><a href="advanced.html#advanced-size-strict"><i class="fa fa-check"></i><b>8.3.1</b> Stricter filtering</a></li>
+<li class="chapter" data-level="8.3.2" data-path="advanced.html"><a href="advanced.html#advanced-size-columns"><i class="fa fa-check"></i><b>8.3.2</b> Removing columns</a></li>
+<li class="chapter" data-level="8.3.3" data-path="advanced.html"><a href="advanced.html#advanced-size-split"><i class="fa fa-check"></i><b>8.3.3</b> Splitting by species</a></li>
+</ul></li>
 <li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.4</b> Land cover covariates</a></li>
 </ul></li>
 </ul>
@@ -249,9 +253,102 @@ Exercise
 </div>
 <div id="advanced-size" class="section level2">
 <h2><span class="header-section-number">8.3</span> Reducing file size</h2>
+<p>Even after filtering the EBD somtimes it can still be too large to read into R and work with. There are several approaches for reducing the size of the EBD. We’ll cover three here: stricter filtering, removing columns, and splitting by species.</p>
+<div id="advanced-size-strict" class="section level3">
+<h3><span class="header-section-number">8.3.1</span> Stricter filtering</h3>
+<p>The most obvious way to reduce the size of an EBD extract is to use stricter filters: focus on a smaller region, shorter time period, or fewer species. To avoid having to waste several hours trying to filter the entire EBD all over again, it’s worthwhile noting that you can always re-filter an EBD extract directly. So, apply the stricter filter to the EBD extract rather than the full EBD so save time.</p>
+</div>
+<div id="advanced-size-columns" class="section level3">
+<h3><span class="header-section-number">8.3.2</span> Removing columns</h3>
+<p>The EBD contains a columns (46 to be precise) many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to or the checklist comments are rarely useful. By removing these columns we can drastically reduce the size of the EBD.</p>
+<p>The available columns in the EBD are listed and defined in the PDF metadata that comes with the EBD (<code>eBird_Basic_Dataset_Metadata_v1.12.pdf</code>). Alternatively, there’s a useful trick to get a list of column names from an <code>auk_ebd</code> object.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
+
+ebd &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>)
+ebd<span class="op">$</span>col_idx<span class="op">$</span>name
+<span class="co">#&gt;  [1] &quot;global unique identifier&quot;     &quot;last edited date&quot;            </span>
+<span class="co">#&gt;  [3] &quot;taxonomic order&quot;              &quot;category&quot;                    </span>
+<span class="co">#&gt;  [5] &quot;common name&quot;                  &quot;scientific name&quot;             </span>
+<span class="co">#&gt;  [7] &quot;subspecies common name&quot;       &quot;subspecies scientific name&quot;  </span>
+<span class="co">#&gt;  [9] &quot;observation count&quot;            &quot;breeding bird atlas code&quot;    </span>
+<span class="co">#&gt; [11] &quot;breeding bird atlas category&quot; &quot;age sex&quot;                     </span>
+<span class="co">#&gt; [13] &quot;country&quot;                      &quot;country code&quot;                </span>
+<span class="co">#&gt; [15] &quot;state&quot;                        &quot;state code&quot;                  </span>
+<span class="co">#&gt; [17] &quot;county&quot;                       &quot;county code&quot;                 </span>
+<span class="co">#&gt; [19] &quot;iba code&quot;                     &quot;bcr code&quot;                    </span>
+<span class="co">#&gt; [21] &quot;usfws code&quot;                   &quot;atlas block&quot;                 </span>
+<span class="co">#&gt; [23] &quot;locality&quot;                     &quot;locality id&quot;                 </span>
+<span class="co">#&gt; [25] &quot;locality type&quot;                &quot;latitude&quot;                    </span>
+<span class="co">#&gt; [27] &quot;longitude&quot;                    &quot;observation date&quot;            </span>
+<span class="co">#&gt; [29] &quot;time observations started&quot;    &quot;observer id&quot;                 </span>
+<span class="co">#&gt; [31] &quot;sampling event identifier&quot;    &quot;protocol type&quot;               </span>
+<span class="co">#&gt; [33] &quot;protocol code&quot;                &quot;project code&quot;                </span>
+<span class="co">#&gt; [35] &quot;duration minutes&quot;             &quot;effort distance km&quot;          </span>
+<span class="co">#&gt; [37] &quot;effort area ha&quot;               &quot;number observers&quot;            </span>
+<span class="co">#&gt; [39] &quot;all species reported&quot;         &quot;group identifier&quot;            </span>
+<span class="co">#&gt; [41] &quot;has media&quot;                    &quot;approved&quot;                    </span>
+<span class="co">#&gt; [43] &quot;reviewed&quot;                     &quot;reason&quot;                      </span>
+<span class="co">#&gt; [45] &quot;trip comments&quot;                &quot;species comments&quot;</span></code></pre>
+<p>The function <code>auk_select()</code> will process the EBD to only keep the selected columns.</p>
+<pre class="sourceCode r"><code class="sourceCode r">cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>,
+          <span class="st">&quot;group identifier&quot;</span>, <span class="st">&quot;sampling event identifier&quot;</span>, 
+          <span class="st">&quot;scientific name&quot;</span>, <span class="st">&quot;observation count&quot;</span>,
+          <span class="st">&quot;observer_id&quot;</span>)
+f_select &lt;-<span class="st"> &quot;data/ebd_smaller.txt&quot;</span>
+selected &lt;-<span class="st"> </span><span class="kw">auk_select</span>(ebd, <span class="dt">select =</span> cols, <span class="dt">file =</span> f_select) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">read_ebd</span>()
+<span class="kw">names</span>(selected)
+<span class="co">#&gt; [1] &quot;checklist_id&quot;              &quot;scientific_name&quot;          </span>
+<span class="co">#&gt; [3] &quot;observation_count&quot;         &quot;latitude&quot;                 </span>
+<span class="co">#&gt; [5] &quot;longitude&quot;                 &quot;observer_id&quot;              </span>
+<span class="co">#&gt; [7] &quot;sampling_event_identifier&quot; &quot;group_identifier&quot;</span></code></pre>
+<p><code>auk_select()</code> is typically applied to a subset of the EBD to reduce the size before reading it into R. However, this function can also be applied to <em>entire</em> EBD to remove any columns that you’re sure you’ll never need. If you’re running out of hard drive space, this approach can drastically reduce the size of the EBD and free up space.</p>
+<div class="exercise">
+<h2>
+Exercise
+</h2>
+<p>Removing columns can also be done concurrently with filtering the EBD. Consult the documentation for <code>auk_filter()</code> and look at the <code>keep</code> and <code>drop</code> arguments. Use these to extract all Least Grebe records from Belize <strong>and</strong> remove the <code>trip comments</code> and <code>species comments</code> fields in addition to any other fields you feel aren’t required.</p>
+<button class="solution">Solution</button>
+<div class="solution-content">
+<pre class="sourceCode r"><code class="sourceCode r">ebd_leagre &lt;-<span class="st"> </span>ebd <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Least Grebe&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;BZ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/ebd_leagre.txt&quot;</span>,
+             <span class="dt">drop =</span> <span class="kw">c</span>(<span class="st">&quot;trip_comments&quot;</span>, <span class="st">&quot;species_comments&quot;</span>,
+                      <span class="st">&quot;country&quot;</span>, <span class="st">&quot;state&quot;</span>, <span class="st">&quot;county&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">read_ebd</span>()</code></pre>
+</div>
+</div>
+</div>
+<div id="advanced-size-split" class="section level3">
+<h3><span class="header-section-number">8.3.3</span> Splitting by species</h3>
+<p>If you’re working with a large number of species, the size of the EBD can quickly increase. An easy way to address this before reading data into R is to split the EBD extract up into seperate files, one for each species. You can then read in species one at a time and process them. Note that the Sampling Event Data doesn’t need to be split and the same file can be used for each species EBD file.</p>
+<p>The function <code>auk_split()</code> facilitates this process. You provide an EBD extract and a vector of species names and it will split the EBD up into species-specific files. In Lesson <a href="applications.html#applications">7</a> we extracted eBird data for 3 warbler species, let’s use <code>auk_split()</code> to split this file up.</p>
+<pre class="sourceCode r"><code class="sourceCode r">split_species &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Wilson&#39;s Warbler&quot;</span>, <span class="st">&quot;Canada Warbler&quot;</span>, <span class="st">&quot;Pink-headed Warbler&quot;</span>)
+f_split &lt;-<span class="st"> </span><span class="kw">auk_split</span>(<span class="st">&quot;data/ebd_cardellina.txt&quot;</span>, 
+                     <span class="dt">species =</span> split_species,
+                     <span class="dt">prefix =</span> <span class="st">&quot;data/ebd_split_&quot;</span>)
+f_split
+<span class="co">#&gt; [1] &quot;data/ebd_split_Cardellina_pusilla.txt&quot;   </span>
+<span class="co">#&gt; [2] &quot;data/ebd_split_Cardellina_canadensis.txt&quot;</span>
+<span class="co">#&gt; [3] &quot;data/ebd_split_Cardellina_versicolor.txt&quot;</span></code></pre>
+<p>Next, let’s take the first of these files (for Wilson’s Warbler) and zero-fill it using the Sampling Event Data we extracted in Lesson <a href="applications.html#applications">7</a>.</p>
+<pre class="sourceCode r"><code class="sourceCode r">wilwar &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_split[<span class="dv">1</span>], 
+                       <span class="dt">sampling_events =</span> <span class="st">&quot;data/sed_cardellina.txt&quot;</span>,
+                       <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</code></pre>
+<p>When working with the full EBD, this approach is much faster because we only need to filter the EBD once instead of once for each species. This could be the difference between a few hours of processing time and a few days.</p>
+</div>
 </div>
 <div id="advanced-modis" class="section level2">
 <h2><span class="header-section-number">8.4</span> Land cover covariates</h2>
+<p>To use eBird data for modeling species distributions you’ll typically want to attach habitat covariates to each checklists to use as model covariates. There are a wide variety of freely available, satellite-derived land use and land cover products available for use as covariates. The specific set of covariates you use, and the dataset that you derived them from, will depend on the specifics of your study: the focal species and region, and question you’re asking. However, we recommend the <a href="https://lpdaac.usgs.gov/products/mcd12q1v006/">MODIS MCD12Q1</a> land cover dataset as a good general use source of land cover covariates. This product is global in extent, available annually since 2001, and provided in a raster format at 500 m resolution.</p>
+<p>The free <a href="http://strimas.com/ebird-best-practices/">eBird Best Practices book</a> associated with this workshop covers in detail how to download land cover data and attach it to eBird checklists. However, we provide an overview of the process here.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Download:</strong> download land cover data (e.g. MODIS MCD12Q1) for your region of interest, either manually or using the R package <code>MODIS</code>. These data will likely be downloaded in the form of multiple tiles that need to be combined together then converted to GeoTIFF format. This is done automatically using the <code>MOIDS</code> package or can be done manually using the command line tool <a href="https://gdal.org/">GDAL</a>.</li>
+<li><strong>Summarize:</strong> birds use and respond to their environment at a scale that is typically larger than the resolution of the satellite data. Furthermore, there is uncertainty in the location of eBird checklists, particularly traveling checklists. So, you should usually summarize the data within a neighborhood of each checklist. This can be done most simply by calculating the percent of each landcover class within a neighborhood of each point.</li>
+<li><strong>Prediction surface:</strong> once you’ve fit your models using the land cover covariates you generated in the previous steps, you’ll usually want to make predictions over the landscape and produce maps. This requires defining a regular grid of points at which you calculate the same summarize land cover covariates as you did in the previous step.</li>
+</ol>
+<p>To see the code for each of these steps consult the <a href="http://strimas.com/ebird-best-practices/">eBird Best Practices</a> book.</p>
 
 </div>
 </div>
