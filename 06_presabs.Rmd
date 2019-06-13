@@ -136,7 +136,7 @@ ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt",
   # lng_min, lat_min, lng_max, lat_max
   auk_bbox(c(-87.12, 20.25, -86.68, 20.63)) %>% 
   auk_complete() %>% 
-  auk_filter("ebd_cozvir.txt", "sed_cozvir.txt", overwrite = TRUE) %>% 
+  auk_filter("data/ebd_cozvir.txt", "data/sed_cozvir.txt", overwrite = TRUE) %>% 
   auk_zerofill(collapse = TRUE)
 table(ebd_cozvir$species_observed)
 ```

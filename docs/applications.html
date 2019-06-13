@@ -180,11 +180,105 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="applications" class="section level1">
 <h1><span class="header-section-number">Lesson 7</span> Applications</h1>
+<p>Now that we know how to extract and zero-fill data from eBird, let’s do something with these data! We’ll start by summarizing the data to show the trajectory of observation frequency over the course of the year. Next, we’ll make a basic presence-absence map of eBird observations. More advanced topics are covered in part II of this workshop, which focuses on using eBird data to model species distributions.</p>
 <div id="applications-trajectory" class="section level2">
 <h2><span class="header-section-number">7.1</span> Frequency trajectories</h2>
+<p>The genus <em>Cardellina</em> contains five New World warbler species, including some of the most spectacular birds in North America: <a href="https://ebird.org/species/canwar/">Canada Warbler</a>, <a href="https://ebird.org/species/redwar1/">Red Warbler</a>, and <a href="https://ebird.org/species/pihwar1/">Pink-headed Warbler</a>. Four of these five species occur within the focal region of the simplfied EBD we’re working with. Let’s extract and zero-fill data for these four species.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
+<span class="kw">library</span>(sf)
+<span class="kw">library</span>(rnaturalearth)
+<span class="kw">library</span>(lubridate)
+<span class="kw">library</span>(tidyverse)
+
+f_ebd &lt;-<span class="st"> &quot;data/ebd_cardellina.txt&quot;</span>
+f_sed &lt;-<span class="st"> &quot;data/sed_cardellina.txt&quot;</span>
+
+<span class="co"># extract</span>
+filters &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>, 
+                   <span class="dt">file_sampling =</span> <span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_species</span>(<span class="kw">c</span>(<span class="st">&quot;Canada Warbler&quot;</span>, <span class="st">&quot;Wilson&#39;s Warbler&quot;</span>, 
+                <span class="st">&quot;Red-faced Warbler&quot;</span>, <span class="st">&quot;Pink-headed Warbler&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;Guatemala&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(f_ebd, f_sed)
+
+<span class="co"># zero-fill</span>
+cardellina_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_ebd, f_sed, <span class="dt">collapse =</span> <span class="ot">TRUE</span>)
+<span class="kw">count</span>(cardellina_zf, scientific_name, species_observed)
+<span class="co">#&gt; # A tibble: 8 x 3</span>
+<span class="co">#&gt;   scientific_name       species_observed     n</span>
+<span class="co">#&gt;   &lt;chr&gt;                 &lt;lgl&gt;            &lt;int&gt;</span>
+<span class="co">#&gt; 1 Cardellina canadensis FALSE             9058</span>
+<span class="co">#&gt; 2 Cardellina canadensis TRUE                93</span>
+<span class="co">#&gt; 3 Cardellina pusilla    FALSE             6676</span>
+<span class="co">#&gt; 4 Cardellina pusilla    TRUE              2475</span>
+<span class="co">#&gt; 5 Cardellina rubrifrons FALSE             9054</span>
+<span class="co">#&gt; 6 Cardellina rubrifrons TRUE                97</span>
+<span class="co">#&gt; # … with 2 more rows</span></code></pre>
+<p>Next, let’s summarize these data, calculating the frequency of observation on eBird checklists by month.</p>
+<pre class="sourceCode r"><code class="sourceCode r">cardellina_freq &lt;-<span class="st"> </span>cardellina_zf <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">month =</span> <span class="kw">month</span>(observation_date)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(scientific_name, month) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarize</span>(<span class="dt">obs_freq =</span> <span class="kw">mean</span>(species_observed)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">ungroup</span>()</code></pre>
+<p>In prepartion for plotting, we can add the common names of the species by joining in the <code>ebird_taxonomy</code> data frame, which is included with <code>auk</code>. In addition, we’ll convert the integer month numbers to dates–using the midpoint of each month–to aid axis labelling.</p>
+<pre class="sourceCode r"><code class="sourceCode r">cardellina_comm &lt;-<span class="st"> </span>cardellina_freq <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">inner_join</span>(ebird_taxonomy, <span class="dt">by =</span> <span class="st">&quot;scientific_name&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(common_name, month, obs_freq) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">month_midpoint =</span> <span class="kw">ymd</span>(<span class="kw">str_glue</span>(<span class="st">&quot;2019-{month}-15&quot;</span>)))</code></pre>
+<p>Finally, let’s make a frequency trajectory for these four species.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(cardellina_comm) <span class="op">+</span>
+<span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> month_midpoint, <span class="dt">y =</span> obs_freq, <span class="dt">color =</span> common_name) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_date</span>(<span class="dt">date_breaks =</span> <span class="st">&quot;2 months&quot;</span>,
+               <span class="dt">date_labels =</span> <span class="st">&quot;%b&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_brewer</span>(<span class="dt">palette =</span> <span class="st">&quot;Set1&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Month&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Observation Frequency&quot;</span>,
+       <span class="dt">color =</span> <span class="ot">NULL</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</code></pre>
+<p><img src="ebp-workshop_files/figure-html/applications-trajectory-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
+<p>We have several different patterns going on here:</p>
+<ul>
+<li>Pink-headed and Red-faced Warblers are resident species, present year-round at fairly low abundance</li>
+<li>Wilson’s Warbler is a migrant, spending the winter in Guatemala and very common during that period</li>
+<li>Canada Warbler appears to only pass through Guatemala during migration</li>
+</ul>
 </div>
 <div id="applications-maps" class="section level2">
 <h2><span class="header-section-number">7.2</span> Maps</h2>
+<p>Continuing with the same dataset, let’s make a presence-absence map for Pink-headed Warbler. Let’s start by filtering the zero-filled data to only Pink-headed Warbler observations and converting these points to a spatial format using the <code>sf</code> package.</p>
+<pre class="sourceCode r"><code class="sourceCode r">pihwar &lt;-<span class="st"> </span>cardellina_zf <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(scientific_name <span class="op">==</span><span class="st"> &quot;Cardellina versicolor&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pres_abs =</span> <span class="kw">if_else</span>(species_observed, <span class="st">&quot;Present&quot;</span>, <span class="st">&quot;Not detected&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>)</code></pre>
+<p>Next, we’ll use <code>rnaturalearth</code> to get some contextual GIS data to use in our maps. This is an amazing source for free GIS data for making maps.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ne_country &lt;-<span class="st"> </span><span class="kw">ne_countries</span>(<span class="dt">continent =</span> <span class="st">&quot;North America&quot;</span>, <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+ne_gt &lt;-<span class="st"> </span><span class="kw">ne_countries</span>(<span class="dt">country =</span> <span class="st">&quot;Guatemala&quot;</span>, <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+<span class="co"># restrict to points falling within Guatemala, removes those over water</span>
+pihwar &lt;-<span class="st"> </span>pihwar[ne_gt, ]</code></pre>
+<p>Finally, we’ll make a presence-absence map, building it up in layers. There are lots excellent tools for mapping in R; however, here we’ll use the basic <code>plot()</code> function from the <code>sf</code> package.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))
+<span class="kw">plot</span>(ne_gt, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)
+<span class="kw">plot</span>(ne_country, <span class="dt">col =</span> <span class="st">&quot;grey80&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw">plot</span>(ne_gt, <span class="dt">col =</span> <span class="st">&quot;grey70&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="co"># not observed</span>
+pihwar_abs &lt;-<span class="st"> </span><span class="kw">filter</span>(pihwar, <span class="op">!</span>species_observed) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+<span class="kw">plot</span>(pihwar_abs, <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;grey20&quot;</span>, <span class="fl">0.3</span>), <span class="dt">pch =</span> <span class="dv">19</span>, <span class="dt">cex =</span> <span class="fl">0.25</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="co"># present</span>
+pihwar_pres &lt;-<span class="st"> </span><span class="kw">filter</span>(pihwar, species_observed) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_geometry</span>()
+<span class="kw">plot</span>(pihwar_pres, <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;orange&quot;</span>, <span class="dv">1</span>), <span class="dt">pch =</span> <span class="dv">19</span>, <span class="dt">cex =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
+<span class="kw">title</span>(<span class="st">&quot;Pink-headed Warbler eBird Observations&quot;</span>, <span class="dt">line =</span> <span class="dv">-1</span>)
+<span class="kw">legend</span>(<span class="st">&quot;bottomright&quot;</span>, 
+       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;grey20&quot;</span>, <span class="st">&quot;orange&quot;</span>),
+       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Not reported&quot;</span>, <span class="st">&quot;Present&quot;</span>),
+       <span class="dt">pch =</span> <span class="dv">19</span>)
+<span class="kw">box</span>()</code></pre>
+<p><img src="ebp-workshop_files/figure-html/unnamed-chunk-12-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 
 </div>
 </div>

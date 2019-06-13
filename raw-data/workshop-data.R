@@ -7,7 +7,7 @@ f_ebd <- here("raw-data", "ebd_relApr-2019_yucatan.txt")
 f_sed <- here("raw-data", "ebd_sampling_relApr-2019_yucatan.txt")
 auk_ebd("ebd_relApr-2019.txt", "ebd_sampling_relApr-2019.txt") %>% 
   auk_country(c("Mexico", "Guatemala", "Belize")) %>% 
-  auk_date(c("2014-01-01", "2018-12-31")) %>% 
+  auk_date(c("2014-01-01", "2019-12-31")) %>% 
   auk_filter(f_ebd, f_sed)
 
 # mexican states in yucatan

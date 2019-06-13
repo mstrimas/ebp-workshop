@@ -358,7 +358,7 @@ Tip
 <span class="st">  </span><span class="co"># lng_min, lat_min, lng_max, lat_max</span>
 <span class="st">  </span><span class="kw">auk_bbox</span>(<span class="kw">c</span>(<span class="op">-</span><span class="fl">87.12</span>, <span class="fl">20.25</span>, <span class="fl">-86.68</span>, <span class="fl">20.63</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;ebd_cozvir.txt&quot;</span>, <span class="st">&quot;sed_cozvir.txt&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/ebd_cozvir.txt&quot;</span>, <span class="st">&quot;data/sed_cozvir.txt&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_zerofill</span>(<span class="dt">collapse =</span> <span class="ot">TRUE</span>)
 <span class="kw">table</span>(ebd_cozvir<span class="op">$</span>species_observed)
 <span class="co">#&gt; </span>
