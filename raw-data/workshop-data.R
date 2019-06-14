@@ -30,7 +30,9 @@ str_glue("sed '1d' {f_ebd_nomx} >> {f_ebd_workshop}") %>% system()
 str_glue("sed '1d' {f_sed_nomx} >> {f_sed_workshop}") %>% system()
 
 # create a basic download file
-zip(here("raw-data", "workshop-data.zip"), c(f_ebd_workshop, f_sed_workshop))
+setwd(here("raw-data"))
+zip("workshop-data.zip", basename(c(f_ebd_workshop, f_sed_workshop)))
+setwd(here())
 
 # zip individually
 str_glue("gzip < {f_ebd_workshop} > {paste0(f_ebd_workshop, '.gz')}") %>% 
