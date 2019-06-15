@@ -107,3 +107,8 @@ button.solution:after {
     float: right;
     margin-left: 5px;
 }
+
+#advanced-unmarked th {
+  background-color: #888888;
+  color: white;
+}

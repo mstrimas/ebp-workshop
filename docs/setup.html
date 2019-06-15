@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-13" />
+<meta name="date" content="2019-06-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -47,6 +47,7 @@
 
 
 
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
@@ -184,11 +185,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="setup" class="section level1">
 <h1><span class="header-section-number">Lesson 2</span> Setup</h1>
 <p>Before we dive into writing code, let’s take a few minutes to ensure our systems are correctly set up with all the correct software and R packages. Devoting some time to this up front will reduce errors and make troubleshooting easier later in the workshop.</p>
-<p>Start by opening a browser window with three tabs pointing to the following websites:</p>
+<p>Start by opening a browser window with four tabs pointing to the following websites:</p>
 <ol style="list-style-type: decimal">
 <li>The <a href="https://ebird.org">eBird homepage</a></li>
 <li>The <a href="https://cornelllabofornithology.github.io/auk/">auk website</a>. This R package is used to access eBird data and we’ll be using the website to access help and resources.</li>
 <li>The <a href="https://public.etherpad-mozilla.org/p/ebp">etherpad</a> for this workshop. This is a collaborative notepad similar to Google Docs, which we can use to share code and links. Make sure you can edit the document.</li>
+<li>The <a href="http://strimas.com/ebp-workshop">online lessons</a> for this workshop.</li>
 </ol>
 <div class="checkpoint">
 <h2>
@@ -196,7 +198,7 @@ Checkpoint
 </h2>
 <p>Are all tabs correctly opened? Can you edit the etherpad?</p>
 </div>
-<p>Next <a href="https://www.rstudio.com/products/rstudio/download/#download">install or update RStudio</a>, then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, <a href="https://cloud.r-project.org/">update R</a>.</p>
+<p>Next <a href="https://www.rstudio.com/products/rstudio/download/#download">install or update RStudio</a>, then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, consider <a href="https://cloud.r-project.org/">updating R</a>.</p>
 <div class="checkpoint">
 <h2>
 Checkpoint
@@ -242,14 +244,14 @@ Checkpoint
 <p>If you’re running into any setup issues that can’t be resolved, use RStudio Cloud for this workshop instead.</p>
 <div id="setup-tidyverse" class="section level2">
 <h2><span class="header-section-number">2.1</span> Tidyverse</h2>
-<p>Throughout this workshop, we’ll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as <code>dplyr</code> and <code>ggplot2</code> are part of the Tidyverse. I’ll try to explain any functions I use as they come up; however, there’s one important operator from the Tidyverse that needs to be explaied up front: the pipe operator <code>%&gt;%</code>. The pipe operator takes the expression to the left of it and “pipes” it into the first argument of the expression on the right.</p>
+<p>Throughout this workshop, we’ll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as <code>dplyr</code>, <code>ggplot2</code>, and <code>purrr</code> are part of the Tidyverse. We’ll try to explain any functions as they come up; however, there’s one important operator from the Tidyverse that needs to be explained up front: the pipe operator <code>%&gt;%</code>. The pipe operator takes the expression to the left of it and “pipes” it into the first argument of the expression on the right.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># without pipe</span>
 <span class="kw">mean</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)
 <span class="co">#&gt; [1] 5.5</span>
 <span class="co"># with pipe</span>
 <span class="dv">1</span><span class="op">:</span><span class="dv">10</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mean</span>()
 <span class="co">#&gt; [1] 5.5</span></code></pre>
-<p>The value of the pipe operator becomes more clean when we have several operations in a row.</p>
+<p>The value of the pipe operator becomes clear when we have several operations in a row. Using the pipe makes code easier to read and reduces the need for intermediate variables.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># without pipes</span>
 ran_norm &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">5</span>)
 ran_norm_pos &lt;-<span class="st"> </span><span class="kw">abs</span>(ran_norm)
@@ -263,6 +265,7 @@ ran_norm_round
 <span class="st">  </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)
 <span class="co">#&gt;  [1]  0.1  0.2  1.9  3.0  3.1  4.1  4.7  5.6  7.6 11.1</span></code></pre>
+<p>For those that have never used the pipe, it probably looks strange, but if you stick with it, you’ll quickly come to appreciate it.</p>
 <div class="checkpoint">
 <h2>
 Checkpoint

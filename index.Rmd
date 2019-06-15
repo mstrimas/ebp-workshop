@@ -12,4 +12,4 @@ description: "eBird Best Practices I: eBird Data Extraction and Processing in R"
 
 # Welcome {-}
 
-These lessons are part of a workshop given at AOS 2019 in Anchorage on eBird Best Practices. Part I of the workshop covers extracting and processing eBird data with R. The content of this workshop is also covered in the free online book [eBird Best Practices](http://strimas.com/ebird-best-practices).
+These lessons comprise Part I of a workshop on best practices for using eBird data. This workshop covers extracting and processing eBird data with R, while Part II of the workshop covers using these data to model species distributions. The content of this workshop is also covered in the free online book [eBird Best Practices](http://strimas.com/ebird-best-practices).

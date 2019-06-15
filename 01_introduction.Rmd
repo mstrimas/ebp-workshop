@@ -6,6 +6,6 @@ editor_options:
 
 # Introduction {#introduction}
 
-We start with a short presentation giving and introduction to eBird and the motivation behind the `auk` package. The presentation can be [downloaded in PowerPoint format](https://github.com/mstrimas/ebp-workshop/raw/master/01_introduction.pptx) or [viewed on SpeakerDeck](https://speakerdeck.com/mstrimas/ebird-best-practices-i).
+We start with a short presentation giving an introduction to eBird and the motivation behind the `auk` R package. The presentation can be [downloaded in PowerPoint format](https://github.com/mstrimas/ebp-workshop/raw/master/01_introduction.pptx) or [viewed on SpeakerDeck](https://speakerdeck.com/mstrimas/ebird-best-practices-i).
 
 <iframe src="https://speakerdeck.com/player/8ebf7834a4c5421da9c5359782517cb6" width="700px" height="400px" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:none;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>

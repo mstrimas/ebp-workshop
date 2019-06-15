@@ -6,9 +6,9 @@ editor_options:
 
 # Presence-absence Data {#presabs}
 
-Up to this point we've been working with presence-only data. The EBD, and eBird checklist in general, only explicitly record positive observations of species. However, if we limit ourselves to complete checklists, we can fill in the implied zero counts for any checklists on which a given species isn't explicitly reported to presence-absence data. We refer to this process as **zero-filling** the eBird data.
+Up to this point we've been working with presence-only data. The EBD, and eBird checklist in general, only explicitly record positive observations of species. However, if we limit ourselves to complete checklists, we can fill in the implied zero counts for any checklists on which a given species isn't explicitly reported to generate presence-absence data. We refer to this process as **zero-filling** the eBird data.
 
-Zero-filling relies on the Sampling Event Data, which is a tab-seperated text file containing checklist-level information. This file contains the full population of checklists in the eBird database. If we apply exactly the same set of filters to both the EBD and the Sampling Event Data we can assume that any checklist with no observations for a given species in the EBD should get a zero-count record added to the dataset. So, producing Presence-absence eBird data is a two-step process:
+Zero-filling relies on the Sampling Event Data, which is a tab-seperated text file containing checklist-level information. This file contains the full population of checklists in the eBird database. If we apply exactly the same set of filters to both the EBD and the Sampling Event Data we can assume that any checklist with no observations for a given species in the EBD should get a zero-count record added to the dataset. So, producing presence-absence eBird data is a two-step process:
 
 1. Simultaneously filter the EBD and Sampling Event Data, making sure to only use complete checklists.
 2. Read both files into R and zero-fill the EBD using the full population of checklists from the Sampling Event Data.
@@ -20,7 +20,7 @@ Zero-filling relies on the Sampling Event Data, which is a tab-seperated text fi
 
 ## Filtering {#presabs-filter}
 
-Simultaneously filtering the EBD and Sampling Event Data is done in almost the exact same way as filtering the EBD alone. The only difference is that we provide both files to `auk_ebd()` and two corresponding output files to `auk_filter()`. For example, we can extract all American Flamingo observations from January in the Mexican state of Yucatán in preparation for zero-filling:
+Simultaneously filtering the EBD and Sampling Event Data is done in almost the exact same way as filtering the EBD alone. The only difference is that we provide both files to `auk_ebd()` and two corresponding output files to `auk_filter()`. For example, we can extract all American Flamingo observations from January in the Mexican state of Yucatán in preparation for zero-filling. Let's do this in a new script `02_zerofill.R`.
 
 ```{r presabs-filter}
 library(auk)
@@ -37,7 +37,7 @@ ebd_filt <- auk_ebd("ebd_2015-2016_yucatan.txt",
   auk_filter(f_ebd, file_sampling = f_sed)
 ```
 
-We now have two output files that have been extract using the same set of filters, apart from the species filter, which only applies to the EBD. We can read these files into R individually:
+We now have two output files that have been extracted using the same set of filters, apart from the species filter, which only applies to the EBD. We can read these files into R individually:
 
 ```{r presabs-filter-read}
 ebd_only <- read_ebd(f_ebd)
@@ -47,6 +47,11 @@ n_distinct(sed_only$checklist_id)
 ```
 
 So, we have `r n_distinct(sed_only$checklist_id)` checklists in the Sampling Event Data and, of those, `r n_distinct(ebd_only$checklist_id)` have Ocellated Turkey observations on them.
+
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  Were you able to filter and import the EBD and Sampling Event Data? Did you get the correct number of rows in both files?
+</div>
 
 <div class="exercise">
   <h2>Exercise</h2>
@@ -58,6 +63,7 @@ So, we have `r n_distinct(sed_only$checklist_id)` checklists in the Sampling Eve
 ```{r presabs-filter-sol}
 f_ebd_hw <- "data/ebd_hoowar.txt"
 f_sed_hw <- "data/sed_hoowar.txt"
+# filter
 ebd_filt <- auk_ebd("ebd_2015-2016_yucatan.txt", 
                     file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
   auk_species("Hooded Warbler") %>% 
@@ -76,7 +82,7 @@ sed_only_hw <- read_sampling(f_sed_hw)
 
 ## Zero-filling {#presabs-zerofill}
 
-Now that we have these two datasets, containing checklist and species information, we can use the function `auk_zerofill()` to combine them to produce presence-absence data. This function also imports the data and handles group checklists and taxonomic rollup automatically, we just have to pass it the paths to the two files. Let's do this with the American Flamingo data.
+Now that we have these two datasets–containing checklist and species information, respectively–we can use the function `auk_zerofill()` to combine them to produce presence-absence data. This function also imports the data, and handles group checklists and taxonomic rollup automatically, we just have to pass it the paths to the two files. Let's do this with the American Flamingo data.
 
 ```{r presabs-zerofill}
 ebd_zf <- auk_zerofill(f_ebd, sampling_events = f_sed)
@@ -90,7 +96,7 @@ glimpse(ebd_zf$observations)
 glimpse(ebd_zf$sampling_events)
 ```
 
-However, in this case object size isn't an issue, and it's easier to work with a single dataframe, so we can collapse the data with:
+However, in this case object size isn't an issue, and it's easier to work with a single dataframe, so we can collapse the data with `collapse_zerofill()`.
 
 ```{r presabs-zerofill-collapse}
 ebd_zf_df <- collapse_zerofill(ebd_zf)
@@ -127,14 +133,14 @@ ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt",
 table(ebd_cozvir$species_observed)
 ```
 
-What we have here is the entire EBD (36 million checklists!) for a species that only occurs on one small island. In this situation, you would be better to identify the boundaries of the island and use `auk_bbox()` to spatially subset the data.
+What we have here is the entire EBD (35 thousand checklists in the example dataset, and 36 million in the full EBD!) for a species that only occurs on one small island. Do we really care that a checklist in Anchorage doesn't have Cozumel Vireo? In this situation, you would be better to identify the boundaries of the island and use `auk_bbox()` to spatially subset the data.
 
 ```{r presabs-zerofill-cozwir-bbox}
 ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt", 
                       file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
   auk_species("Cozumel Vireo") %>% 
   # lng_min, lat_min, lng_max, lat_max
-  auk_bbox(c(-87.12, 20.25, -86.68, 20.63)) %>% 
+  auk_bbox(c(-87.1, 20.2, -86.7, 20.6)) %>% 
   auk_complete() %>% 
   auk_filter("data/ebd_cozvir.txt", "data/sed_cozvir.txt", overwrite = TRUE) %>% 
   auk_zerofill(collapse = TRUE)
@@ -155,7 +161,7 @@ arrange(ebd_zf_df, desc(observation_count)) %>%
   head(10)
 ```
 
-It's more appropriate to have this as `NA` rather than `"X"` and this will also allow us to convert the count column data type to integer rather than character. At this point, we'll also assign an explicit distance of 0 to stationary checklists.
+It's more appropriate to have the count as `NA` rather than `"X"` in this scenario. This will also allow us to convert the count column to integer rather than character. At this point, we'll also assign an explicit distance of 0 to stationary checklists.
 
 ```{r presabs-tidy-na}
 zf_count <- ebd_zf_df %>% 
@@ -166,7 +172,7 @@ zf_count <- ebd_zf_df %>%
                                       0, effort_distance_km))
 ```
 
-Finally, depending on your application, you'll likely want to do some further filtering of the data. For many uses, it's a good idea to reduce the variation in detectability between checklists by imposing some constraints on the effort variables. For example, in part II of this workshop, we'll restrict observations to those from checklists less than 5 hours long and 5 km in length, and with 10 or fewer observers.
+Finally, depending on your application, you'll likely want to do some further filtering of the data. For many uses, it's a good idea to reduce the variation in detectability between checklists by imposing some constraints on the effort variables. You can think of this as partially standardizing the observation process in a *post hoc* fashion. For example, in part II of this workshop, we'll restrict observations to those from checklists less than 5 hours long and 5 km in length, and with 10 or fewer observers.
 
 ```{r presabs-tidy-effort}
 zf_effort <- zf_count %>% 

@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-13" />
+<meta name="date" content="2019-06-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -47,6 +47,7 @@
 
 
 
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
@@ -183,7 +184,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="filter" class="section level1">
 <h1><span class="header-section-number">Lesson 4</span> Filtering</h1>
-<p>The EBD is huge, much too large to be read into R. So, if we want to work with these data, we first need to extract a small enough subset that it can be processed by R. This is the main purpose of the <code>auk</code> package: it uses the unix command line utility AWK to extract data from the EBD. There are three steps to this filtering process:</p>
+<p>The EBD is huge, much too large to be read into R. So, if we want to work with these data, we first need to extract a small enough subset that it can be processed in R. This is the main purpose of the <code>auk</code> package: it uses the unix command line utility AWK to extract data from the EBD. There are three steps to this filtering process:</p>
 <ol style="list-style-type: decimal">
 <li>Set up a reference to the EBD text file with <code>auk_ebd()</code>.</li>
 <li>Define a set of filters.</li>
@@ -193,7 +194,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>
 Tip
 </h2>
-<p>Filtering with <code>auk</code> can be fairly coarse, we just need to make the data small enough to read into R. Once the data are in R, they can be further subset.</p>
+<p>Filtering with <code>auk</code> can be fairly coarse, we just need to make the data small enough to read into R. Once the data are in R, they can be further refined</p>
 </div>
 <div id="filter-define" class="section level2">
 <h2><span class="header-section-number">4.1</span> Defining filters</h2>
@@ -232,6 +233,12 @@ Tip
 <span class="co">#&gt;   Records with breeding codes only: no</span>
 <span class="co">#&gt;   Complete checklists only: no</span></code></pre>
 <p>Notice that when the <code>auk_ebd</code> object is printed, it tells us what filters have been defined. At this point, nothing has been done to the EBD, we’ve just <em>defined</em> the filter, we haven’t executed it yet.</p>
+<div class="tip">
+<h2>
+Tip
+</h2>
+<p>Consult the <a href="http://CornellLabofOrnithology.github.io/auk/reference/index.html#section-filter">Function Reference</a> section of the <code>auk</code> website for a full list of available filters.</p>
+</div>
 <p>In general, you should think about filtering on region, season, and species, so let’s build upon what we already have and add some more filters. For example, if we wanted all Resplendant Quetzal records from Guatemala in June 2015 we would use the following filters:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Resplendent Quetzal&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -264,11 +271,13 @@ Tip
 </h2>
 <p>The filtering functions in <code>auk</code> check the arguments you provide and will throw an error if there’s something wrong. Filtering the EBD takes a long time, so it’s better to get an error now rather than realizing you made a mistake after waiting several hours for the extraction process to complete.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># typo in species name</span>
 <span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Resplendant Quetzal&quot;</span>)
 <span class="co">#&gt; Error in auk_species.auk_ebd(., &quot;Resplendant Quetzal&quot;): The following species were not found in the eBird taxonomy: </span>
 <span class="co">#&gt;  Resplendant Quetzal</span>
 
 <span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="co"># non-sequential dates</span>
 <span class="st">  </span><span class="kw">auk_date</span>(<span class="kw">c</span>(<span class="st">&quot;2016-06-01&quot;</span>, <span class="st">&quot;2015-06-30&quot;</span>))
 <span class="co">#&gt; Error: date[1] not less than or equal to date[2]</span></code></pre>
 </div>
@@ -276,7 +285,7 @@ Tip
 <h2>
 Exercise
 </h2>
-<p>Define filters to extract Magnolia Warbler observations from Belize that are from checklists that started between 5 and 9 am and used either the Traveling or Stationary protocols. Consult the list of filters to see which ones you’ll need to use.</p>
+<p>Define filters to extract Magnolia Warbler observations from Belize on checklists that started between 5 and 9 am and used either the Traveling or Stationary protocols. Consult the list of filters to see which ones you’ll need to use.</p>
 <button class="solution">Solution</button>
 <div class="solution-content">
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -311,9 +320,9 @@ Exercise
 <h2>
 Tip
 </h2>
-<p>In general, when using the effort filters like <code>auk_time()</code> or <code>auk_distance()</code>, it’s best to be quite coarse. You can always refine the filters later once the data are in R and starting with a coarse filter gives you some wiggle room if you later realize you want to make adjustments. Remember: <strong>the initial filtering with <code>auk</code> takes a long time</strong>, it’s best to limit the number of times you do this.</p>
+<p>In general, when using the effort filters like <code>auk_time()</code> or <code>auk_distance()</code>, it’s best to be a bit coarse. You can always refine the filters later once the data are in R, and starting with a coarse filter gives you some wiggle room if you later realize you want to make adjustments. Remember: <strong>the initial filtering with <code>auk</code> takes a long time</strong>, it’s best to limit the number of times you do this.</p>
 </div>
-<p>When filtering by date, you may need to extract records from a given date range <em>regardless of year</em>. For the situation, the <code>auk_date()</code> function can accept wildcards for the year. For example, we can rewrite the above Resplendent Quetzal example to get observations from June of any year.</p>
+<p>When filtering by date, you may need to extract records from a given date range <em>regardless of year</em>. For this situation, the <code>auk_date()</code> function can accept wildcards for the year. For example, we can rewrite the above Resplendent Quetzal example to get observations from June of any year.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Resplendent Quetzal&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;Guatemala&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -341,7 +350,7 @@ Tip
 <span class="co">#&gt;   Complete checklists only: no</span></code></pre>
 <div id="filter-define-complete" class="section level3">
 <h3><span class="header-section-number">4.1.1</span> Complete checklists</h3>
-<p>One of the most important filters is <code>auk_complete()</code>, which limits observations to those from complete checklists. As we’ve already seen, with complete checklists we can infer non-detections from the data. For most scientific applications, it’s critical that we have complete checklists, so we can generate presence/absence data.</p>
+<p>One of the most important filters is <code>auk_complete()</code>, which limits observations to those from complete checklists. As we’ve already seen, with complete checklists we can infer non-detections from the data. For most scientific applications, it’s critical that we have complete checklists, so we can generate presence-absence data.</p>
 <div class="exercise">
 <h2>
 Exercise
@@ -380,47 +389,26 @@ Exercise
 <h2>
 Tip
 </h2>
-<p>To find the state code, consult the <code>ebird_states</code> data frame or visit the <a href="https://ebird.org/explore">Explore page</a> on the eBird website and enter the state name under Explore Region. The state code will appear after <code>region</code> in the URL. For example, for Chiapas the URL is <code>https://ebird.org/region/MX-CHP?yr=all</code> and the state code is therefore <code>MX-CHP</code>.</p>
+<p>To find the state code, consult the <code>ebird_states</code> data frame or visit the <a href="https://ebird.org/explore">Explore page</a> on the eBird website and enter the state name under Explore Region. The state code will appear after <code>region/</code> in the URL. For example, for Chiapas the URL is <code>https://ebird.org/region/MX-CHP?yr=all</code> and the state code is therefore <code>MX-CHP</code>.</p>
 </div>
 </div>
 </div>
 <div id="filter-execute" class="section level2">
 <h2><span class="header-section-number">4.2</span> Execute filters</h2>
-<p>Once you have an <code>auk_ebd</code> object with a set of filters defined you can execute those filters with <code>auk_filter()</code>. This function compiles the filters into an AWK script, then executes that script to produce a text file with the defined subset of the EBD. We’ll store this output file within the <code>data/</code> subdirectory of the project directory. Note that <strong>filtering on the full EBD will take at least a couple hours</strong>, so be prepared to wait awhile.</p>
+<p>Once you have an <code>auk_ebd</code> object with a set of filters defined, you can execute those filters with <code>auk_filter()</code>. This function compiles the filters into an AWK script, then runs that script to produce a text file with the defined subset of the EBD. We’ll store this output file within the <code>data/</code> subdirectory of the project directory. Note that <strong>filtering on the full EBD will take at least a couple hours</strong>, so be prepared to wait awhile.</p>
+<p>Let’s define filters to extract Yellow-rumped Warbler observations in Guatemala that appear on complete traveling or stationary checklists, then execute those filters.</p>
 <pre class="sourceCode r"><code class="sourceCode r">ebd_filtered &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Yellow-rumped Warbler&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;GT&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_protocol</span>(<span class="kw">c</span>(<span class="st">&quot;Traveling&quot;</span>, <span class="st">&quot;Stationary&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_filter</span>(<span class="dt">file =</span> <span class="st">&quot;data/ebd_yerwar.txt&quot;</span>)
-ebd_filtered
-<span class="co">#&gt; Input </span>
-<span class="co">#&gt;   EBD: /Users/mes335/data/ebird/ebd_2015-2016_yucatan.txt </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Output </span>
-<span class="co">#&gt;   EBD: /Users/mes335/projects/ebp-workshop/data/ebd_yerwar.txt </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Filters </span>
-<span class="co">#&gt;   Species: Setophaga coronata</span>
-<span class="co">#&gt;   Countries: GT</span>
-<span class="co">#&gt;   States: all</span>
-<span class="co">#&gt;   BCRs: all</span>
-<span class="co">#&gt;   Bounding box: full extent</span>
-<span class="co">#&gt;   Date: all</span>
-<span class="co">#&gt;   Start time: all</span>
-<span class="co">#&gt;   Last edited date: all</span>
-<span class="co">#&gt;   Protocol: Traveling, Stationary</span>
-<span class="co">#&gt;   Project code: all</span>
-<span class="co">#&gt;   Duration: all</span>
-<span class="co">#&gt;   Distance travelled: all</span>
-<span class="co">#&gt;   Records with breeding codes only: no</span>
-<span class="co">#&gt;   Complete checklists only: yes</span></code></pre>
-<p>Notice that we’ve drastically reduced the size of the file and it can now be imported into R without any issues.</p>
+<span class="st">  </span><span class="kw">auk_filter</span>(<span class="dt">file =</span> <span class="st">&quot;data/ebd_yerwar.txt&quot;</span>)</code></pre>
+<p>Take a look at this file and notice that we’ve drastically reduced the size. It can now be imported into R without any issues.</p>
 <div class="checkpoint">
 <h2>
 Checkpoint
 </h2>
-<p>Any questions on filtering?</p>
+<p>Were you able to correctly extract the Yellow-rumped Warbler data? Any questions on filtering?</p>
 </div>
 
 </div>

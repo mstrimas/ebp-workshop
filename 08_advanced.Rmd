@@ -8,20 +8,19 @@ editor_options:
 
 ## Custom downloads {#advanced-custom}
 
-The full EBD is massive (over 200 GB) and takes a long time to process with `auk` (typically several hours). In some cases, there is a way around these issues. On the [EBD download page](https://ebird.org/data/download/ebd), there is a Custom Download form that allows you to only download a subset of the EBD for a given species, within a region, and for a range of dates. After submitting this form, the request will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.
+The full EBD is massive (over 200 GB) and takes a long time to process with `auk` (typically several hours). In some cases, there'ss a way around these issues. On the [EBD download page](https://ebird.org/data/download/ebd), there's a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and for a range of dates. After submitting a request, it will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.
 
 ![](assets/img/08_advanced_custom.png)
 
 Recall from the [lesson on zero-filling](#presabs--filter), that we extracted American Flamingo records from Mexico's Yucatán state in January, and produced presence-absence data from this extract. Let's try to do this with the Custom Download form. After the request is submitted an email will arrive with instrustions for [downloading the following file](https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip). Download and unarchive this file, placing the text file in the `data/` subdirectory of your project.
 
-```{r advanced-custom-dl}
-tf <- "data/temp.zip"
-download.file("https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip", tf)
-unzip(tf, "ebd_MX-YUC_grefla2_201501_201612_relApr-2019.txt", exdir = "data/")
-unlink(tf)
+```{r advanced-custom-dl, echo = FALSE}
+unzip("raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip",
+      "ebd_MX-YUC_grefla2_201501_201612_relApr-2019.txt", 
+      exdir = "data/")
 ```
 
-It will quickly become clear that there are two issues with this approach. First, the set of filters available in the Custom Download form is limited. For example, there's no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we've imported the data in R. Specifically, we'll only keep observations from complete checklists in June.
+It will quickly become clear that there are two challenges with this approach. First, the set of filters available in the Custom Download form is limited. For example, there's no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we've imported the data in R. Specifically, we'll only keep observations from complete checklists in June.
 
 ```{r advanced-custom-filter}
 library(auk)
@@ -33,7 +32,7 @@ ebd <- read_ebd("data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.txt") %>%
          all_species_reported)
 ```
 
-The second challenge is that the Custom Download form only provides the positive observations from the EBD, it doesn't provide the corresponding Sampling Event Data for zero-filling. However, the Sampling Event Data is much smaller than the EBD and quicker to process. So, we can easily filter this file using the same set of filters we've already applied to the EBD. Note that `auk_sampling()` is used in place of `auk_ebd()` when we're only filtering the sampling data and not the EBD.
+The second challenge is that the Custom Download form only provides the positive observations from the EBD, it doesn't provide the corresponding Sampling Event Data for zero-filling. However, the Sampling Event Data is much smaller than the EBD and quicker to process with `auk`. So, we can easily filter this file using the same set of filters we've already applied to the EBD. Note that `auk_sampling()` is used in place of `auk_ebd()` when we're only filtering the sampling data and not the EBD.
 
 ```{r advanced-custom-sed}
 f_sed <- "data/sed-only_amefla.txt"
@@ -45,19 +44,19 @@ sed_filt <- auk_sampling("ebd_sampling_2015-2016_yucatan.txt") %>%
 sed <- read_sampling(f_sed)
 ```
 
-Finally, we can join these combine those two dataframes together with `auk_zerofill()` to produce zero-filled presence-absence data.
+Finally, we can combine these two dataframes together with `auk_zerofill()` to produce zero-filled presence-absence data.
 
 ```{r advanced-custom-zerofill}
 ebd_zf <- auk_zerofill(ebd, sed, collapse = TRUE)
 ```
 
-We've produced exactly the same data as in Lesson \@ref(presabs); however, we've done so avoiding having to deal with the full EBD.
+We've produced exactly the same data as in Lesson \@ref(presabs); however, we've done so avoiding having to deal with the full EBD!
 
 ## Preparing for occupancy modeling {#advanced-unmarked}
 
-One common use of eBird data is for occupancy modeling with the R package `unmarked`. This workshop won't cover occupancy modeling; however, `unmarked` requires data to be formatted in a very particular way and `auk` contains functions to prepare data in this way, which we'll cover in this lesson. We'll continue with the American Flamingo data from the previous section.
+One common use of eBird data is for occupancy modeling with the R package `unmarked`. This workshop won't cover occupancy modeling; however, `unmarked` requires data to be formatted in a very particular way and `auk` contains functions to do this, which we'll cover in this lesson. We'll continue with the American Flamingo data from the previous section.
 
-First, we need to extract the subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated sampling events to a single site during a time frame over which the population can be considered closed. For example, let's define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data of this form.
+First, we need to extract the subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated visits to a single site during a time frame over which the population can be considered closed. For example, let's define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data of this form.
 
 ```{r advanced-unmarked-extract}
 visits <- filter_repeat_visits(ebd_zf, 
@@ -76,11 +75,25 @@ n_distinct(visits$site)
 
 Three new columns are added to the dataset when using the function `filter_repeat_visits()`: `site` is a unique site ID, `closure_id` identifies the primary period of closure (in this example the year), and `n_observations` is the number of visits to each site.
 
-Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by `unmarked`. The documentation for the `unmarked` function `formatWide()` outlines the details of this format. In the EBD, each row is a checklist; however, `unmarked` requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and habitat covariates. Finally, there are several groups of columns containing observation-level covariates, such as distance and duration. Each covariate gets a set of columns corresponding to the columns specifying the presence-absence of the species.
+```{r advanced-unmarked-newvars}
+visits %>% 
+  select(site, closure_id, n_observations) %>% 
+  head()
+```
 
-![](assets/img/08_advanced_unmarked.png)
+Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by `unmarked`. The documentation for the `unmarked` function `formatWide()` outlines the details of this format. In the EBD, each row is a checklist; however, `unmarked` requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and any habitat covariates we might have. Finally, the observation-level covariates, such as distance and duration, each get a set of columns corresponding to the the presence-absence columns.
 
-The `auk` function `format_unmarked_occu()` takes care of the reformatting for you. `response` is the variable that you will be using as the response in occupancy modeling (e.g. `observation_count` or `species_observered`), `site_covs` are the site-level covariates, and `obs_covs` are the observation-level covariates.
+```{r advanced-unmarked-exdata, echo = FALSE}
+options(knitr.kable.NA = "")
+readr::read_csv("raw-data/unmarked-ex-data.csv") %>% 
+  knitr::kable(format = "html") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "responsive"),
+                            font_size = 11) %>%
+  kableExtra::scroll_box(width = "100%",
+                         box_css = "border: 0; padding: 0; ")
+```
+
+The `auk` function `format_unmarked_occu()` takes care of the reformatting for you. The `response` argument defines the variable that you will be using as the response in occupancy modeling (e.g. `observation_count` or `species_observered`), `site_covs` are the site-level covariates, and `obs_covs` are the observation-level covariates.
 
 ```{r}
 visits_um <- format_unmarked_occu(visits, 
@@ -101,15 +114,15 @@ visits_um <- format_unmarked_occu(visits,
 
 ## Reducing file size {#advanced-size}
 
-Even after filtering the EBD somtimes it can still be too large to read into R and work with. There are several approaches for reducing the size of the EBD. We'll cover three here: stricter filtering, removing columns, and splitting by species.
+Even after filtering the EBD, somtimes it's still too large to read into R and work with. There are several approaches for reducing the size of the EBD. We'll cover three here: stricter filtering, removing columns, and splitting by species.
 
 ### Stricter filtering {#advanced-size-strict}
 
-The most obvious way to reduce the size of an EBD extract is to use stricter filters: focus on a smaller region, shorter time period, or fewer species. To avoid having to waste several hours trying to filter the entire EBD all over again, it's worthwhile noting that you can always re-filter an EBD extract directly. So, apply the stricter filter to the EBD extract rather than the full EBD so save time.
+The most obvious way to reduce the size of an EBD extract is to use stricter filters: focus on a smaller region, shorter time period, or fewer species. To avoid having to waste several hours trying to filter the entire EBD all over again, it's worthwhile noting that you can always re-filter an EBD extract directly. So, if you realize you were too coarse in your initial filtering, apply the stricter filter to the EBD extract rather than the full EBD so save time.
 
 ### Removing columns {#advanced-size-columns}
 
-The EBD contains a columns (46 to be precise) many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to or the checklist comments are rarely useful. By removing these columns we can drastically reduce the size of the EBD.
+The EBD contains a lot of columns (46 to be precise), many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to and the checklist comments, are rarely useful. By removing these columns we can drastically reduce the size of the EBD.
 
 The available columns in the EBD are listed and defined in the PDF metadata that comes with the EBD (`eBird_Basic_Dataset_Metadata_v1.12.pdf`). Alternatively, there's a useful trick to get a list of column names from an `auk_ebd` object.
 
@@ -157,7 +170,7 @@ ebd_leagre <- ebd %>%
 
 ### Splitting by species {#advanced-size-split}
 
-If you're working with a large number of species, the size of the EBD can quickly increase. An easy way to address this before reading data into R is to split the EBD extract up into seperate files, one for each species. You can then read in species one at a time and process them. Note that the Sampling Event Data doesn't need to be split and the same file can be used for each species EBD file.
+If you're working with a large number of species, the size of the EBD can quickly increase. An easy way to address this before importing data into R is to split the EBD extract up into seperate files, one for each species. You can then read in species one at a time and process them. Note that the Sampling Event Data doesn't need to be split and the same file can be used for each species EBD file.
 
 The function `auk_split()` facilitates this process. You provide an EBD extract and a vector of species names and it will split the EBD up into species-specific files. In Lesson \@ref(applications) we extracted eBird data for 3 warbler species, let's use `auk_split()` to split this file up.
 
@@ -181,20 +194,17 @@ When working with the full EBD, this approach is much faster because we only nee
 
 ## Land cover covariates {#advanced-modis}
 
-To use eBird data for modeling species distributions you'll typically want to attach habitat covariates to each checklists to use as model covariates. There are a wide variety of freely available, satellite-derived land use and land cover products available for use as covariates. The specific set of covariates you use, and the dataset that you derived them from, will depend on the specifics of your study: the focal species and region, and question you're asking. However, we recommend the [MODIS MCD12Q1](https://lpdaac.usgs.gov/products/mcd12q1v006/) land cover dataset as a good general use source of land cover covariates. This product is global in extent, available annually since 2001, and provided in a raster format at 500 m resolution.
+To use eBird data for modeling species distributions you'll typically want to attach habitat data to the checklists to use as model covariates. There are a wide variety of freely available, satellite-derived land use and land cover products available for use as covariates. The specific set of covariates you use, and the dataset that you derived them from, will depend on the specifics of your study: the focal species and region, and question you're asking. However, we recommend the [MODIS MCD12Q1](https://lpdaac.usgs.gov/products/mcd12q1v006/) land cover dataset as a good general use source of land cover covariates. This product is global in extent, available annually since 2001, and provided in a raster format at 500 m resolution.
 
-The free [eBird Best Practices book](http://strimas.com/ebird-best-practices/) associated with this workshop covers in detail how to download land cover data and attach it to eBird checklists. However, we provide an overview of the process here.
+The free [eBird Best Practices book](http://strimas.com/ebird-best-practices/habitat/) associated with this workshop covers in detail how to download land cover data and attach it to eBird checklists. However, we provide an overview of the process here.
 
-1. **Download:** download land cover data (e.g. MODIS MCD12Q1) for your region of interest, either manually or using the R package `MODIS`. These data will likely be downloaded in the form of multiple tiles that need to be combined together then converted to GeoTIFF format. This is done automatically using the `MOIDS` package or can be done manually using the command line tool [GDAL](https://gdal.org/).
+1. **Download:** download land cover data (e.g. MODIS MCD12Q1) for your region of interest, either manually or using the R package `MODIS`. These data will likely be downloaded in the form of multiple tiles that need to be combined together then converted to GeoTIFF format. This is done automatically if you're using the `MOIDS` package, but it can be done manually using the command line tool [GDAL](https://gdal.org/).
 2. **Summarize:** birds use and respond to their environment at a scale that is typically larger than the resolution of the satellite data. Furthermore, there is uncertainty in the location of eBird checklists, particularly traveling checklists. So, you should usually summarize the data within a neighborhood of each checklist. This can be done most simply by calculating the percent of each landcover class within a neighborhood of each point.
-3. **Prediction surface:** once you've fit your models using the land cover covariates you generated in the previous steps, you'll usually want to make predictions over the landscape and produce maps. This requires defining a regular grid of points at which you calculate the same summarize land cover covariates as you did in the previous step.
+3. **Prediction surface:** once you've fit your models using the land cover covariates you generated in the previous steps, you'll usually want to make predictions over the landscape and produce maps. This requires defining a regular grid of points at which you calculate the same summarized land cover covariates as you did in the previous step.
 
-To see the code for each of these steps consult the [eBird Best Practices](http://strimas.com/ebird-best-practices/) book.
-
+To see the code for each of these steps consult the [eBird Best Practices](http://strimas.com/ebird-best-practices/habitat) book.
 
 
 ```{r cleanup, echo = FALSE}
 unlink(list.files("data/", full.names = TRUE))
 ```
-
-

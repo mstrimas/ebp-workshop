@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-13" />
+<meta name="date" content="2019-06-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -47,6 +47,7 @@
 
 
 
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
@@ -183,10 +184,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="applications" class="section level1">
 <h1><span class="header-section-number">Lesson 7</span> Applications</h1>
-<p>Now that we know how to extract and zero-fill data from eBird, let’s do something with these data! We’ll start by summarizing the data to show the trajectory of observation frequency over the course of the year. Next, we’ll make a basic presence-absence map of eBird observations. More advanced topics are covered in part II of this workshop, which focuses on using eBird data to model species distributions.</p>
+<p>Now that we know how to extract and zero-fill data from eBird, let’s do something with these data! We’ll start by summarizing the data to show the trajectory of observation frequency over the course of the year. Next, we’ll make a basic presence-absence map of eBird observations. More advanced topics are covered in part II of this workshop, which focuses on using eBird data to model species distributions. We’ll start a new script for this lesson: <code>03_applications.R</code>.</p>
 <div id="applications-trajectory" class="section level2">
 <h2><span class="header-section-number">7.1</span> Frequency trajectories</h2>
-<p>The genus <em>Cardellina</em> contains five New World warbler species, including some of the most spectacular birds in North America: <a href="https://ebird.org/species/canwar/">Canada Warbler</a>, <a href="https://ebird.org/species/redwar1/">Red Warbler</a>, and <a href="https://ebird.org/species/pihwar1/">Pink-headed Warbler</a>. Let’s extract and zero-fill data for these three species in this genus within Guatemala.</p>
+<p>The genus <em>Cardellina</em> contains five New World warbler species, including some of the most spectacular birds in North America: <a href="https://ebird.org/species/canwar/">Canada Warbler</a>, <a href="https://ebird.org/species/redwar1/">Red Warbler</a>, and <a href="https://ebird.org/species/pihwar1/">Pink-headed Warbler</a>. Let’s extract and zero-fill data for three of the species in this genus within Guatemala.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
 <span class="kw">library</span>(sf)
 <span class="kw">library</span>(rnaturalearth)
@@ -242,17 +243,16 @@ cardellina_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>
 <p><img src="ebp-workshop_files/figure-html/applications-trajectory-plot-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <p>We have several different patterns going on here:</p>
 <ul>
-<li>Pink-headed Warblers is resident species, present year-round at fairly low abundance</li>
-<li>Wilson’s Warbler is a migrant, spending the winter in Guatemala and is common during that period</li>
+<li>Pink-headed Warblers is a resident species, present year-round at fairly low abundance</li>
+<li>Wilson’s Warbler spends the winter in Guatemala and is common during that period</li>
 <li>Canada Warbler appears to only pass through Guatemala during migration</li>
 </ul>
 </div>
 <div id="applications-maps" class="section level2">
 <h2><span class="header-section-number">7.2</span> Maps</h2>
-<p>Continuing with the same dataset, let’s make a presence-absence map for Pink-headed Warbler. Let’s start by filtering the zero-filled data to only Pink-headed Warbler observations and converting these points to a spatial format using the <code>sf</code> package.</p>
+<p>Continuing with the same dataset, let’s make a presence-absence map for Pink-headed Warbler. We’ll start by filtering the zero-filled data to only Pink-headed Warbler observations and converting these points to a spatial format using the <code>sf</code> package.</p>
 <pre class="sourceCode r"><code class="sourceCode r">pihwar &lt;-<span class="st"> </span>cardellina_zf <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">filter</span>(scientific_name <span class="op">==</span><span class="st"> &quot;Cardellina versicolor&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pres_abs =</span> <span class="kw">if_else</span>(species_observed, <span class="st">&quot;Present&quot;</span>, <span class="st">&quot;Not detected&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>)</code></pre>
 <p>Next, we’ll use <code>rnaturalearth</code> to get some contextual GIS data to use in our maps. This is an amazing source for free GIS data for making maps.</p>
 <pre class="sourceCode r"><code class="sourceCode r">ne_country &lt;-<span class="st"> </span><span class="kw">ne_countries</span>(<span class="dt">continent =</span> <span class="st">&quot;North America&quot;</span>, <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
@@ -261,9 +261,11 @@ ne_gt &lt;-<span class="st"> </span><span class="kw">ne_countries</span>(<span c
 <span class="st">  </span><span class="kw">st_geometry</span>()
 <span class="co"># restrict to points falling within Guatemala, removes those over water</span>
 pihwar &lt;-<span class="st"> </span>pihwar[ne_gt, ]</code></pre>
-<p>Finally, we’ll make a presence-absence map, building it up in layers. There are lots excellent tools for mapping in R; however, here we’ll use the basic <code>plot()</code> function from the <code>sf</code> package.</p>
+<p>Finally, we’ll make a presence-absence map, building it up in layers. There are lots excellent tools for mapping in R; however, here we’ll use the basic <code>plot()</code> function from the <code>sf</code> package. Other good options include <code>ggplot2</code> and <code>tmap</code>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))
+<span class="co"># start by defining the bounds of the map with an empty plot</span>
 <span class="kw">plot</span>(ne_gt, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)
+<span class="co"># borders</span>
 <span class="kw">plot</span>(ne_country, <span class="dt">col =</span> <span class="st">&quot;grey80&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
 <span class="kw">plot</span>(ne_gt, <span class="dt">col =</span> <span class="st">&quot;grey70&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;white&quot;</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)
 <span class="co"># not observed</span>
@@ -281,7 +283,7 @@ pihwar_pres &lt;-<span class="st"> </span><span class="kw">filter</span>(pihwar,
        <span class="dt">pch =</span> <span class="dv">19</span>)
 <span class="kw">box</span>()</code></pre>
 <p><img src="ebp-workshop_files/figure-html/applications-maps-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
-<p>Within Guatemala, Pink-headed Warbler is restricted to the southwestern highlands of Guatemala.</p>
+<p>Based on this map, we see that Pink-headed Warbler is restricted to the southwestern highlands of Guatemala.</p>
 <div class="exercise">
 <h2>
 Exercise

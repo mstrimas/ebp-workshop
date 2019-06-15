@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-13" />
+<meta name="date" content="2019-06-14" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -47,6 +47,7 @@
 
 
 
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
 
 
 <style type="text/css">
@@ -183,10 +184,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="import" class="section level1">
 <h1><span class="header-section-number">Lesson 5</span> Importing Data</h1>
-<p>In the previous lesson we extracted a subset of the EBD containing Yellow-rumped Warbler observations from Guatemala. The output file created by <code>auk_filter()</code> is a tab-seperated text file and could be read into using <code>read.delim()</code> or <code>readr::read_tsv()</code>; however, <code>auk</code> has a function specifically for reading the EBD. <code>read_ebd()</code> does the following:</p>
+<p>In the <a href="filter.html#filter">previous lesson</a>, we extracted a subset of the EBD containing Yellow-rumped Warbler observations from Guatemala. The output file created by <code>auk_filter()</code> is a tab-seperated text file and could be read into R using <code>read.delim()</code> or <code>readr::read_tsv()</code>; however, <code>auk</code> has a function specifically for reading the EBD. <code>read_ebd()</code> does the following:</p>
 <ol style="list-style-type: decimal">
 <li>Reads the data using <code>data.table::fread()</code>, which is much faster than <code>read.delim()</code>.</li>
-<li>Sets the correct variable types.</li>
+<li>Sets the correct data types for the columns.</li>
 <li>Cleans up the column names so they are all <code>snake_case</code>.</li>
 <li>Automatically performs some post processing steps, which will be covered later in this lesson.</li>
 </ol>
@@ -249,7 +250,7 @@ ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="
 <h2>
 Exercise
 </h2>
-<p>Take a minute to explore these data using <code>glimpse()</code> and <code>View()</code>. Familiarize yourself with the columns.</p>
+<p>Take a minute to explore these data using <code>glimpse()</code> and <code>View()</code>. Familiarize yourself with the columns. Be sure you can find the effort columns and the <code>observation_count</code> column.</p>
 </div>
 <div class="checkpoint">
 <h2>
@@ -259,8 +260,9 @@ Checkpoint
 </div>
 <div id="import-group" class="section level2">
 <h2><span class="header-section-number">5.1</span> Group checklists</h2>
-<p>eBird allows users to share checklists with other eBird users that they’re birding with. This results it multiple copies of some checklists in the database. Group checklists can be identified in the data because they have the <code>group_identifier</code> populated. Let’s take a look at these checklists.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(ebd, <span class="op">!</span><span class="kw">is.na</span>(group_identifier)) <span class="op">%&gt;%</span><span class="st"> </span>
+<p>eBird allows users to share checklists with other eBird users that they’re birding with. This results it multiple copies of some checklists in the database. Group checklists can be identified in the data because they have the <code>group_identifier</code> column populated. Let’s take a look at some these checklists.</p>
+<pre class="sourceCode r"><code class="sourceCode r">ebd <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(group_identifier)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(sampling_event_identifier, group_identifier) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">head</span>()
 <span class="co">#&gt; # A tibble: 6 x 2</span>
@@ -275,21 +277,38 @@ Checkpoint
 <p>We see that there are multiple checklists with the same <code>group_identifier</code>, implying that these checklists have been shared and are duplicates. Let’s look at one of these on the eBird website: <a href="https://ebird.org/view/checklist/S26466410" class="uri">https://ebird.org/view/checklist/S26466410</a></p>
 <p>As it turns out, group checklists aren’t exact duplicates; once a checklist has been shared the individual checklists can diverge in terms of the species seen, the counts for each species, and even the protocol and effort.</p>
 <p>In most cases, you’ll only want to retain one of these checklists, but it’s not trivial to do so because the checklists are only partial duplicates. The function <code>auk_unique()</code> manages this for you. Specifically, for each species, it retains only the first observation of that species, which is typically the one submitted by the primary observer (i.e. the person who recorded the original checklist).</p>
-<pre class="sourceCode r"><code class="sourceCode r">keep_one &lt;-<span class="st"> </span><span class="kw">filter</span>(ebd, group_identifier <span class="op">==</span><span class="st"> &quot;G1480977&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_unique</span>()</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">keep_one &lt;-<span class="st"> </span><span class="kw">auk_unique</span>(ebd)
+<span class="kw">nrow</span>(ebd)
+<span class="co">#&gt; [1] 276</span>
+<span class="kw">nrow</span>(keep_one)
+<span class="co">#&gt; [1] 123</span></code></pre>
 <p>Note that a new field has been created (<code>checklist_id</code>), which is populated with <code>group_identifier</code> for group checklists and <code>sampling_event_identifier</code> otherwise; this is now a unique identifier for checklists. In addition, the full set of observer and sampling event identifiers has been retained in a comma seperated format.</p>
-<p>By default, <code>read_ebd()</code> calls <code>auk_unique()</code> automatically; however, this behaviour can be controlled with the <code>unique</code> argument.</p>
+<pre class="sourceCode r"><code class="sourceCode r">keep_one <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(group_identifier)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(checklist_id, sampling_event_identifier, 
+         group_identifier, observer_id) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">head</span>()
+<span class="co">#&gt; # A tibble: 6 x 4</span>
+<span class="co">#&gt;   checklist_id sampling_event_identif… group_identifier observer_id        </span>
+<span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;                   &lt;chr&gt;            &lt;chr&gt;              </span>
+<span class="co">#&gt; 1 G1125167     S21118307,S21556219     G1125167         obsr553524,obsr172…</span>
+<span class="co">#&gt; 2 G1100467     S21235386,S21244259,S2… G1100467         obsr503360,obsr553…</span>
+<span class="co">#&gt; 3 G1135829     S21569933,S21684780     G1135829         obsr276876,obsr277…</span>
+<span class="co">#&gt; 4 G1769139     S21608832,S29779877     G1769139         obsr553208,obsr662…</span>
+<span class="co">#&gt; 5 G1173637     S22200277,S22269150,S2… G1173637         obsr458611,obsr432…</span>
+<span class="co">#&gt; 6 G1173395     S22263863,S22266171,S2… G1173395         obsr458611,obsr412…</span></code></pre>
+<p>By default, whever you import data with <code>read_ebd()</code> it calls <code>auk_unique()</code> automatically; however, this behaviour can be controlled with the <code>unique</code> argument. So, for example, the following will import data <em>and</em> remove duplicates.</p>
 <pre class="sourceCode r"><code class="sourceCode r">ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="st">&quot;data/ebd_yerwar.txt&quot;</span>, <span class="dt">rollup =</span> <span class="ot">FALSE</span>)</code></pre>
 <div class="tip">
 <h2>
 Tip
 </h2>
-<p><code>auk_unique()</code> takes a long time to run on large datasets. Consider using <code>read_ebd(unique = FALSE)</code> when importing large text files to prevent R from freezing.</p>
+<p><code>auk_unique()</code> takes a long time to run on large datasets. Consider using <code>read_ebd(unique = FALSE)</code> when importing large text files to speed up the process.</p>
 </div>
 </div>
 <div id="import-taxonomy" class="section level2">
 <h2><span class="header-section-number">5.2</span> Taxonomy</h2>
-<p>eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contains in the eBird taxonomy, which is updated every year in August. The eBird Science page has a <a href="https://ebird.org/science/the-ebird-taxonomy">subsection with details on the eBir</a> taxonomy and the taxonomy itself is available in the package as a dataframe in the <code>auk</code> package.</p>
+<p>eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contains in the eBird taxonomy, which is updated every year in August. The eBird Science page has a <a href="https://ebird.org/science/the-ebird-taxonomy">subsection with details on the eBird</a> taxonomy, and the taxonomy itself is available in the package as a dataframe in the <code>auk</code> package.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(ebird_taxonomy)
 <span class="co">#&gt; Observations: 16,248</span>
 <span class="co">#&gt; Variables: 8</span>
@@ -300,8 +319,25 @@ Tip
 <span class="co">#&gt; $ taxon_order     &lt;dbl&gt; 1, 6, 7, 8, 14, 15, 18, 19, 20, 21, 26, 27, 30, …</span>
 <span class="co">#&gt; $ order           &lt;chr&gt; &quot;Struthioniformes&quot;, &quot;Struthioniformes&quot;, &quot;Struthi…</span>
 <span class="co">#&gt; $ family          &lt;chr&gt; &quot;Struthionidae&quot;, &quot;Struthionidae&quot;, &quot;Struthionidae…</span>
-<span class="co">#&gt; $ report_as       &lt;chr&gt; NA, NA, NA, NA, NA, &quot;lesrhe2&quot;, &quot;lesrhe2&quot;, NA, NA…</span></code></pre>
-<p>Note that for taxa below the species level, the <code>report_as</code> field specifies the species that this taxa falls under. The EBD contains a subspecies column which is populated when an observer has identified a bird below species level. In the EBD extract we’re working with, we have three different subspecies of Yellow-rumped Warbler:</p>
+<span class="co">#&gt; $ report_as       &lt;chr&gt; NA, NA, NA, NA, NA, &quot;lesrhe2&quot;, &quot;lesrhe2&quot;, NA, NA…</span>
+<span class="co"># you can even report that you saw a generic bird!</span>
+<span class="kw">filter</span>(ebird_taxonomy, common_name <span class="op">==</span><span class="st"> &quot;bird sp.&quot;</span>)
+<span class="co">#&gt;   scientific_name common_name species_code category taxon_order order</span>
+<span class="co">#&gt; 1        Aves sp.    bird sp.        bird1     spuh       34339  &lt;NA&gt;</span>
+<span class="co">#&gt;   family report_as</span>
+<span class="co">#&gt; 1   &lt;NA&gt;      &lt;NA&gt;</span></code></pre>
+<p>For taxa below the species level, the <code>report_as</code> field specifies the species that this taxa falls under. For example, the Western subspecies of Willet rolls up to Willet</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># myrtle warbler</span>
+<span class="kw">filter</span>(ebird_taxonomy, common_name <span class="op">==</span><span class="st"> &quot;Yellow-rumped Warbler (Myrtle)&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(common_name, category, report_as)
+<span class="co">#&gt;                      common_name category report_as</span>
+<span class="co">#&gt; 1 Yellow-rumped Warbler (Myrtle)     issf    yerwar</span>
+<span class="co"># rolls up to yellow-rumped warbler</span>
+<span class="kw">filter</span>(ebird_taxonomy, species_code <span class="op">==</span><span class="st"> &quot;yerwar&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">select</span>(common_name, category, report_as)
+<span class="co">#&gt;             common_name category report_as</span>
+<span class="co">#&gt; 1 Yellow-rumped Warbler  species      &lt;NA&gt;</span></code></pre>
+<p>The EBD contains a subspecies column, which is populated when an observer has identified a bird below species level. In the EBD extract we’re working with, we have three different subspecies of Yellow-rumped Warbler:</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">count</span>(ebd, common_name, subspecies_common_name)
 <span class="co">#&gt; # A tibble: 4 x 3</span>
 <span class="co">#&gt;   common_name           subspecies_common_name                n</span>
@@ -326,7 +362,7 @@ Tip
 <span class="co">#&gt;   checklist_id common_name           observation_count</span>
 <span class="co">#&gt;   &lt;chr&gt;        &lt;chr&gt;                 &lt;chr&gt;            </span>
 <span class="co">#&gt; 1 S22725024    Yellow-rumped Warbler 2</span></code></pre>
-<p>By default, <code>read_ebd()</code> calls <code>auk_rollup()</code> automatically; however, this behaviour can be controlled with the <code>rollup</code> argument.</p>
+<p>By default, when you import data with <code>read_ebd()</code> it calls <code>auk_rollup()</code> automatically; however, this behaviour can be controlled with the <code>rollup</code> argument. So, for example, the following will import data <em>and</em> remove duplicates <em>and</em> report all records at species level.</p>
 <pre class="sourceCode r"><code class="sourceCode r">ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="st">&quot;data/ebd_yerwar.txt&quot;</span>)</code></pre>
 <div class="checkpoint">
 <h2>

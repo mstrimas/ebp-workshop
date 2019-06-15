@@ -6,11 +6,11 @@ editor_options:
 
 # Applications {#applications}
 
-Now that we know how to extract and zero-fill data from eBird, let's do something with these data! We'll start by summarizing the data to show the trajectory of observation frequency over the course of the year. Next, we'll make a basic presence-absence map of eBird observations. More advanced topics are covered in part II of this workshop, which focuses on using eBird data to model species distributions.
+Now that we know how to extract and zero-fill data from eBird, let's do something with these data! We'll start by summarizing the data to show the trajectory of observation frequency over the course of the year. Next, we'll make a basic presence-absence map of eBird observations. More advanced topics are covered in part II of this workshop, which focuses on using eBird data to model species distributions. We'll start a new script for this lesson: `03_applications.R`.
 
 ## Frequency trajectories {#applications-trajectory}
 
-The genus *Cardellina* contains five New World warbler species, including some of the most spectacular birds in North America: [Canada Warbler](https://ebird.org/species/canwar/), [Red Warbler](https://ebird.org/species/redwar1/), and [Pink-headed Warbler](https://ebird.org/species/pihwar1/). Let's extract and zero-fill data for these three species in this genus within Guatemala.
+The genus *Cardellina* contains five New World warbler species, including some of the most spectacular birds in North America: [Canada Warbler](https://ebird.org/species/canwar/), [Red Warbler](https://ebird.org/species/redwar1/), and [Pink-headed Warbler](https://ebird.org/species/pihwar1/). Let's extract and zero-fill data for three of the species in this genus within Guatemala.
 
 ```{r applications-trajectory-extract}
 library(auk)
@@ -72,18 +72,17 @@ ggplot(cardellina_comm) +
 
 We have several different patterns going on here:
 
-- Pink-headed Warblers is resident species, present year-round at fairly low abundance
-- Wilson's Warbler is a migrant, spending the winter in Guatemala and is common during that period
+- Pink-headed Warblers is a resident species, present year-round at fairly low abundance
+- Wilson's Warbler spends the winter in Guatemala and is common during that period
 - Canada Warbler appears to only pass through Guatemala during migration
 
 ## Maps {#applications-maps}
 
-Continuing with the same dataset, let's make a presence-absence map for Pink-headed Warbler. Let's start by filtering the zero-filled data to only Pink-headed Warbler observations and converting these points to a spatial format using the `sf` package.
+Continuing with the same dataset, let's make a presence-absence map for Pink-headed Warbler. We'll start by filtering the zero-filled data to only Pink-headed Warbler observations and converting these points to a spatial format using the `sf` package.
 
 ```{r applications-maps-sf}
 pihwar <- cardellina_zf %>% 
   filter(scientific_name == "Cardellina versicolor") %>% 
-  mutate(pres_abs = if_else(species_observed, "Present", "Not detected")) %>% 
   st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 ```
 
@@ -98,11 +97,13 @@ ne_gt <- ne_countries(country = "Guatemala", returnclass = "sf") %>%
 pihwar <- pihwar[ne_gt, ]
 ```
 
-Finally, we'll make a presence-absence map, building it up in layers. There are lots excellent tools for mapping in R; however, here we'll use the basic `plot()` function from the `sf` package.
+Finally, we'll make a presence-absence map, building it up in layers. There are lots excellent tools for mapping in R; however, here we'll use the basic `plot()` function from the `sf` package. Other good options include `ggplot2` and `tmap`.
 
 ```{r applications-maps-map}
 par(mar = c(0.25, 0.25, 0.25, 0.25))
+# start by defining the bounds of the map with an empty plot
 plot(ne_gt, col = NA, border = NA)
+# borders
 plot(ne_country, col = "grey80", border = "white", add = TRUE)
 plot(ne_gt, col = "grey70", border = "white", add = TRUE)
 # not observed
@@ -121,7 +122,7 @@ legend("bottomright",
 box()
 ```
 
-Within Guatemala, Pink-headed Warbler is restricted to the southwestern highlands of Guatemala.
+Based on this map, we see that Pink-headed Warbler is restricted to the southwestern highlands of Guatemala.
 
 <div class="exercise">
   <h2>Exercise</h2>

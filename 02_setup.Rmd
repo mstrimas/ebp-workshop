@@ -8,18 +8,19 @@ editor_options:
 
 Before we dive into writing code, let's take a few minutes to ensure our systems are correctly set up with all the correct software and R packages. Devoting some time to this up front will reduce errors and make troubleshooting easier later in the workshop.
 
-Start by opening a browser window with three tabs pointing to the following websites:
+Start by opening a browser window with four tabs pointing to the following websites:
 
 1. The [eBird homepage](https://ebird.org)
 2. The [auk website](https://cornelllabofornithology.github.io/auk/). This R package is used to access eBird data and we'll be using the website to access help and resources.
 3. The [etherpad](https://public.etherpad-mozilla.org/p/ebp) for this workshop. This is a collaborative notepad similar to Google Docs, which we can use to share code and links. Make sure you can edit the document.
+4. The [online lessons](http://strimas.com/ebp-workshop) for this workshop.
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
   Are all tabs correctly opened? Can you edit the etherpad?
 </div>
 
-Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, [update R](https://cloud.r-project.org/). 
+Next [install or update RStudio](https://www.rstudio.com/products/rstudio/download/#download), then open it up. Look at the top line of the console, which gives your R version; copy that over to the etherpad. If you have a version older than 3.5.0, consider [updating R](https://cloud.r-project.org/). 
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
@@ -74,7 +75,7 @@ If you're running into any setup issues that can't be resolved, use RStudio Clou
 
 ## Tidyverse {#setup-tidyverse}
 
-Throughout this workshop, we'll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as `dplyr` and `ggplot2` are part of the Tidyverse. I'll try to explain any functions I use as they come up; however, there's one important operator from the Tidyverse that needs to be explaied up front: the pipe operator `%>%`. The pipe operator takes the expression to the left of it and "pipes" it into the first argument of the expression on the right.
+Throughout this workshop, we'll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as `dplyr`, `ggplot2`, and `purrr` are part of the Tidyverse. We'll try to explain any functions as they come up; however, there's one important operator from the Tidyverse that needs to be explained up front: the pipe operator `%>%`. The pipe operator takes the expression to the left of it and "pipes" it into the first argument of the expression on the right.
 
 ```{r setup-tidyverse-pipe}
 # without pipe
@@ -83,7 +84,7 @@ mean(1:10)
 1:10 %>% mean()
 ```
 
-The value of the pipe operator becomes more clean when we have several operations in a row.
+The value of the pipe operator becomes clear when we have several operations in a row. Using the pipe makes code easier to read and reduces the need for intermediate variables. 
 
 ```{r  setup-tidyverse-morepipe}
 # without pipes
@@ -99,11 +100,12 @@ rnorm(10, sd = 5) %>%
   round(digits = 1)
 ```
 
+For those that have never used the pipe, it probably looks strange, but if you stick with it, you'll quickly come to appreciate it.
+
 <div class="checkpoint">
   <h2>Checkpoint</h2>
   Any questions about the pipe?
 </div>
-
 
 <div class="exercise">
   <h2>Exercise</h2>

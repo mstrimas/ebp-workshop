@@ -6,7 +6,7 @@ editor_options:
 
 # Filtering {#filter}
 
-The EBD is huge, much too large to be read into R. So, if we want to work with these data, we first need to extract a small enough subset that it can be processed by R. This is the main purpose of the `auk` package: it uses the unix command line utility AWK to extract data from the EBD. There are three steps to this filtering process:
+The EBD is huge, much too large to be read into R. So, if we want to work with these data, we first need to extract a small enough subset that it can be processed in R. This is the main purpose of the `auk` package: it uses the unix command line utility AWK to extract data from the EBD. There are three steps to this filtering process:
 
 1. Set up a reference to the EBD text file with `auk_ebd()`.
 2. Define a set of filters.
@@ -14,7 +14,7 @@ The EBD is huge, much too large to be read into R. So, if we want to work with t
 
 <div class="tip">
   <h2>Tip</h2>
-  Filtering with `auk` can be fairly coarse, we just need to make the data small enough to read into R. Once the data are in R, they can be further subset.
+  Filtering with `auk` can be fairly coarse, we just need to make the data small enough to read into R. Once the data are in R, they can be further refined
 </div>
 
 ## Defining filters {#filter-define}
@@ -37,7 +37,12 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
   auk_country("Guatemala")
 ```
 
-Notice that when the `auk_ebd` object is printed, it tells us what filters have been defined. At this point, nothing has been done to the EBD, we've just *defined* the filter, we haven't executed it yet. 
+Notice that when the `auk_ebd` object is printed, it tells us what filters have been defined. At this point, nothing has been done to the EBD, we've just *defined* the filter, we haven't executed it yet.
+
+<div class="tip">
+  <h2>Tip</h2>
+  Consult the [Function Reference](http://CornellLabofOrnithology.github.io/auk/reference/index.html#section-filter) section of the `auk` website for a full list of available filters.
+</div>
 
 In general, you should think about filtering on region, season, and species, so let's build upon what we already have and add some more filters. For example, if we wanted all Resplendant Quetzal records from Guatemala in June 2015 we would use the following filters:
 
@@ -54,9 +59,11 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
   
 ```{r fitler-errors, error=TRUE}
 auk_ebd("ebd_2015-2016_yucatan.txt") %>% 
+  # typo in species name
   auk_species("Resplendant Quetzal")
 
 auk_ebd("ebd_2015-2016_yucatan.txt") %>% 
+  # non-sequential dates
   auk_date(c("2016-06-01", "2015-06-30"))
 ```
   
@@ -64,7 +71,7 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
 
 <div class="exercise">
   <h2>Exercise</h2>
-  Define filters to extract Magnolia Warbler observations from Belize that are from checklists that started between 5 and 9 am and used either the Traveling or Stationary protocols. Consult the list of filters to see which ones you'll need to use.
+  Define filters to extract Magnolia Warbler observations from Belize on checklists that started between 5 and 9 am and used either the Traveling or Stationary protocols. Consult the list of filters to see which ones you'll need to use.
   
   <button class="solution">Solution</button>
 <div class="solution-content">
@@ -82,10 +89,10 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
 
 <div class="tip">
   <h2>Tip</h2>
-  In general, when using the effort filters like `auk_time()` or `auk_distance()`, it's best to be quite coarse. You can always refine the filters later once the data are in R and starting with a coarse filter gives you some wiggle room if you later realize you want to make adjustments. Remember: **the initial filtering with `auk` takes a long time**, it's best to limit the number of times you do this.
+  In general, when using the effort filters like `auk_time()` or `auk_distance()`, it's best to be a bit coarse. You can always refine the filters later once the data are in R, and starting with a coarse filter gives you some wiggle room if you later realize you want to make adjustments. Remember: **the initial filtering with `auk` takes a long time**, it's best to limit the number of times you do this.
 </div>
 
-When filtering by date, you may need to extract records from a given date range *regardless of year*. For the situation, the `auk_date()` function can accept wildcards for the year. For example, we can rewrite the above Resplendent Quetzal example to get observations from June of any year.
+When filtering by date, you may need to extract records from a given date range *regardless of year*. For this situation, the `auk_date()` function can accept wildcards for the year. For example, we can rewrite the above Resplendent Quetzal example to get observations from June of any year.
 
 ```{r filter-define-wildcards}
 auk_ebd("ebd_2015-2016_yucatan.txt") %>% 
@@ -96,7 +103,7 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
 
 ### Complete checklists {#filter-define-complete}
 
-One of the most important filters is `auk_complete()`, which limits observations to those from complete checklists. As we've already seen, with complete checklists we can infer non-detections from the data. For most scientific applications, it's critical that we have complete checklists, so we can generate presence/absence data.
+One of the most important filters is `auk_complete()`, which limits observations to those from complete checklists. As we've already seen, with complete checklists we can infer non-detections from the data. For most scientific applications, it's critical that we have complete checklists, so we can generate presence-absence data.
 
 <div class="exercise">
   <h2>Exercise</h2>
@@ -117,12 +124,14 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
 
 <div class="tip">
   <h2>Tip</h2>
-  To find the state code, consult the `ebird_states` data frame or visit the [Explore page](https://ebird.org/explore) on the eBird website and enter the state name under Explore Region. The state code will appear after `region` in the URL. For example, for Chiapas the URL is `https://ebird.org/region/MX-CHP?yr=all` and the state code is therefore `MX-CHP`.
+  To find the state code, consult the `ebird_states` data frame or visit the [Explore page](https://ebird.org/explore) on the eBird website and enter the state name under Explore Region. The state code will appear after `region/` in the URL. For example, for Chiapas the URL is `https://ebird.org/region/MX-CHP?yr=all` and the state code is therefore `MX-CHP`.
 </div>
 
 ## Execute filters {#filter-execute}
 
-Once you have an `auk_ebd` object with a set of filters defined you can execute those filters with `auk_filter()`. This function compiles the filters into an AWK script, then executes that script to produce a text file with the defined subset of the EBD. We'll store this output file within the `data/` subdirectory of the project directory. Note that **filtering on the full EBD will take at least a couple hours**, so be prepared to wait awhile.
+Once you have an `auk_ebd` object with a set of filters defined, you can execute those filters with `auk_filter()`. This function compiles the filters into an AWK script, then runs that script to produce a text file with the defined subset of the EBD. We'll store this output file within the `data/` subdirectory of the project directory. Note that **filtering on the full EBD will take at least a couple hours**, so be prepared to wait awhile. 
+
+Let's define filters to extract Yellow-rumped Warbler observations in Guatemala that appear on complete traveling or stationary checklists, then execute those filters.
 
 ```{r filter-execute}
 ebd_filtered <- auk_ebd("ebd_2015-2016_yucatan.txt") %>% 
@@ -131,12 +140,11 @@ ebd_filtered <- auk_ebd("ebd_2015-2016_yucatan.txt") %>%
   auk_protocol(c("Traveling", "Stationary")) %>% 
   auk_complete() %>% 
   auk_filter(file = "data/ebd_yerwar.txt")
-ebd_filtered
 ```
 
-Notice that we've drastically reduced the size of the file and it can now be imported into R without any issues.
+Take a look at this file and notice that we've drastically reduced the size. It can now be imported into R without any issues.
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>
-  Any questions on filtering?
+  Were you able to correctly extract the Yellow-rumped Warbler data? Any questions on filtering?
 </div>
