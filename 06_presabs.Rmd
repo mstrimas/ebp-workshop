@@ -6,7 +6,7 @@ editor_options:
 
 # Presence-absence Data {#presabs}
 
-Up to this point we've been working with presence-only data. The EBD, and eBird checklist in general, only explicitly record positive observations of species. However, if we limit ourselves to complete checklists, we can fill in the implied zero counts for any checklists on which a given species isn't explicitly reported to generate presence-absence data. We refer to this process as **zero-filling** the eBird data.
+Up to this point we've been working with presence-only data. The EBD, and eBird checklists in general, only explicitly record positive observations of species. However, if we limit ourselves to complete checklists, we can fill in the implied zero counts for any checklists on which a given species isn't explicitly reported to generate presence-absence data. We refer to this process as **zero-filling** the eBird data.
 
 Zero-filling relies on the Sampling Event Data, which is a tab-seperated text file containing checklist-level information. This file contains the full population of checklists in the eBird database. If we apply exactly the same set of filters to both the EBD and the Sampling Event Data we can assume that any checklist with no observations for a given species in the EBD should get a zero-count record added to the dataset. So, producing presence-absence eBird data is a two-step process:
 
@@ -15,7 +15,12 @@ Zero-filling relies on the Sampling Event Data, which is a tab-seperated text fi
 
 <div class="tip">
   <h2>Tip</h2>
-  When we say "presence-absence" what we really mean by absence is that the species was not detected, it's entirely possible that the species was presented but the observer didn't detect it.
+  When we say "presence-absence" what we really mean by absence is that the species was not detected, it's entirely possible that the species was present but the observer didn't detect it.
+</div>
+
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  Are there any conceptual questions about the process of zero-filling?
 </div>
 
 ## Filtering {#presabs-filter}
@@ -42,11 +47,11 @@ We now have two output files that have been extracted using the same set of filt
 ```{r presabs-filter-read}
 ebd_only <- read_ebd(f_ebd)
 sed_only <- read_sampling(f_sed)
-n_distinct(ebd_only$checklist_id)
-n_distinct(sed_only$checklist_id)
+nrow(ebd_only)
+nrow(sed_only)
 ```
 
-So, we have `r n_distinct(sed_only$checklist_id)` checklists in the Sampling Event Data and, of those, `r n_distinct(ebd_only$checklist_id)` have Ocellated Turkey observations on them.
+So, we have `r nrow(sed_only)` checklists in the Sampling Event Data and, of those, `r nrow(ebd_only)` have Flamingo observations on them.
 
 <div class="checkpoint">
   <h2>Checkpoint</h2>

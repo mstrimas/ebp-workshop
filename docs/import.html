@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-06-14" />
+<meta name="date" content="2019-06-22" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -199,52 +199,52 @@ ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="
 <span class="kw">glimpse</span>(ebd)
 <span class="co">#&gt; Observations: 276</span>
 <span class="co">#&gt; Variables: 46</span>
-<span class="co">#&gt; $ global_unique_identifier     &lt;chr&gt; &quot;URN:CornellLabOfOrnithology:EBIRD:…</span>
-<span class="co">#&gt; $ last_edited_date             &lt;chr&gt; &quot;2018-09-09 12:17:58&quot;, &quot;2018-09-09 …</span>
-<span class="co">#&gt; $ taxonomic_order              &lt;dbl&gt; 31814, 31814, 31814, 31816, 31814, …</span>
-<span class="co">#&gt; $ category                     &lt;chr&gt; &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, &quot;i…</span>
-<span class="co">#&gt; $ common_name                  &lt;chr&gt; &quot;Yellow-rumped Warbler&quot;, &quot;Yellow-ru…</span>
-<span class="co">#&gt; $ scientific_name              &lt;chr&gt; &quot;Setophaga coronata&quot;, &quot;Setophaga co…</span>
-<span class="co">#&gt; $ subspecies_common_name       &lt;chr&gt; NA, NA, NA, &quot;Yellow-rumped Warbler …</span>
-<span class="co">#&gt; $ subspecies_scientific_name   &lt;chr&gt; NA, NA, NA, &quot;Setophaga coronata aud…</span>
-<span class="co">#&gt; $ observation_count            &lt;chr&gt; &quot;8&quot;, &quot;8&quot;, &quot;8&quot;, &quot;1&quot;, &quot;10&quot;, &quot;1&quot;, &quot;10&quot;…</span>
-<span class="co">#&gt; $ breeding_bird_atlas_code     &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ breeding_bird_atlas_category &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ age_sex                      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ country                      &lt;chr&gt; &quot;Guatemala&quot;, &quot;Guatemala&quot;, &quot;Guatemal…</span>
-<span class="co">#&gt; $ country_code                 &lt;chr&gt; &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;,…</span>
-<span class="co">#&gt; $ state                        &lt;chr&gt; &quot;Baja Verapaz&quot;, &quot;Baja Verapaz&quot;, &quot;Ba…</span>
-<span class="co">#&gt; $ state_code                   &lt;chr&gt; &quot;GT-BV&quot;, &quot;GT-BV&quot;, &quot;GT-BV&quot;, &quot;GT-AV&quot;,…</span>
-<span class="co">#&gt; $ county                       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ county_code                  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ iba_code                     &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ bcr_code                     &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ usfws_code                   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ atlas_block                  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ locality                     &lt;chr&gt; &quot;Finca Santo Tomas&quot;, &quot;Finca Santo T…</span>
-<span class="co">#&gt; $ locality_id                  &lt;chr&gt; &quot;L3244964&quot;, &quot;L3244964&quot;, &quot;L3244964&quot;,…</span>
-<span class="co">#&gt; $ locality_type                &lt;chr&gt; &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, …</span>
-<span class="co">#&gt; $ latitude                     &lt;dbl&gt; 15.2, 15.2, 15.2, 15.2, 15.2, 15.2,…</span>
-<span class="co">#&gt; $ longitude                    &lt;dbl&gt; -90.3, -90.3, -90.3, -90.3, -90.3, …</span>
-<span class="co">#&gt; $ observation_date             &lt;date&gt; 2015-12-26, 2015-12-26, 2015-12-26…</span>
-<span class="co">#&gt; $ time_observations_started    &lt;chr&gt; &quot;14:26:00&quot;, &quot;14:26:00&quot;, &quot;14:26:00&quot;,…</span>
-<span class="co">#&gt; $ observer_id                  &lt;chr&gt; &quot;obsr414683&quot;, &quot;obsr418529&quot;, &quot;obsr41…</span>
-<span class="co">#&gt; $ sampling_event_identifier    &lt;chr&gt; &quot;S26466410&quot;, &quot;S26466240&quot;, &quot;S2646791…</span>
-<span class="co">#&gt; $ protocol_type                &lt;chr&gt; &quot;Stationary&quot;, &quot;Stationary&quot;, &quot;Statio…</span>
-<span class="co">#&gt; $ protocol_code                &lt;chr&gt; &quot;P21&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P22&quot;, &quot;P21&quot;, …</span>
-<span class="co">#&gt; $ project_code                 &lt;chr&gt; &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;,…</span>
-<span class="co">#&gt; $ duration_minutes             &lt;int&gt; 15, 15, 15, 68, 15, 68, 15, 15, 120…</span>
-<span class="co">#&gt; $ effort_distance_km           &lt;dbl&gt; NA, NA, NA, 7.00, NA, 7.00, NA, NA,…</span>
-<span class="co">#&gt; $ effort_area_ha               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ number_observers             &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 4, 1, 1, 5,…</span>
-<span class="co">#&gt; $ all_species_reported         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span>
-<span class="co">#&gt; $ group_identifier             &lt;chr&gt; &quot;G1514667&quot;, &quot;G1514667&quot;, &quot;G1514667&quot;,…</span>
-<span class="co">#&gt; $ has_media                    &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, …</span>
-<span class="co">#&gt; $ approved                     &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span>
-<span class="co">#&gt; $ reviewed                     &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, …</span>
-<span class="co">#&gt; $ reason                       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
-<span class="co">#&gt; $ trip_comments                &lt;chr&gt; &quot;&lt;br /&gt;Enviado desde eBird Android …</span>
-<span class="co">#&gt; $ species_comments             &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></code></pre>
+<span class="co">#&gt; $ global_unique_identifier     [3m[90m&lt;chr&gt;[39m[23m &quot;URN:CornellLabOfOrnithology:EBIRD:…</span>
+<span class="co">#&gt; $ last_edited_date             [3m[90m&lt;chr&gt;[39m[23m &quot;2018-09-09 12:17:58&quot;, &quot;2018-09-09 …</span>
+<span class="co">#&gt; $ taxonomic_order              [3m[90m&lt;dbl&gt;[39m[23m 31814, 31814, 31814, 31816, 31814, …</span>
+<span class="co">#&gt; $ category                     [3m[90m&lt;chr&gt;[39m[23m &quot;species&quot;, &quot;species&quot;, &quot;species&quot;, &quot;i…</span>
+<span class="co">#&gt; $ common_name                  [3m[90m&lt;chr&gt;[39m[23m &quot;Yellow-rumped Warbler&quot;, &quot;Yellow-ru…</span>
+<span class="co">#&gt; $ scientific_name              [3m[90m&lt;chr&gt;[39m[23m &quot;Setophaga coronata&quot;, &quot;Setophaga co…</span>
+<span class="co">#&gt; $ subspecies_common_name       [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Yellow-rumped Warbler …</span>
+<span class="co">#&gt; $ subspecies_scientific_name   [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, &quot;Setophaga coronata aud…</span>
+<span class="co">#&gt; $ observation_count            [3m[90m&lt;chr&gt;[39m[23m &quot;8&quot;, &quot;8&quot;, &quot;8&quot;, &quot;1&quot;, &quot;10&quot;, &quot;1&quot;, &quot;10&quot;…</span>
+<span class="co">#&gt; $ breeding_bird_atlas_code     [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ breeding_bird_atlas_category [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ age_sex                      [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ country                      [3m[90m&lt;chr&gt;[39m[23m &quot;Guatemala&quot;, &quot;Guatemala&quot;, &quot;Guatemal…</span>
+<span class="co">#&gt; $ country_code                 [3m[90m&lt;chr&gt;[39m[23m &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;, &quot;GT&quot;,…</span>
+<span class="co">#&gt; $ state                        [3m[90m&lt;chr&gt;[39m[23m &quot;Baja Verapaz&quot;, &quot;Baja Verapaz&quot;, &quot;Ba…</span>
+<span class="co">#&gt; $ state_code                   [3m[90m&lt;chr&gt;[39m[23m &quot;GT-BV&quot;, &quot;GT-BV&quot;, &quot;GT-BV&quot;, &quot;GT-AV&quot;,…</span>
+<span class="co">#&gt; $ county                       [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ county_code                  [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ iba_code                     [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ bcr_code                     [3m[90m&lt;int&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ usfws_code                   [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ atlas_block                  [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ locality                     [3m[90m&lt;chr&gt;[39m[23m &quot;Finca Santo Tomas&quot;, &quot;Finca Santo T…</span>
+<span class="co">#&gt; $ locality_id                  [3m[90m&lt;chr&gt;[39m[23m &quot;L3244964&quot;, &quot;L3244964&quot;, &quot;L3244964&quot;,…</span>
+<span class="co">#&gt; $ locality_type                [3m[90m&lt;chr&gt;[39m[23m &quot;P&quot;, &quot;P&quot;, &quot;P&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, …</span>
+<span class="co">#&gt; $ latitude                     [3m[90m&lt;dbl&gt;[39m[23m 15.2, 15.2, 15.2, 15.2, 15.2, 15.2,…</span>
+<span class="co">#&gt; $ longitude                    [3m[90m&lt;dbl&gt;[39m[23m -90.3, -90.3, -90.3, -90.3, -90.3, …</span>
+<span class="co">#&gt; $ observation_date             [3m[90m&lt;date&gt;[39m[23m 2015-12-26, 2015-12-26, 2015-12-26…</span>
+<span class="co">#&gt; $ time_observations_started    [3m[90m&lt;chr&gt;[39m[23m &quot;14:26:00&quot;, &quot;14:26:00&quot;, &quot;14:26:00&quot;,…</span>
+<span class="co">#&gt; $ observer_id                  [3m[90m&lt;chr&gt;[39m[23m &quot;obsr414683&quot;, &quot;obsr418529&quot;, &quot;obsr41…</span>
+<span class="co">#&gt; $ sampling_event_identifier    [3m[90m&lt;chr&gt;[39m[23m &quot;S26466410&quot;, &quot;S26466240&quot;, &quot;S2646791…</span>
+<span class="co">#&gt; $ protocol_type                [3m[90m&lt;chr&gt;[39m[23m &quot;Stationary&quot;, &quot;Stationary&quot;, &quot;Statio…</span>
+<span class="co">#&gt; $ protocol_code                [3m[90m&lt;chr&gt;[39m[23m &quot;P21&quot;, &quot;P21&quot;, &quot;P21&quot;, &quot;P22&quot;, &quot;P21&quot;, …</span>
+<span class="co">#&gt; $ project_code                 [3m[90m&lt;chr&gt;[39m[23m &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;, &quot;EBIRD&quot;,…</span>
+<span class="co">#&gt; $ duration_minutes             [3m[90m&lt;int&gt;[39m[23m 15, 15, 15, 68, 15, 68, 15, 15, 120…</span>
+<span class="co">#&gt; $ effort_distance_km           [3m[90m&lt;dbl&gt;[39m[23m NA, NA, NA, 7.00, NA, 7.00, NA, NA,…</span>
+<span class="co">#&gt; $ effort_area_ha               [3m[90m&lt;dbl&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ number_observers             [3m[90m&lt;int&gt;[39m[23m 3, 3, 3, 3, 3, 3, 3, 3, 4, 1, 1, 5,…</span>
+<span class="co">#&gt; $ all_species_reported         [3m[90m&lt;lgl&gt;[39m[23m TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span>
+<span class="co">#&gt; $ group_identifier             [3m[90m&lt;chr&gt;[39m[23m &quot;G1514667&quot;, &quot;G1514667&quot;, &quot;G1514667&quot;,…</span>
+<span class="co">#&gt; $ has_media                    [3m[90m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, …</span>
+<span class="co">#&gt; $ approved                     [3m[90m&lt;lgl&gt;[39m[23m TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…</span>
+<span class="co">#&gt; $ reviewed                     [3m[90m&lt;lgl&gt;[39m[23m FALSE, FALSE, FALSE, FALSE, FALSE, …</span>
+<span class="co">#&gt; $ reason                       [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span>
+<span class="co">#&gt; $ trip_comments                [3m[90m&lt;chr&gt;[39m[23m &quot;&lt;br /&gt;Enviado desde eBird Android …</span>
+<span class="co">#&gt; $ species_comments             [3m[90m&lt;chr&gt;[39m[23m NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></code></pre>
 <p>We’ll cover the use of <code>unique = FALSE</code> and <code>rollup = FALSE</code> next. For now, let’s just look at the data.</p>
 <div class="exercise">
 <h2>
@@ -274,7 +274,7 @@ Checkpoint
 <span class="co">#&gt; 4 S26033869                 G1480977        </span>
 <span class="co">#&gt; 5 S26467907                 G1514670        </span>
 <span class="co">#&gt; 6 S26064931                 G1480977</span></code></pre>
-<p>We see that there are multiple checklists with the same <code>group_identifier</code>, implying that these checklists have been shared and are duplicates. Let’s look at one of these on the eBird website: <a href="https://ebird.org/view/checklist/S26466410" class="uri">https://ebird.org/view/checklist/S26466410</a></p>
+<p>We see that there are multiple checklists with the same <code>group_identifier</code>, implying that these checklists have been shared and are duplicates. Let’s look at one of these on the eBird website: <a href="https://ebird.org/view/checklist/S26064931" class="uri">https://ebird.org/view/checklist/S26064931</a></p>
 <p>As it turns out, group checklists aren’t exact duplicates; once a checklist has been shared the individual checklists can diverge in terms of the species seen, the counts for each species, and even the protocol and effort.</p>
 <p>In most cases, you’ll only want to retain one of these checklists, but it’s not trivial to do so because the checklists are only partial duplicates. The function <code>auk_unique()</code> manages this for you. Specifically, for each species, it retains only the first observation of that species, which is typically the one submitted by the primary observer (i.e. the person who recorded the original checklist).</p>
 <pre class="sourceCode r"><code class="sourceCode r">keep_one &lt;-<span class="st"> </span><span class="kw">auk_unique</span>(ebd)
@@ -308,7 +308,7 @@ Tip
 </div>
 <div id="import-taxonomy" class="section level2">
 <h2><span class="header-section-number">5.2</span> Taxonomy</h2>
-<p>eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contains in the eBird taxonomy, which is updated every year in August. The eBird Science page has a <a href="https://ebird.org/science/the-ebird-taxonomy">subsection with details on the eBird</a> taxonomy, and the taxonomy itself is available in the package as a dataframe in the <code>auk</code> package.</p>
+<p>eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contained in the eBird taxonomy, which is updated every year in August. The eBird Science page has a <a href="https://ebird.org/science/the-ebird-taxonomy">subsection with details on the eBird</a> taxonomy, and the taxonomy itself is available in the package as a dataframe in the <code>auk</code> package.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(ebird_taxonomy)
 <span class="co">#&gt; Observations: 16,248</span>
 <span class="co">#&gt; Variables: 8</span>
@@ -326,7 +326,7 @@ Tip
 <span class="co">#&gt; 1        Aves sp.    bird sp.        bird1     spuh       34339  &lt;NA&gt;</span>
 <span class="co">#&gt;   family report_as</span>
 <span class="co">#&gt; 1   &lt;NA&gt;      &lt;NA&gt;</span></code></pre>
-<p>For taxa below the species level, the <code>report_as</code> field specifies the species that this taxa falls under. For example, the Western subspecies of Willet rolls up to Willet</p>
+<p>For taxa below the species level, the <code>report_as</code> field specifies the species that this taxa falls under. For example, the Myrtle warbler rolls up to Yellow-rumped Warbler.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span class="co"># myrtle warbler</span>
 <span class="kw">filter</span>(ebird_taxonomy, common_name <span class="op">==</span><span class="st"> &quot;Yellow-rumped Warbler (Myrtle)&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw">select</span>(common_name, category, report_as)

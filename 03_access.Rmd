@@ -28,7 +28,7 @@ The files will be in `.tar` format, and you should be unarchive them (this may r
   Are the files downloaded and unarchived into a central location?
 </div>
 
-Let's take a look at this dataset. If we were working with the full EBD, we wouldn't have enough memory to read in the whole file, but we can always read a small subset. Open a new R script (`01_ebrid-data.R`) and read in the first few lines:
+Let's take a look at this dataset. If we were working with the full EBD, we wouldn't have enough memory to read in the whole file, but we can always read a small subset. Open a new R script (`01_ebird-data.R`) and read in the first few lines:
 
 ```{r access-top}
 library(readr)

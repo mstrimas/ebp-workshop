@@ -127,6 +127,11 @@ auk_ebd("ebd_2015-2016_yucatan.txt") %>%
   To find the state code, consult the `ebird_states` data frame or visit the [Explore page](https://ebird.org/explore) on the eBird website and enter the state name under Explore Region. The state code will appear after `region/` in the URL. For example, for Chiapas the URL is `https://ebird.org/region/MX-CHP?yr=all` and the state code is therefore `MX-CHP`.
 </div>
 
+<div class="checkpoint">
+  <h2>Checkpoint</h2>
+  Are there any questions about defining filters on the EBD?
+</div>
+
 ## Execute filters {#filter-execute}
 
 Once you have an `auk_ebd` object with a set of filters defined, you can execute those filters with `auk_filter()`. This function compiles the filters into an AWK script, then runs that script to produce a text file with the defined subset of the EBD. We'll store this output file within the `data/` subdirectory of the project directory. Note that **filtering on the full EBD will take at least a couple hours**, so be prepared to wait awhile. 

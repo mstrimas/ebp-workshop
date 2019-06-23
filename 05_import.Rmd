@@ -46,7 +46,7 @@ ebd %>%
   head()
 ```
 
-We see that there are multiple checklists with the same `group_identifier`, implying that these checklists have been shared and are duplicates. Let's look at one of these on the eBird website: https://ebird.org/view/checklist/S26466410
+We see that there are multiple checklists with the same `group_identifier`, implying that these checklists have been shared and are duplicates. Let's look at one of these on the eBird website: https://ebird.org/view/checklist/S26064931
 
 As it turns out, group checklists aren't exact duplicates; once a checklist has been shared the individual checklists can diverge in terms of the species seen, the counts for each species, and even the protocol and effort.
 
@@ -81,7 +81,7 @@ ebd <- read_ebd("data/ebd_yerwar.txt", rollup = FALSE)
 
 ## Taxonomy {#import-taxonomy}
 
-eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contains in the eBird taxonomy, which is updated every year in August. The eBird Science page has a [subsection with details on the eBird](https://ebird.org/science/the-ebird-taxonomy) taxonomy, and the taxonomy itself is available in the package as a dataframe in the `auk` package.
+eBird users can enter data for a wide range of taxa in addition to species. Observations can be reported at a level more granular than species (e.g. subspecies or recognizable forms) or at a higher level than species (e.g. spuhs, slashes, and hybrids). All the different taxa that can be reported are contained in the eBird taxonomy, which is updated every year in August. The eBird Science page has a [subsection with details on the eBird](https://ebird.org/science/the-ebird-taxonomy) taxonomy, and the taxonomy itself is available in the package as a dataframe in the `auk` package.
 
 ```{r import-taxonomy-taxdf}
 glimpse(ebird_taxonomy)
@@ -89,7 +89,7 @@ glimpse(ebird_taxonomy)
 filter(ebird_taxonomy, common_name == "bird sp.")
 ```
 
-For taxa below the species level, the `report_as` field specifies the species that this taxa falls under. For example, the Western subspecies of Willet rolls up to Willet
+For taxa below the species level, the `report_as` field specifies the species that this taxa falls under. For example, the Myrtle warbler rolls up to Yellow-rumped Warbler.
 
 ```{r import-taxonomy-reportas}
 # myrtle warbler
