@@ -10,7 +10,7 @@ Before we dive into writing code, let's take a few minutes to ensure our systems
 
 Start by opening a browser window with four tabs pointing to the following websites:
 
-1. The [shared Google Doc](https://tinyurl.com/ebird-best-practices) for this workshop. This is a will act as a collaborative notepad, which we can use to share code and links. Make sure you can edit the document.
+1. The shared Google Doc for this workshop. This will act as a collaborative notepad, which we can use to share code and links. Make sure you can edit the document.
 2. The [eBird homepage](https://ebird.org)
 3. The [auk website](https://cornelllabofornithology.github.io/auk/). This R package is used to access eBird data and we'll be using the website to access help and resources.
 4. The [online lessons](http://strimas.com/ebp-workshop) for this workshop.

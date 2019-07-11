@@ -8,11 +8,11 @@ editor_options:
 
 ## Custom downloads {#advanced-custom}
 
-The full EBD is massive (over 200 GB) and takes a long time to process with `auk` (typically several hours). In some cases, there'ss a way around these issues. On the [EBD download page](https://ebird.org/data/download/ebd), there's a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and for a range of dates. After submitting a request, it will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.
+The full EBD is massive (over 200 GB) and takes a long time to process with `auk` (typically several hours). In some cases, there's a way around these issues. On the [EBD download page](https://ebird.org/data/download/ebd), there's a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and for a range of dates. After submitting a request, it will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.
 
 ![](assets/img/08_advanced_custom.png)
 
-Recall from the [lesson on zero-filling](#presabs--filter), that we extracted American Flamingo records from Mexico's Yucatán state in January, and produced presence-absence data from this extract. Let's try to do this with the Custom Download form. After the request is submitted an email will arrive with instrustions for [downloading the following file](https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip). Download and unarchive this file, placing the text file in the `data/` subdirectory of your project.
+Recall from the [lesson on zero-filling](#presabs-filter), that we extracted American Flamingo records from Mexico's Yucatán state in January, and produced presence-absence data from this extract. Let's try to do this with the Custom Download form. After the request is submitted an email will arrive with instrustions for [downloading the following file](https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip). Download and unarchive this file, placing the text file in the `data/` subdirectory of your project.
 
 ```{r advanced-custom-dl, echo = FALSE}
 unzip("raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip",
@@ -20,7 +20,7 @@ unzip("raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip",
       exdir = "data/")
 ```
 
-It will quickly become clear that there are two challenges with this approach. First, the set of filters available in the Custom Download form is limited. For example, there's no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we've imported the data in R. Specifically, we'll only keep observations from complete checklists in June.
+It will quickly become clear that there are two challenges with this approach. First, the set of filters available in the Custom Download form is limited. For example, there's no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we've imported the data in R. Specifically, we'll only keep observations from complete checklists in January
 
 ```{r advanced-custom-filter}
 library(auk)
@@ -44,6 +44,11 @@ sed_filt <- auk_sampling("ebd_sampling_2015-2016_yucatan.txt") %>%
 sed <- read_sampling(f_sed)
 ```
 
+<div class="tip">
+  <h2>Tip</h2>
+  This method will only work if the custom download data and the Sampling Event Data are from the same release of the EBD. The EBD is updated monthly, so you'll want to make sure you download a copy of the Sampling Event Data at the same time as you submit a custom download request
+</div>
+
 Finally, we can combine these two dataframes together with `auk_zerofill()` to produce zero-filled presence-absence data.
 
 ```{r advanced-custom-zerofill}
@@ -56,19 +61,19 @@ We've produced exactly the same data as in Lesson \@ref(presabs); however, we've
 
 One common use of eBird data is for occupancy modeling with the R package `unmarked`. This workshop won't cover occupancy modeling; however, `unmarked` requires data to be formatted in a very particular way and `auk` contains functions to do this, which we'll cover in this lesson. We'll continue with the American Flamingo data from the previous section.
 
-First, we need to extract the subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated visits to a single site during a time frame over which the population can be considered closed. For example, let's define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data of this form.
+First, we need to extract a subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated visits to a single site during a time frame over which the population can be considered closed. For example, let's define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The `auk` function `filter_repeat_visits()` is designed to extract a subset of eBird data of this form.
 
 ```{r advanced-unmarked-extract}
 visits <- filter_repeat_visits(ebd_zf, 
                                min_obs = 2, max_obs = 10,
-                               annual_closure = TRUE,
                                date_var = "observation_date",
+                               annual_closure = TRUE,
                                site_vars = c("latitude", "longitude", 
                                              "observer_id"))
 # entire data set
-nrow(visits)
-# reduced data set
 nrow(ebd_zf)
+# reduced data set
+nrow(visits)
 # how many individual sites there are
 n_distinct(visits$site)
 ```
@@ -93,12 +98,10 @@ readr::read_csv("raw-data/unmarked-ex-data.csv") %>%
                          box_css = "border: 0; padding: 0; ")
 ```
 
-The `auk` function `format_unmarked_occu()` takes care of the reformatting for you. The `response` argument defines the variable that you will be using as the response in occupancy modeling (e.g. `observation_count` or `species_observered`), `site_covs` are the site-level covariates, and `obs_covs` are the observation-level covariates.
+The `auk` function `format_unmarked_occu()` takes care of the reformatting for you. In this function, `site_covs` are the site-level covariates and `obs_covs` are the observation-level covariates.
 
 ```{r}
 visits_um <- format_unmarked_occu(visits, 
-                                  site_id = "site", 
-                                  response = "species_observed",
                                   site_covs = c("latitude", "longitude"),
                                   obs_covs = c("time_observations_started", 
                                                "duration_minutes", 
