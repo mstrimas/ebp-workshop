@@ -15,7 +15,7 @@ extents <- list(extent(-1, 0, 0, 1),
                 extent(-1, 0, -1, 0),
                 extent(0, 1, 0, 1),
                 extent(-0, 1, -1, 0))
-png(here("assets", "img", "08_advanced_lc-tiles.png"), 
+png(here("assets", "img", "09_advanced_lc-tiles.png"), 
     width = 600, height = 600)
 par(mar = c(1, 1, 1, 1), mfrow = c(2, 2))
 for (i in seq_along(extents)) {
@@ -28,7 +28,7 @@ for (i in seq_along(extents)) {
 dev.off()
 
 
-png(here("assets", "img", "08_advanced_lc-mosaic.png"), 
+png(here("assets", "img", "09_advanced_lc-mosaic.png"), 
     width = 600, height = 600)
 par(mar = c(0, 0, 0, 0), mfrow = c(1, 1))
 plot(st_as_sfc(st_bbox(extent(r))), col = NA, border = NA)
@@ -43,7 +43,7 @@ p <- rasterToPoints(r_agg, spatial = TRUE) %>%
   st_geometry()
 buff <- st_buffer(p, 0.25)
 
-png(here("assets", "img", "08_advanced_lc-buffer.png"), 
+png(here("assets", "img", "09_advanced_lc-buffer.png"), 
     width = 800, height = 800)
 par(mar = c(0, 0, 0, 0), mfrow = c(1, 1))
 plot(st_as_sfc(st_bbox(extent(r))), col = NA, border = NA)
@@ -54,7 +54,7 @@ plot(buff, border = "black", lwd = 5, add = TRUE)
 dev.off()
 
 
-png(here("assets", "img", "08_advanced_lc-pland-1.png"), 
+png(here("assets", "img", "09_advanced_lc-pland-1.png"), 
     width = 600, height = 600)
 par(mar = c(0, 0, 0, 0), mfrow = c(1, 1))
 plot(st_as_sfc(st_bbox(extent(r))), col = NA, border = NA)
@@ -62,7 +62,7 @@ plot(r_agg, col = RColorBrewer::brewer.pal(5, "Greens"), axes = FALSE,
      legend = FALSE, add = TRUE)
 dev.off()
 
-png(here("assets", "img", "08_advanced_lc-pland-0.png"), 
+png(here("assets", "img", "09_advanced_lc-pland-0.png"), 
     width = 600, height = 600)
 par(mar = c(0, 0, 0, 0), mfrow = c(1, 1))
 plot(st_as_sfc(st_bbox(extent(r))), col = NA, border = NA)

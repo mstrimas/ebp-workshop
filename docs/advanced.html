@@ -4,35 +4,35 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Lesson 8 Advanced Topics | eBird Best Practices I</title>
-  <meta name="description" content="Lesson 8 Advanced Topics | eBird Best Practices I: eBird Data Extraction and Processing in R" />
-  <meta name="generator" content="bookdown 0.11.1 and GitBook 2.6.7" />
+  <title>Lesson 10 Advanced Topics | eBird Best Practices Workshop</title>
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown 0.13.2 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Lesson 8 Advanced Topics | eBird Best Practices I" />
+  <meta property="og:title" content="Lesson 10 Advanced Topics | eBird Best Practices Workshop" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="Lesson 8 Advanced Topics | eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
   <meta name="github-repo" content="mstrimas/ebp-workshop" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Lesson 8 Advanced Topics | eBird Best Practices I" />
+  <meta name="twitter:title" content="Lesson 10 Advanced Topics | eBird Best Practices Workshop" />
   
-  <meta name="twitter:description" content="Lesson 8 Advanced Topics | eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-07-10" />
+<meta name="date" content="2019-11-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="applications.html">
-
+<link rel="prev" href="applications.html"/>
+<link rel="next" href="model-intro.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -40,6 +40,9 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
 
 
 
@@ -56,7 +59,6 @@ a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -131,40 +133,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="setup.html"><a href="setup.html"><i class="fa fa-check"></i><b>2</b> Setup</a><ul>
-<li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#setup-tidyverse"><i class="fa fa-check"></i><b>2.1</b> Tidyverse</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#format"><i class="fa fa-check"></i><b>1.1</b> Format</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.2</b> Setup</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-tidyverse"><i class="fa fa-check"></i><b>1.3</b> Tidyverse</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>3</b> Data Access</a></li>
-<li class="chapter" data-level="4" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>4</b> Filtering</a><ul>
-<li class="chapter" data-level="4.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>4.1</b> Defining filters</a><ul>
-<li class="chapter" data-level="4.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>4.1.1</b> Complete checklists</a></li>
+<li class="part"><span><b>I eBird Data</b></span></li>
+<li class="chapter" data-level="2" data-path="ebird-intro.html"><a href="ebird-intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
+<li class="chapter" data-level="3" data-path="the-auk-workflow.html"><a href="the-auk-workflow.html"><i class="fa fa-check"></i><b>3</b> The <code>auk</code> workflow</a></li>
+<li class="chapter" data-level="4" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>4</b> Data Access</a></li>
+<li class="chapter" data-level="5" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>5</b> Filtering</a><ul>
+<li class="chapter" data-level="5.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>5.1</b> Defining filters</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>5.1.1</b> Complete checklists</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>4.2</b> Execute filters</a></li>
+<li class="chapter" data-level="5.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>5.2</b> Execute filters</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>5</b> Importing Data</a><ul>
-<li class="chapter" data-level="5.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>5.1</b> Group checklists</a></li>
-<li class="chapter" data-level="5.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>5.2</b> Taxonomy</a></li>
+<li class="chapter" data-level="6" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>6</b> Importing Data</a><ul>
+<li class="chapter" data-level="6.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>6.1</b> Group checklists</a></li>
+<li class="chapter" data-level="6.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>6.2</b> Taxonomy</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>6</b> Presence-absence Data</a><ul>
-<li class="chapter" data-level="6.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>6.1</b> Filtering</a></li>
-<li class="chapter" data-level="6.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>6.2</b> Zero-filling</a></li>
-<li class="chapter" data-level="6.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>6.3</b> Tidying up</a></li>
+<li class="chapter" data-level="7" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>7</b> Presence-absence Data</a><ul>
+<li class="chapter" data-level="7.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>7.1</b> Filtering</a></li>
+<li class="chapter" data-level="7.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>7.2</b> Zero-filling</a></li>
+<li class="chapter" data-level="7.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>7.3</b> Tidying up</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>7</b> Applications</a><ul>
-<li class="chapter" data-level="7.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>7.1</b> Frequency trajectories</a></li>
-<li class="chapter" data-level="7.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>7.2</b> Maps</a></li>
+<li class="chapter" data-level="8" data-path="subsampling.html"><a href="subsampling.html"><i class="fa fa-check"></i><b>8</b> Spatiotemporal Subsampling</a><ul>
+<li class="chapter" data-level="8.1" data-path="subsampling.html"><a href="subsampling.html#subsampling-toy"><i class="fa fa-check"></i><b>8.1</b> A toy example</a></li>
+<li class="chapter" data-level="8.2" data-path="subsampling.html"><a href="subsampling.html#subsampling-ebird"><i class="fa fa-check"></i><b>8.2</b> Subsampling eBird data</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
-<li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
-<li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
-<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.3</b> Reducing file size</a><ul>
-<li class="chapter" data-level="8.3.1" data-path="advanced.html"><a href="advanced.html#advanced-size-strict"><i class="fa fa-check"></i><b>8.3.1</b> Stricter filtering</a></li>
-<li class="chapter" data-level="8.3.2" data-path="advanced.html"><a href="advanced.html#advanced-size-columns"><i class="fa fa-check"></i><b>8.3.2</b> Removing columns</a></li>
-<li class="chapter" data-level="8.3.3" data-path="advanced.html"><a href="advanced.html#advanced-size-split"><i class="fa fa-check"></i><b>8.3.3</b> Splitting by species</a></li>
+<li class="chapter" data-level="9" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>9</b> Applications</a><ul>
+<li class="chapter" data-level="9.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>9.1</b> Frequency trajectories</a></li>
+<li class="chapter" data-level="9.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>9.2</b> Maps</a></li>
 </ul></li>
-<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.4</b> Land cover covariates</a></li>
+<li class="chapter" data-level="10" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>10</b> Advanced Topics</a><ul>
+<li class="chapter" data-level="10.1" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>10.1</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="10.2" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>10.2</b> Land cover covariates</a></li>
+<li class="chapter" data-level="10.3" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>10.3</b> Custom downloads</a></li>
+<li class="chapter" data-level="10.4" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>10.4</b> Reducing file size</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="advanced.html"><a href="advanced.html#advanced-size-strict"><i class="fa fa-check"></i><b>10.4.1</b> Stricter filtering</a></li>
+<li class="chapter" data-level="10.4.2" data-path="advanced.html"><a href="advanced.html#advanced-size-columns"><i class="fa fa-check"></i><b>10.4.2</b> Removing columns</a></li>
+<li class="chapter" data-level="10.4.3" data-path="advanced.html"><a href="advanced.html#advanced-size-split"><i class="fa fa-check"></i><b>10.4.3</b> Splitting by species</a></li>
 </ul></li>
+</ul></li>
+<li class="part"><span><b>II Distribution Modeling</b></span></li>
+<li class="chapter" data-level="11" data-path="model-intro.html"><a href="model-intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
 </ul>
 
       </nav>
@@ -174,7 +186,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">eBird Best Practices I</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">eBird Best Practices Workshop</a>
           </h1>
         </div>
 
@@ -183,70 +195,44 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="advanced" class="section level1">
-<h1><span class="header-section-number">Lesson 8</span> Advanced Topics</h1>
-<div id="advanced-custom" class="section level2">
-<h2><span class="header-section-number">8.1</span> Custom downloads</h2>
-<p>The full EBD is massive (over 200 GB) and takes a long time to process with <code>auk</code> (typically several hours). In some cases, there’s a way around these issues. On the <a href="https://ebird.org/data/download/ebd">EBD download page</a>, there’s a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and for a range of dates. After submitting a request, it will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.</p>
-<p><img src="assets/img/08_advanced_custom.png" /></p>
-<p>Recall from the <a href="presabs.html#presabs-filter">lesson on zero-filling</a>, that we extracted American Flamingo records from Mexico’s Yucatán state in January, and produced presence-absence data from this extract. Let’s try to do this with the Custom Download form. After the request is submitted an email will arrive with instrustions for <a href="https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.zip">downloading the following file</a>. Download and unarchive this file, placing the text file in the <code>data/</code> subdirectory of your project.</p>
-<p>It will quickly become clear that there are two challenges with this approach. First, the set of filters available in the Custom Download form is limited. For example, there’s no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we’ve imported the data in R. Specifically, we’ll only keep observations from complete checklists in January</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
-<span class="kw">library</span>(lubridate)
-<span class="kw">library</span>(tidyverse)
-
-ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="st">&quot;data/ebd_MX-YUC_grefla2_201501_201612_relApr-2019.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">filter</span>(<span class="kw">month</span>(observation_date) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, 
-         all_species_reported)</code></pre>
-<p>The second challenge is that the Custom Download form only provides the positive observations from the EBD, it doesn’t provide the corresponding Sampling Event Data for zero-filling. However, the Sampling Event Data is much smaller than the EBD and quicker to process with <code>auk</code>. So, we can easily filter this file using the same set of filters we’ve already applied to the EBD. Note that <code>auk_sampling()</code> is used in place of <code>auk_ebd()</code> when we’re only filtering the sampling data and not the EBD.</p>
-<pre class="sourceCode r"><code class="sourceCode r">f_sed &lt;-<span class="st"> &quot;data/sed-only_amefla.txt&quot;</span>
-sed_filt &lt;-<span class="st"> </span><span class="kw">auk_sampling</span>(<span class="st">&quot;ebd_sampling_2015-2016_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_state</span>(<span class="st">&quot;MX-YUC&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_date</span>(<span class="kw">c</span>(<span class="st">&quot;*-01-01&quot;</span>, <span class="st">&quot;*-01-31&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/sed-only_amefla.txt&quot;</span>)
-sed &lt;-<span class="st"> </span><span class="kw">read_sampling</span>(f_sed)</code></pre>
-<div class="tip">
-<h2>
-Tip
-</h2>
-<p>This method will only work if the custom download data and the Sampling Event Data are from the same release of the EBD. The EBD is updated monthly, so you’ll want to make sure you download a copy of the Sampling Event Data at the same time as you submit a custom download request</p>
-</div>
-<p>Finally, we can combine these two dataframes together with <code>auk_zerofill()</code> to produce zero-filled presence-absence data.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ebd_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(ebd, sed, <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</code></pre>
-<p>We’ve produced exactly the same data as in Lesson <a href="presabs.html#presabs">6</a>; however, we’ve done so avoiding having to deal with the full EBD!</p>
-</div>
+<h1><span class="header-section-number">Lesson 10</span> Advanced Topics</h1>
 <div id="advanced-unmarked" class="section level2">
-<h2><span class="header-section-number">8.2</span> Preparing for occupancy modeling</h2>
+<h2><span class="header-section-number">10.1</span> Preparing for occupancy modeling</h2>
 <p>One common use of eBird data is for occupancy modeling with the R package <code>unmarked</code>. This workshop won’t cover occupancy modeling; however, <code>unmarked</code> requires data to be formatted in a very particular way and <code>auk</code> contains functions to do this, which we’ll cover in this lesson. We’ll continue with the American Flamingo data from the previous section.</p>
 <p>First, we need to extract a subset of observations that are suitable for occupancy modeling. In particular, occupancy models typically require data from repeated visits to a single site during a time frame over which the population can be considered closed. For example, let’s define the period of closure as the entire month of January in each year and a repeat visit as the same observer revisting a site with same latitude and longitude at least twice. The <code>auk</code> function <code>filter_repeat_visits()</code> is designed to extract a subset of eBird data of this form.</p>
-<pre class="sourceCode r"><code class="sourceCode r">visits &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebd_zf, 
-                               <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,
-                               <span class="dt">date_var =</span> <span class="st">&quot;observation_date&quot;</span>,
-                               <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,
-                               <span class="dt">site_vars =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>, 
-                                             <span class="st">&quot;observer_id&quot;</span>))
-<span class="co"># entire data set</span>
-<span class="kw">nrow</span>(ebd_zf)
-<span class="co">#&gt; [1] 336</span>
-<span class="co"># reduced data set</span>
-<span class="kw">nrow</span>(visits)
-<span class="co">#&gt; [1] 112</span>
-<span class="co"># how many individual sites there are</span>
-<span class="kw">n_distinct</span>(visits<span class="op">$</span>site)
-<span class="co">#&gt; [1] 39</span></code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1"><span class="kw">library</span>(auk)</a>
+<a class="sourceLine" id="cb54-2" data-line-number="2"><span class="kw">library</span>(lubridate)</a>
+<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb54-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb54-5" data-line-number="5">ebd_zf &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebird_amefla_zf.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb54-6" data-line-number="6">visits &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebd_zf, </a>
+<a class="sourceLine" id="cb54-7" data-line-number="7">                               <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,</a>
+<a class="sourceLine" id="cb54-8" data-line-number="8">                               <span class="dt">date_var =</span> <span class="st">&quot;observation_date&quot;</span>,</a>
+<a class="sourceLine" id="cb54-9" data-line-number="9">                               <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb54-10" data-line-number="10">                               <span class="dt">site_vars =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>, </a>
+<a class="sourceLine" id="cb54-11" data-line-number="11">                                             <span class="st">&quot;observer_id&quot;</span>))</a>
+<a class="sourceLine" id="cb54-12" data-line-number="12"><span class="co"># entire data set</span></a>
+<a class="sourceLine" id="cb54-13" data-line-number="13"><span class="kw">nrow</span>(ebd_zf)</a>
+<a class="sourceLine" id="cb54-14" data-line-number="14"><span class="co">#&gt; [1] 242</span></a>
+<a class="sourceLine" id="cb54-15" data-line-number="15"><span class="co"># reduced data set</span></a>
+<a class="sourceLine" id="cb54-16" data-line-number="16"><span class="kw">nrow</span>(visits)</a>
+<a class="sourceLine" id="cb54-17" data-line-number="17"><span class="co">#&gt; [1] 122</span></a>
+<a class="sourceLine" id="cb54-18" data-line-number="18"><span class="co"># how many individual sites there are</span></a>
+<a class="sourceLine" id="cb54-19" data-line-number="19"><span class="kw">n_distinct</span>(visits<span class="op">$</span>site)</a>
+<a class="sourceLine" id="cb54-20" data-line-number="20"><span class="co">#&gt; [1] 40</span></a></code></pre></div>
 <p>Three new columns are added to the dataset when using the function <code>filter_repeat_visits()</code>: <code>site</code> is a unique site ID, <code>closure_id</code> identifies the primary period of closure (in this example the year), and <code>n_observations</code> is the number of visits to each site.</p>
-<pre class="sourceCode r"><code class="sourceCode r">visits <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">select</span>(site, closure_id, n_observations) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">head</span>()
-<span class="co">#&gt; # A tibble: 6 x 3</span>
-<span class="co">#&gt;   site                                 closure_id n_observations</span>
-<span class="co">#&gt;   &lt;chr&gt;                                &lt;chr&gt;               &lt;int&gt;</span>
-<span class="co">#&gt; 1 20.359625_-89.7705531_obs282508_2015 2015                    3</span>
-<span class="co">#&gt; 2 20.359625_-89.7705531_obs282508_2015 2015                    3</span>
-<span class="co">#&gt; 3 20.359625_-89.7705531_obs282508_2015 2015                    3</span>
-<span class="co">#&gt; 4 20.539589_-89.341231_obs536411_2015  2015                    2</span>
-<span class="co">#&gt; 5 20.539589_-89.341231_obs536411_2015  2015                    2</span>
-<span class="co">#&gt; 6 20.539589_-89.341231_obs536411_2016  2016                    3</span></code></pre>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1">visits <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb55-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(site, closure_id, n_observations) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb55-3" data-line-number="3"><span class="st">  </span><span class="kw">head</span>()</a>
+<a class="sourceLine" id="cb55-4" data-line-number="4"><span class="co">#&gt; # A tibble: 6 x 3</span></a>
+<a class="sourceLine" id="cb55-5" data-line-number="5"><span class="co">#&gt;   site                                  closure_id n_observations</span></a>
+<a class="sourceLine" id="cb55-6" data-line-number="6"><span class="co">#&gt;   &lt;chr&gt;                                 &lt;chr&gt;               &lt;int&gt;</span></a>
+<a class="sourceLine" id="cb55-7" data-line-number="7"><span class="co">#&gt; 1 20.0893017_-89.551304_obs174363_2014  2014                    2</span></a>
+<a class="sourceLine" id="cb55-8" data-line-number="8"><span class="co">#&gt; 2 20.0893017_-89.551304_obs174363_2014  2014                    2</span></a>
+<a class="sourceLine" id="cb55-9" data-line-number="9"><span class="co">#&gt; 3 20.359625_-89.7705531_obs282508_2015  2015                    3</span></a>
+<a class="sourceLine" id="cb55-10" data-line-number="10"><span class="co">#&gt; 4 20.359625_-89.7705531_obs282508_2015  2015                    3</span></a>
+<a class="sourceLine" id="cb55-11" data-line-number="11"><span class="co">#&gt; 5 20.359625_-89.7705531_obs282508_2015  2015                    3</span></a>
+<a class="sourceLine" id="cb55-12" data-line-number="12"><span class="co">#&gt; 6 20.5685104_-88.5133266_obs431367_2014 2014                    4</span></a></code></pre></div>
 <p>Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by <code>unmarked</code>. The documentation for the <code>unmarked</code> function <code>formatWide()</code> outlines the details of this format. In the EBD, each row is a checklist; however, <code>unmarked</code> requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and any habitat covariates we might have. Finally, the observation-level covariates, such as distance and duration, each get a set of columns corresponding to the the presence-absence columns.</p>
 <div style="border: 0; padding: 0; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-responsive" style="font-size: 11px; margin-left: auto; margin-right: auto;">
@@ -497,13 +483,13 @@ FALSE
 </table>
 </div>
 <p>The <code>auk</code> function <code>format_unmarked_occu()</code> takes care of the reformatting for you. In this function, <code>site_covs</code> are the site-level covariates and <code>obs_covs</code> are the observation-level covariates.</p>
-<pre class="sourceCode r"><code class="sourceCode r">visits_um &lt;-<span class="st"> </span><span class="kw">format_unmarked_occu</span>(visits, 
-                                  <span class="dt">site_covs =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>),
-                                  <span class="dt">obs_covs =</span> <span class="kw">c</span>(<span class="st">&quot;time_observations_started&quot;</span>, 
-                                               <span class="st">&quot;duration_minutes&quot;</span>, 
-                                               <span class="st">&quot;effort_distance_km&quot;</span>, 
-                                               <span class="st">&quot;number_observers&quot;</span>, 
-                                               <span class="st">&quot;protocol_type&quot;</span>))</code></pre>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1">visits_um &lt;-<span class="st"> </span><span class="kw">format_unmarked_occu</span>(visits, </a>
+<a class="sourceLine" id="cb56-2" data-line-number="2">                                  <span class="dt">site_covs =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>),</a>
+<a class="sourceLine" id="cb56-3" data-line-number="3">                                  <span class="dt">obs_covs =</span> <span class="kw">c</span>(<span class="st">&quot;time_observations_started&quot;</span>, </a>
+<a class="sourceLine" id="cb56-4" data-line-number="4">                                               <span class="st">&quot;duration_minutes&quot;</span>, </a>
+<a class="sourceLine" id="cb56-5" data-line-number="5">                                               <span class="st">&quot;effort_distance_km&quot;</span>, </a>
+<a class="sourceLine" id="cb56-6" data-line-number="6">                                               <span class="st">&quot;number_observers&quot;</span>, </a>
+<a class="sourceLine" id="cb56-7" data-line-number="7">                                               <span class="st">&quot;protocol_type&quot;</span>))</a></code></pre></div>
 <div class="exercise">
 <h2>
 Exercise
@@ -511,57 +497,95 @@ Exercise
 <p>Explore both the <code>visits_um</code> and <code>visits</code> dataframes. They contain the same data in different formats. Try to understand how one dataframe was transformed into the other.</p>
 </div>
 </div>
+<div id="advanced-modis" class="section level2">
+<h2><span class="header-section-number">10.2</span> Land cover covariates</h2>
+<p>To use eBird data for modeling species distributions you’ll typically want to attach habitat data to the checklists to use as model covariates. There are a wide variety of freely available, satellite-derived land use and land cover products available for use as covariates. The specific set of covariates you use, and the dataset that you derived them from, will depend on the specifics of your study: the focal species and region, and question you’re asking. However, we recommend the <a href="https://lpdaac.usgs.gov/products/mcd12q1v006/">MODIS MCD12Q1</a> land cover dataset as a good general use source of land cover covariates. This product is global in extent, available annually since 2001, and provided in a raster format at 500 m resolution.</p>
+<p>The free <a href="http://strimas.com/ebird-best-practices/covariates/">eBird Best Practices book</a> associated with this workshop covers in detail how to download land cover data and attach it to eBird checklists. However, we provide an overview of the process here.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Download:</strong> download land cover data (e.g. MODIS MCD12Q1) for your region of interest, either manually or using the R package <code>MODIS</code>. These data will likely be downloaded in the form of multiple tiles that need to be combined together then converted to GeoTIFF format. This is done automatically if you’re using the <code>MOIDS</code> package, but it can be done manually using the command line tool <a href="https://gdal.org/">GDAL</a>.</li>
+<li><strong>Summarize:</strong> birds use and respond to their environment at a scale that is typically larger than the resolution of the satellite data. Furthermore, there is uncertainty in the location of eBird checklists, particularly traveling checklists. So, you should usually summarize the data within a neighborhood of each checklist. This can be done most simply by calculating the percent of each landcover class within a neighborhood of each point.</li>
+<li><strong>Prediction surface:</strong> once you’ve fit your models using the land cover covariates you generated in the previous steps, you’ll usually want to make predictions over the landscape and produce maps. This requires defining a regular grid of points at which you calculate the same summarized land cover covariates as you did in the previous step.</li>
+</ol>
+<p>To see the code for each of these steps consult the <a href="http://strimas.com/ebird-best-practices/covariates/">eBird Best Practices</a> book.</p>
+</div>
+<div id="advanced-custom" class="section level2">
+<h2><span class="header-section-number">10.3</span> Custom downloads</h2>
+<p>The full EBD is massive (over 200 GB) and takes a long time to process with <code>auk</code> (typically several hours). In some cases, there’s a way around these issues. On the <a href="https://ebird.org/data/download/ebd">EBD download page</a>, there’s a Custom Download form that allows you to request a subset of the EBD for a given species, within a region, and for a range of dates. After submitting a request, it will be processed on the eBird servers and a email will be sent to you with instructions for downloading the EBD extract.</p>
+<p><img src="assets/img/09_advanced_custom.png" /></p>
+<p>Recall from the <a href="presabs.html#presabs-filter">lesson on zero-filling</a>, that we extracted American Flamingo records from Mexico’s Yucatán state in January, and produced presence-absence data from this extract. Let’s try to do this with the Custom Download form. After the request is submitted an email will arrive with instrustions for <a href="https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebd_MX-YUC_grefla2_201401_201512_relSep-2019.zip">downloading the following file</a>. Download and unarchive this file, placing the text file in the <code>data/</code> subdirectory of your project.</p>
+<p>It will quickly become clear that there are two challenges with this approach. First, the set of filters available in the Custom Download form is limited. For example, there’s no option to only extract observations from complete checklists or any way to get observations from a given month from any year. To address this, we can apply the additional filters after we’ve imported the data in R. Specifically, we’ll only keep observations from complete checklists in January</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">ebd &lt;-<span class="st"> </span><span class="kw">read_ebd</span>(<span class="st">&quot;data/ebd_MX-YUC_grefla2_201401_201512_relSep-2019.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb57-2" data-line-number="2"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">month</span>(observation_date) <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, </a>
+<a class="sourceLine" id="cb57-3" data-line-number="3">         all_species_reported)</a></code></pre></div>
+<p>The second challenge is that the Custom Download form only provides the positive observations from the EBD, it doesn’t provide the corresponding Sampling Event Data for zero-filling. However, the Sampling Event Data is much smaller than the EBD and quicker to process with <code>auk</code>. So, we can easily filter this file using the same set of filters we’ve already applied to the EBD. Note that <code>auk_sampling()</code> is used in place of <code>auk_ebd()</code> when we’re only filtering the sampling data and not the EBD.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1">f_sed &lt;-<span class="st"> &quot;data/sed-only_amefla.txt&quot;</span></a>
+<a class="sourceLine" id="cb58-2" data-line-number="2">sed_filt &lt;-<span class="st"> </span><span class="kw">auk_sampling</span>(<span class="st">&quot;ebd_sampling_2014-2015_yucatan.txt&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb58-3" data-line-number="3"><span class="st">  </span><span class="kw">auk_state</span>(<span class="st">&quot;MX-YUC&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb58-4" data-line-number="4"><span class="st">  </span><span class="kw">auk_date</span>(<span class="kw">c</span>(<span class="st">&quot;*-01-01&quot;</span>, <span class="st">&quot;*-01-31&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb58-5" data-line-number="5"><span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb58-6" data-line-number="6"><span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/sed-only_amefla.txt&quot;</span>)</a>
+<a class="sourceLine" id="cb58-7" data-line-number="7">sed &lt;-<span class="st"> </span><span class="kw">read_sampling</span>(f_sed)</a></code></pre></div>
+<div class="tip">
+<h2>
+Tip
+</h2>
+<p>This method will only work if the custom download data and the Sampling Event Data are from the same release of the EBD. The EBD is updated monthly, so you’ll want to make sure you download a copy of the Sampling Event Data at the same time as you submit a custom download request</p>
+</div>
+<p>Finally, we can combine these two dataframes together with <code>auk_zerofill()</code> to produce zero-filled presence-absence data.</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1">ebd_zf &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(ebd, sed, <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>We’ve produced exactly the same data as in Lesson <a href="presabs.html#presabs">7</a>; however, we’ve done so avoiding having to deal with the full EBD!</p>
+</div>
 <div id="advanced-size" class="section level2">
-<h2><span class="header-section-number">8.3</span> Reducing file size</h2>
+<h2><span class="header-section-number">10.4</span> Reducing file size</h2>
 <p>Even after filtering the EBD, somtimes it’s still too large to read into R and work with. There are several approaches for reducing the size of the EBD. We’ll cover three here: stricter filtering, removing columns, and splitting by species.</p>
 <div id="advanced-size-strict" class="section level3">
-<h3><span class="header-section-number">8.3.1</span> Stricter filtering</h3>
+<h3><span class="header-section-number">10.4.1</span> Stricter filtering</h3>
 <p>The most obvious way to reduce the size of an EBD extract is to use stricter filters: focus on a smaller region, shorter time period, or fewer species. To avoid having to waste several hours trying to filter the entire EBD all over again, it’s worthwhile noting that you can always re-filter an EBD extract directly. So, if you realize you were too coarse in your initial filtering, apply the stricter filter to the EBD extract rather than the full EBD so save time.</p>
 </div>
 <div id="advanced-size-columns" class="section level3">
-<h3><span class="header-section-number">8.3.2</span> Removing columns</h3>
+<h3><span class="header-section-number">10.4.2</span> Removing columns</h3>
 <p>The EBD contains a lot of columns (46 to be precise), many of which are redundant or not useful in most scenarios. For example, country, state, and county each have two columns, one for the name and one for the code. Other columns, such as the Important Bird Area (IBA) that a checklist belong to and the checklist comments, are rarely useful. By removing these columns we can drastically reduce the size of the EBD.</p>
 <p>The available columns in the EBD are listed and defined in the PDF metadata that comes with the EBD (<code>eBird_Basic_Dataset_Metadata_v1.12.pdf</code>). Alternatively, there’s a useful trick to get a list of column names from an <code>auk_ebd</code> object.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(auk)
-
-ebd &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2015-2016_yucatan.txt&quot;</span>)
-ebd<span class="op">$</span>col_idx<span class="op">$</span>name
-<span class="co">#&gt;  [1] &quot;global unique identifier&quot;     &quot;last edited date&quot;            </span>
-<span class="co">#&gt;  [3] &quot;taxonomic order&quot;              &quot;category&quot;                    </span>
-<span class="co">#&gt;  [5] &quot;common name&quot;                  &quot;scientific name&quot;             </span>
-<span class="co">#&gt;  [7] &quot;subspecies common name&quot;       &quot;subspecies scientific name&quot;  </span>
-<span class="co">#&gt;  [9] &quot;observation count&quot;            &quot;breeding bird atlas code&quot;    </span>
-<span class="co">#&gt; [11] &quot;breeding bird atlas category&quot; &quot;age sex&quot;                     </span>
-<span class="co">#&gt; [13] &quot;country&quot;                      &quot;country code&quot;                </span>
-<span class="co">#&gt; [15] &quot;state&quot;                        &quot;state code&quot;                  </span>
-<span class="co">#&gt; [17] &quot;county&quot;                       &quot;county code&quot;                 </span>
-<span class="co">#&gt; [19] &quot;iba code&quot;                     &quot;bcr code&quot;                    </span>
-<span class="co">#&gt; [21] &quot;usfws code&quot;                   &quot;atlas block&quot;                 </span>
-<span class="co">#&gt; [23] &quot;locality&quot;                     &quot;locality id&quot;                 </span>
-<span class="co">#&gt; [25] &quot;locality type&quot;                &quot;latitude&quot;                    </span>
-<span class="co">#&gt; [27] &quot;longitude&quot;                    &quot;observation date&quot;            </span>
-<span class="co">#&gt; [29] &quot;time observations started&quot;    &quot;observer id&quot;                 </span>
-<span class="co">#&gt; [31] &quot;sampling event identifier&quot;    &quot;protocol type&quot;               </span>
-<span class="co">#&gt; [33] &quot;protocol code&quot;                &quot;project code&quot;                </span>
-<span class="co">#&gt; [35] &quot;duration minutes&quot;             &quot;effort distance km&quot;          </span>
-<span class="co">#&gt; [37] &quot;effort area ha&quot;               &quot;number observers&quot;            </span>
-<span class="co">#&gt; [39] &quot;all species reported&quot;         &quot;group identifier&quot;            </span>
-<span class="co">#&gt; [41] &quot;has media&quot;                    &quot;approved&quot;                    </span>
-<span class="co">#&gt; [43] &quot;reviewed&quot;                     &quot;reason&quot;                      </span>
-<span class="co">#&gt; [45] &quot;trip comments&quot;                &quot;species comments&quot;</span></code></pre>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw">library</span>(auk)</a>
+<a class="sourceLine" id="cb60-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb60-3" data-line-number="3">ebd &lt;-<span class="st"> </span><span class="kw">auk_ebd</span>(<span class="st">&quot;ebd_2014-2015_yucatan.txt&quot;</span>)</a>
+<a class="sourceLine" id="cb60-4" data-line-number="4">ebd<span class="op">$</span>col_idx<span class="op">$</span>name</a>
+<a class="sourceLine" id="cb60-5" data-line-number="5"><span class="co">#&gt;  [1] &quot;global unique identifier&quot;     &quot;last edited date&quot;            </span></a>
+<a class="sourceLine" id="cb60-6" data-line-number="6"><span class="co">#&gt;  [3] &quot;taxonomic order&quot;              &quot;category&quot;                    </span></a>
+<a class="sourceLine" id="cb60-7" data-line-number="7"><span class="co">#&gt;  [5] &quot;common name&quot;                  &quot;scientific name&quot;             </span></a>
+<a class="sourceLine" id="cb60-8" data-line-number="8"><span class="co">#&gt;  [7] &quot;subspecies common name&quot;       &quot;subspecies scientific name&quot;  </span></a>
+<a class="sourceLine" id="cb60-9" data-line-number="9"><span class="co">#&gt;  [9] &quot;observation count&quot;            &quot;breeding bird atlas code&quot;    </span></a>
+<a class="sourceLine" id="cb60-10" data-line-number="10"><span class="co">#&gt; [11] &quot;breeding bird atlas category&quot; &quot;age sex&quot;                     </span></a>
+<a class="sourceLine" id="cb60-11" data-line-number="11"><span class="co">#&gt; [13] &quot;country&quot;                      &quot;country code&quot;                </span></a>
+<a class="sourceLine" id="cb60-12" data-line-number="12"><span class="co">#&gt; [15] &quot;state&quot;                        &quot;state code&quot;                  </span></a>
+<a class="sourceLine" id="cb60-13" data-line-number="13"><span class="co">#&gt; [17] &quot;county&quot;                       &quot;county code&quot;                 </span></a>
+<a class="sourceLine" id="cb60-14" data-line-number="14"><span class="co">#&gt; [19] &quot;iba code&quot;                     &quot;bcr code&quot;                    </span></a>
+<a class="sourceLine" id="cb60-15" data-line-number="15"><span class="co">#&gt; [21] &quot;usfws code&quot;                   &quot;atlas block&quot;                 </span></a>
+<a class="sourceLine" id="cb60-16" data-line-number="16"><span class="co">#&gt; [23] &quot;locality&quot;                     &quot;locality id&quot;                 </span></a>
+<a class="sourceLine" id="cb60-17" data-line-number="17"><span class="co">#&gt; [25] &quot;locality type&quot;                &quot;latitude&quot;                    </span></a>
+<a class="sourceLine" id="cb60-18" data-line-number="18"><span class="co">#&gt; [27] &quot;longitude&quot;                    &quot;observation date&quot;            </span></a>
+<a class="sourceLine" id="cb60-19" data-line-number="19"><span class="co">#&gt; [29] &quot;time observations started&quot;    &quot;observer id&quot;                 </span></a>
+<a class="sourceLine" id="cb60-20" data-line-number="20"><span class="co">#&gt; [31] &quot;sampling event identifier&quot;    &quot;protocol type&quot;               </span></a>
+<a class="sourceLine" id="cb60-21" data-line-number="21"><span class="co">#&gt; [33] &quot;protocol code&quot;                &quot;project code&quot;                </span></a>
+<a class="sourceLine" id="cb60-22" data-line-number="22"><span class="co">#&gt; [35] &quot;duration minutes&quot;             &quot;effort distance km&quot;          </span></a>
+<a class="sourceLine" id="cb60-23" data-line-number="23"><span class="co">#&gt; [37] &quot;effort area ha&quot;               &quot;number observers&quot;            </span></a>
+<a class="sourceLine" id="cb60-24" data-line-number="24"><span class="co">#&gt; [39] &quot;all species reported&quot;         &quot;group identifier&quot;            </span></a>
+<a class="sourceLine" id="cb60-25" data-line-number="25"><span class="co">#&gt; [41] &quot;has media&quot;                    &quot;approved&quot;                    </span></a>
+<a class="sourceLine" id="cb60-26" data-line-number="26"><span class="co">#&gt; [43] &quot;reviewed&quot;                     &quot;reason&quot;                      </span></a>
+<a class="sourceLine" id="cb60-27" data-line-number="27"><span class="co">#&gt; [45] &quot;trip comments&quot;                &quot;species comments&quot;</span></a></code></pre></div>
 <p>The function <code>auk_select()</code> will process the EBD to only keep the selected columns.</p>
-<pre class="sourceCode r"><code class="sourceCode r">cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>,
-          <span class="st">&quot;group identifier&quot;</span>, <span class="st">&quot;sampling event identifier&quot;</span>, 
-          <span class="st">&quot;scientific name&quot;</span>, <span class="st">&quot;observation count&quot;</span>,
-          <span class="st">&quot;observer_id&quot;</span>)
-f_select &lt;-<span class="st"> &quot;data/ebd_smaller.txt&quot;</span>
-selected &lt;-<span class="st"> </span><span class="kw">auk_select</span>(ebd, <span class="dt">select =</span> cols, <span class="dt">file =</span> f_select) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">read_ebd</span>()
-<span class="kw">names</span>(selected)
-<span class="co">#&gt; [1] &quot;checklist_id&quot;              &quot;scientific_name&quot;          </span>
-<span class="co">#&gt; [3] &quot;observation_count&quot;         &quot;latitude&quot;                 </span>
-<span class="co">#&gt; [5] &quot;longitude&quot;                 &quot;observer_id&quot;              </span>
-<span class="co">#&gt; [7] &quot;sampling_event_identifier&quot; &quot;group_identifier&quot;</span></code></pre>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1">cols &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>,</a>
+<a class="sourceLine" id="cb61-2" data-line-number="2">          <span class="st">&quot;group identifier&quot;</span>, <span class="st">&quot;sampling event identifier&quot;</span>, </a>
+<a class="sourceLine" id="cb61-3" data-line-number="3">          <span class="st">&quot;scientific name&quot;</span>, <span class="st">&quot;observation count&quot;</span>,</a>
+<a class="sourceLine" id="cb61-4" data-line-number="4">          <span class="st">&quot;observer_id&quot;</span>)</a>
+<a class="sourceLine" id="cb61-5" data-line-number="5">f_select &lt;-<span class="st"> &quot;data/ebd_smaller.txt&quot;</span></a>
+<a class="sourceLine" id="cb61-6" data-line-number="6">selected &lt;-<span class="st"> </span><span class="kw">auk_select</span>(ebd, <span class="dt">select =</span> cols, <span class="dt">file =</span> f_select) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb61-7" data-line-number="7"><span class="st">  </span><span class="kw">read_ebd</span>()</a>
+<a class="sourceLine" id="cb61-8" data-line-number="8"><span class="kw">names</span>(selected)</a>
+<a class="sourceLine" id="cb61-9" data-line-number="9"><span class="co">#&gt; [1] &quot;checklist_id&quot;              &quot;scientific_name&quot;          </span></a>
+<a class="sourceLine" id="cb61-10" data-line-number="10"><span class="co">#&gt; [3] &quot;observation_count&quot;         &quot;latitude&quot;                 </span></a>
+<a class="sourceLine" id="cb61-11" data-line-number="11"><span class="co">#&gt; [5] &quot;longitude&quot;                 &quot;observer_id&quot;              </span></a>
+<a class="sourceLine" id="cb61-12" data-line-number="12"><span class="co">#&gt; [7] &quot;sampling_event_identifier&quot; &quot;group_identifier&quot;</span></a></code></pre></div>
 <p><code>auk_select()</code> is typically applied to a subset of the EBD to reduce the size before reading it into R. However, this function can also be applied to <em>entire</em> EBD to remove any columns that you’re sure you’ll never need. If you’re running out of hard drive space, this approach can drastically reduce the size of the EBD and free up space.</p>
 <div class="exercise">
 <h2>
@@ -570,48 +594,40 @@ Exercise
 <p>Removing columns can also be done concurrently with filtering the EBD. Consult the documentation for <code>auk_filter()</code> and look at the <code>keep</code> and <code>drop</code> arguments. Use these to extract all Least Grebe records from Belize <strong>and</strong> remove the <code>trip comments</code> and <code>species comments</code> fields in addition to any other fields you feel aren’t required.</p>
 <button class="solution">Solution</button>
 <div class="solution-content">
-<pre class="sourceCode r"><code class="sourceCode r">ebd_leagre &lt;-<span class="st"> </span>ebd <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Least Grebe&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;BZ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/ebd_leagre.txt&quot;</span>,
-             <span class="dt">drop =</span> <span class="kw">c</span>(<span class="st">&quot;trip_comments&quot;</span>, <span class="st">&quot;species_comments&quot;</span>,
-                      <span class="st">&quot;country&quot;</span>, <span class="st">&quot;state&quot;</span>, <span class="st">&quot;county&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw">read_ebd</span>()</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">ebd_leagre &lt;-<span class="st"> </span>ebd <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb62-2" data-line-number="2"><span class="st">  </span><span class="kw">auk_species</span>(<span class="st">&quot;Least Grebe&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb62-3" data-line-number="3"><span class="st">  </span><span class="kw">auk_country</span>(<span class="st">&quot;BZ&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb62-4" data-line-number="4"><span class="st">  </span><span class="kw">auk_filter</span>(<span class="st">&quot;data/ebd_leagre.txt&quot;</span>,</a>
+<a class="sourceLine" id="cb62-5" data-line-number="5">             <span class="dt">drop =</span> <span class="kw">c</span>(<span class="st">&quot;trip_comments&quot;</span>, <span class="st">&quot;species_comments&quot;</span>,</a>
+<a class="sourceLine" id="cb62-6" data-line-number="6">                      <span class="st">&quot;country&quot;</span>, <span class="st">&quot;state&quot;</span>, <span class="st">&quot;county&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb62-7" data-line-number="7"><span class="st">  </span><span class="kw">read_ebd</span>()</a></code></pre></div>
 </div>
 </div>
 </div>
 <div id="advanced-size-split" class="section level3">
-<h3><span class="header-section-number">8.3.3</span> Splitting by species</h3>
+<h3><span class="header-section-number">10.4.3</span> Splitting by species</h3>
 <p>If you’re working with a large number of species, the size of the EBD can quickly increase. An easy way to address this before importing data into R is to split the EBD extract up into seperate files, one for each species. You can then read in species one at a time and process them. Note that the Sampling Event Data doesn’t need to be split and the same file can be used for each species EBD file.</p>
-<p>The function <code>auk_split()</code> facilitates this process. You provide an EBD extract and a vector of species names and it will split the EBD up into species-specific files. In Lesson <a href="applications.html#applications">7</a> we extracted eBird data for 3 warbler species, let’s use <code>auk_split()</code> to split this file up.</p>
-<pre class="sourceCode r"><code class="sourceCode r">split_species &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Wilson&#39;s Warbler&quot;</span>, <span class="st">&quot;Canada Warbler&quot;</span>, <span class="st">&quot;Pink-headed Warbler&quot;</span>)
-f_split &lt;-<span class="st"> </span><span class="kw">auk_split</span>(<span class="st">&quot;data/ebd_cardellina.txt&quot;</span>, 
-                     <span class="dt">species =</span> split_species,
-                     <span class="dt">prefix =</span> <span class="st">&quot;data/ebd_split_&quot;</span>)
-f_split
-<span class="co">#&gt; [1] &quot;data/ebd_split_Cardellina_pusilla.txt&quot;   </span>
-<span class="co">#&gt; [2] &quot;data/ebd_split_Cardellina_canadensis.txt&quot;</span>
-<span class="co">#&gt; [3] &quot;data/ebd_split_Cardellina_versicolor.txt&quot;</span></code></pre>
-<p>Next, let’s take the first of these files (for Wilson’s Warbler) and zero-fill it using the Sampling Event Data we extracted in Lesson <a href="applications.html#applications">7</a>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">wilwar &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_split[<span class="dv">1</span>], 
-                       <span class="dt">sampling_events =</span> <span class="st">&quot;data/sed_cardellina.txt&quot;</span>,
-                       <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</code></pre>
+<p>The function <code>auk_split()</code> facilitates this process. You provide an EBD extract and a vector of species names and it will split the EBD up into species-specific files. In Lesson <a href="applications.html#applications">9</a> we extracted eBird data for 3 warbler species, let’s use <code>auk_split()</code> to split this file up.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1">split_species &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Wilson&#39;s Warbler&quot;</span>, <span class="st">&quot;Canada Warbler&quot;</span>, <span class="st">&quot;Pink-headed Warbler&quot;</span>)</a>
+<a class="sourceLine" id="cb63-2" data-line-number="2">f_split &lt;-<span class="st"> </span><span class="kw">auk_split</span>(<span class="st">&quot;data/ebd_cardellina.txt&quot;</span>, </a>
+<a class="sourceLine" id="cb63-3" data-line-number="3">                     <span class="dt">species =</span> split_species,</a>
+<a class="sourceLine" id="cb63-4" data-line-number="4">                     <span class="dt">prefix =</span> <span class="st">&quot;data/ebd_split_&quot;</span>)</a>
+<a class="sourceLine" id="cb63-5" data-line-number="5">f_split</a>
+<a class="sourceLine" id="cb63-6" data-line-number="6"><span class="co">#&gt; [1] &quot;data/ebd_split_Cardellina_pusilla.txt&quot;   </span></a>
+<a class="sourceLine" id="cb63-7" data-line-number="7"><span class="co">#&gt; [2] &quot;data/ebd_split_Cardellina_canadensis.txt&quot;</span></a>
+<a class="sourceLine" id="cb63-8" data-line-number="8"><span class="co">#&gt; [3] &quot;data/ebd_split_Cardellina_versicolor.txt&quot;</span></a></code></pre></div>
+<p>Next, let’s take the first of these files (for Wilson’s Warbler) and zero-fill it using the Sampling Event Data we extracted in Lesson <a href="applications.html#applications">9</a>.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1">wilwar &lt;-<span class="st"> </span><span class="kw">auk_zerofill</span>(f_split[<span class="dv">1</span>], </a>
+<a class="sourceLine" id="cb64-2" data-line-number="2">                       <span class="dt">sampling_events =</span> <span class="st">&quot;data/sed_cardellina.txt&quot;</span>,</a>
+<a class="sourceLine" id="cb64-3" data-line-number="3">                       <span class="dt">collapse =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>When working with the full EBD, this approach is much faster because we only need to filter the EBD once instead of once for each species. This could be the difference between a few hours of processing time and a few days.</p>
-</div>
-</div>
-<div id="advanced-modis" class="section level2">
-<h2><span class="header-section-number">8.4</span> Land cover covariates</h2>
-<p>To use eBird data for modeling species distributions you’ll typically want to attach habitat data to the checklists to use as model covariates. There are a wide variety of freely available, satellite-derived land use and land cover products available for use as covariates. The specific set of covariates you use, and the dataset that you derived them from, will depend on the specifics of your study: the focal species and region, and question you’re asking. However, we recommend the <a href="https://lpdaac.usgs.gov/products/mcd12q1v006/">MODIS MCD12Q1</a> land cover dataset as a good general use source of land cover covariates. This product is global in extent, available annually since 2001, and provided in a raster format at 500 m resolution.</p>
-<p>The free <a href="http://strimas.com/ebird-best-practices/habitat/">eBird Best Practices book</a> associated with this workshop covers in detail how to download land cover data and attach it to eBird checklists. However, we provide an overview of the process here.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Download:</strong> download land cover data (e.g. MODIS MCD12Q1) for your region of interest, either manually or using the R package <code>MODIS</code>. These data will likely be downloaded in the form of multiple tiles that need to be combined together then converted to GeoTIFF format. This is done automatically if you’re using the <code>MOIDS</code> package, but it can be done manually using the command line tool <a href="https://gdal.org/">GDAL</a>.</li>
-<li><strong>Summarize:</strong> birds use and respond to their environment at a scale that is typically larger than the resolution of the satellite data. Furthermore, there is uncertainty in the location of eBird checklists, particularly traveling checklists. So, you should usually summarize the data within a neighborhood of each checklist. This can be done most simply by calculating the percent of each landcover class within a neighborhood of each point.</li>
-<li><strong>Prediction surface:</strong> once you’ve fit your models using the land cover covariates you generated in the previous steps, you’ll usually want to make predictions over the landscape and produce maps. This requires defining a regular grid of points at which you calculate the same summarized land cover covariates as you did in the previous step.</li>
-</ol>
-<p>To see the code for each of these steps consult the <a href="http://strimas.com/ebird-best-practices/habitat">eBird Best Practices</a> book.</p>
 
 </div>
 </div>
+</div>
+
+
+
 <script>
 var coll = document.getElementsByClassName("solution");
 var i;
@@ -633,17 +649,19 @@ for (i = 0; i < coll.length; i++) {
           </div>
         </div>
       </div>
-<a href="applications.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="applications.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="model-intro.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
@@ -664,7 +682,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/mstrimas/ebp-workshop/edit/master/08_advanced.Rmd",
+"link": "https://github.com/mstrimas/ebp-workshop/edit/master/09_advanced.Rmd",
 "text": "Edit"
 },
 "history": {

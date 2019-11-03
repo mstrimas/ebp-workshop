@@ -15,7 +15,7 @@ Zero-filling relies on the Sampling Event Data, which is a tab-seperated text fi
 
 <div class="tip">
   <h2>Tip</h2>
-  When we say "presence-absence" what we really mean by absence is that the species was not detected, it's entirely possible that the species was present but the observer didn't detect it.
+  When we say "presence-absence" what we really mean by "absence" is that the species was not detected, it's entirely possible that the species was present, but the observer didn't detect it.
 </div>
 
 <div class="checkpoint">
@@ -25,16 +25,16 @@ Zero-filling relies on the Sampling Event Data, which is a tab-seperated text fi
 
 ## Filtering {#presabs-filter}
 
-Simultaneously filtering the EBD and Sampling Event Data is done in almost the exact same way as filtering the EBD alone. The only difference is that we provide both files to `auk_ebd()` and two corresponding output files to `auk_filter()`. For example, we can extract all American Flamingo observations from January in the Mexican state of Yucatán in preparation for zero-filling. Let's do this in a new script `02_zerofill.R`.
+Simultaneously filtering the EBD and Sampling Event Data is done in almost the exact same way as filtering the EBD alone. The only difference is that we provide both files to `auk_ebd()` and two corresponding output files to `auk_filter()`. For example, we can extract all American Flamingo observations from January in the Mexican state of Yucatán in preparation for zero-filling.
 
 ```{r presabs-filter}
 library(auk)
-library(dplyr)
+library(tidyverse)
 
 f_ebd <- "data/ebd_amefla.txt"
 f_sed <- "data/sed_amefla.txt"
-ebd_filt <- auk_ebd("ebd_2015-2016_yucatan.txt", 
-                    file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
+ebd_amefla <- auk_ebd("ebd_2014-2015_yucatan.txt", 
+                      file_sampling = "ebd_sampling_2014-2015_yucatan.txt") %>% 
   auk_species("American Flamingo") %>% 
   auk_state("MX-YUC") %>% 
   auk_date(c("*-01-01", "*-01-31")) %>% 
@@ -69,8 +69,8 @@ So, we have `r nrow(sed_only)` checklists in the Sampling Event Data and, of tho
 f_ebd_hw <- "data/ebd_hoowar.txt"
 f_sed_hw <- "data/sed_hoowar.txt"
 # filter
-ebd_filt <- auk_ebd("ebd_2015-2016_yucatan.txt", 
-                    file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
+ebd_hoowar <- auk_ebd("ebd_2014-2015_yucatan.txt", 
+                      file_sampling = "ebd_sampling_2014-2015_yucatan.txt") %>% 
   auk_species("Hooded Warbler") %>% 
   auk_country("BZ") %>% 
   # when using wildcards, dates can wrap around the year end
@@ -112,13 +112,15 @@ Notice that in addition to the `observation_count` column, we now have a binary 
 
 <div class="exercise">
   <h2>Exercise</h2>
-  Zero-fill and collapse the Hooded Warbler data you extracted in the previous exercise.
+  Zero-fill and collapse the Hooded Warbler data you extracted in the previous exercise. What proportion of checklists detected this species?
   
   <button class="solution">Solution</button>
 <div class="solution-content">
 
 ```{r presabs-zerofill-sol}
-ebd_zf_hw <- auk_zerofill(f_ebd_hw, f_sed_hw)
+ebd_zf_hw <- auk_zerofill(f_ebd_hw, f_sed_hw, collapse = TRUE)
+# proportion of checklists
+mean(ebd_zf_hw$species_observed)
 ```
 
 </div>
@@ -126,11 +128,11 @@ ebd_zf_hw <- auk_zerofill(f_ebd_hw, f_sed_hw)
 
 <div class="tip">
   <h2>Tip</h2>
-  Whenever you're zero-filling data it's critical that you think about region and season (i.e. where and when) in addition to just the species. If you don't do that, you'll zero-fill the entire global EBD and your computer will explode. For example, consider a highly localized species like the [Cozumel Vireo](https://ebird.org/species/cozvir1), endemic to the small island of Cozumel off the coast of Mexico. Let's try just filtering on species.
+  Whenever you're zero-filling data it's critical that you think about region and season (i.e. where and when) in addition to just the species. If you don't do that, you'll zero-fill the entire global EBD and your computer will explode! For example, consider a highly localized species like the [Cozumel Vireo](https://ebird.org/species/cozvir1), endemic to the small island of Cozumel off the coast of Mexico. Let's try just filtering on species.
   
 ```{r presabs-zerofill-cozwir}
-ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt", 
-                    file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
+ebd_cozvir <- auk_ebd("ebd_2014-2015_yucatan.txt", 
+                    file_sampling = "ebd_sampling_2014-2015_yucatan.txt") %>% 
   auk_species("Cozumel Vireo") %>% 
   auk_complete() %>% 
   auk_filter("data/ebd_cozvir.txt", "data/sed_cozvir.txt") %>% 
@@ -138,11 +140,11 @@ ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt",
 table(ebd_cozvir$species_observed)
 ```
 
-What we have here is the entire EBD (35 thousand checklists in the example dataset, and 36 million in the full EBD!) for a species that only occurs on one small island. Do we really care that a checklist in Anchorage doesn't have Cozumel Vireo? In this situation, you would be better to identify the boundaries of the island and use `auk_bbox()` to spatially subset the data.
+What we have here is the entire EBD (22 thousand checklists in the example dataset, and 40 million in the full EBD!) for a species that only occurs on one small island. Do we really care that a checklist in Anchorage, Alaska doesn't have Cozumel Vireo? In this situation, you would be better to identify the boundaries of the island and use `auk_bbox()` to spatially subset the data.
 
 ```{r presabs-zerofill-cozwir-bbox}
-ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt", 
-                      file_sampling = "ebd_sampling_2015-2016_yucatan.txt") %>% 
+ebd_cozvir <- auk_ebd("ebd_2014-2015_yucatan.txt", 
+                      file_sampling = "ebd_sampling_2014-2015_yucatan.txt") %>% 
   auk_species("Cozumel Vireo") %>% 
   # lng_min, lat_min, lng_max, lat_max
   auk_bbox(c(-87.1, 20.2, -86.7, 20.6)) %>% 
@@ -152,7 +154,7 @@ ebd_cozvir <- auk_ebd("ebd_2015-2016_yucatan.txt",
 table(ebd_cozvir$species_observed)
 ```
 
-We have the same number of positive observations, but have now drastically reduced the number of checklists without Cozumel Vireo observations.
+We have the same number of positive observations, but have now drastically reduced the number of checklists that didn't detect Cozumel Vireo observations.
 
 </div>
 
@@ -188,4 +190,8 @@ table(zf_count$species_observed)
 table(zf_effort$species_observed)
 ```
 
-We've reduced the amount of data, but also decreased the variability in effort, which will lead to better model performance if we use these data to model species distributions.
+We've reduced the amount of data, but also decreased the variability in effort, which will lead to better model performance if we use these data to model species distributions. At this point, we can save the resulting processed eBird data, so that we can use it later in our analysis workflow.
+
+```{r presabs-tidy-save}
+write_csv(zf_effort, "data/ebird_amefla_zf.csv")
+```

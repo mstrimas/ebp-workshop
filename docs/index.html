@@ -4,27 +4,27 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>eBird Best Practices I</title>
-  <meta name="description" content="eBird Best Practices I: eBird Data Extraction and Processing in R" />
-  <meta name="generator" content="bookdown 0.11.1 and GitBook 2.6.7" />
+  <title>eBird Best Practices Workshop</title>
+  <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
+  <meta name="generator" content="bookdown 0.13.2 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="eBird Best Practices I" />
+  <meta property="og:title" content="eBird Best Practices Workshop" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta property="og:description" content="Best practices for using eBird data to estimate species distributions" />
   <meta name="github-repo" content="mstrimas/ebp-workshop" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="eBird Best Practices I" />
+  <meta name="twitter:title" content="eBird Best Practices Workshop" />
   
-  <meta name="twitter:description" content="eBird Best Practices I: eBird Data Extraction and Processing in R" />
+  <meta name="twitter:description" content="Best practices for using eBird data to estimate species distributions" />
   
 
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-07-10" />
+<meta name="date" content="2019-11-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 
-<link rel="next" href="introduction.html">
+<link rel="next" href="intro.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -40,6 +40,9 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
 
 
 
@@ -56,7 +59,6 @@ a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
 a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
@@ -131,40 +133,50 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
-<li class="chapter" data-level="1" data-path="introduction.html"><a href="introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path="setup.html"><a href="setup.html"><i class="fa fa-check"></i><b>2</b> Setup</a><ul>
-<li class="chapter" data-level="2.1" data-path="setup.html"><a href="setup.html#setup-tidyverse"><i class="fa fa-check"></i><b>2.1</b> Tidyverse</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#format"><i class="fa fa-check"></i><b>1.1</b> Format</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.2</b> Setup</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-tidyverse"><i class="fa fa-check"></i><b>1.3</b> Tidyverse</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>3</b> Data Access</a></li>
-<li class="chapter" data-level="4" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>4</b> Filtering</a><ul>
-<li class="chapter" data-level="4.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>4.1</b> Defining filters</a><ul>
-<li class="chapter" data-level="4.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>4.1.1</b> Complete checklists</a></li>
+<li class="part"><span><b>I eBird Data</b></span></li>
+<li class="chapter" data-level="2" data-path="ebird-intro.html"><a href="ebird-intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
+<li class="chapter" data-level="3" data-path="the-auk-workflow.html"><a href="the-auk-workflow.html"><i class="fa fa-check"></i><b>3</b> The <code>auk</code> workflow</a></li>
+<li class="chapter" data-level="4" data-path="access.html"><a href="access.html"><i class="fa fa-check"></i><b>4</b> Data Access</a></li>
+<li class="chapter" data-level="5" data-path="filter.html"><a href="filter.html"><i class="fa fa-check"></i><b>5</b> Filtering</a><ul>
+<li class="chapter" data-level="5.1" data-path="filter.html"><a href="filter.html#filter-define"><i class="fa fa-check"></i><b>5.1</b> Defining filters</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="filter.html"><a href="filter.html#filter-define-complete"><i class="fa fa-check"></i><b>5.1.1</b> Complete checklists</a></li>
 </ul></li>
-<li class="chapter" data-level="4.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>4.2</b> Execute filters</a></li>
+<li class="chapter" data-level="5.2" data-path="filter.html"><a href="filter.html#filter-execute"><i class="fa fa-check"></i><b>5.2</b> Execute filters</a></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>5</b> Importing Data</a><ul>
-<li class="chapter" data-level="5.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>5.1</b> Group checklists</a></li>
-<li class="chapter" data-level="5.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>5.2</b> Taxonomy</a></li>
+<li class="chapter" data-level="6" data-path="import.html"><a href="import.html"><i class="fa fa-check"></i><b>6</b> Importing Data</a><ul>
+<li class="chapter" data-level="6.1" data-path="import.html"><a href="import.html#import-group"><i class="fa fa-check"></i><b>6.1</b> Group checklists</a></li>
+<li class="chapter" data-level="6.2" data-path="import.html"><a href="import.html#import-taxonomy"><i class="fa fa-check"></i><b>6.2</b> Taxonomy</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>6</b> Presence-absence Data</a><ul>
-<li class="chapter" data-level="6.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>6.1</b> Filtering</a></li>
-<li class="chapter" data-level="6.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>6.2</b> Zero-filling</a></li>
-<li class="chapter" data-level="6.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>6.3</b> Tidying up</a></li>
+<li class="chapter" data-level="7" data-path="presabs.html"><a href="presabs.html"><i class="fa fa-check"></i><b>7</b> Presence-absence Data</a><ul>
+<li class="chapter" data-level="7.1" data-path="presabs.html"><a href="presabs.html#presabs-filter"><i class="fa fa-check"></i><b>7.1</b> Filtering</a></li>
+<li class="chapter" data-level="7.2" data-path="presabs.html"><a href="presabs.html#presabs-zerofill"><i class="fa fa-check"></i><b>7.2</b> Zero-filling</a></li>
+<li class="chapter" data-level="7.3" data-path="presabs.html"><a href="presabs.html#presabs-tidy"><i class="fa fa-check"></i><b>7.3</b> Tidying up</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>7</b> Applications</a><ul>
-<li class="chapter" data-level="7.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>7.1</b> Frequency trajectories</a></li>
-<li class="chapter" data-level="7.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>7.2</b> Maps</a></li>
+<li class="chapter" data-level="8" data-path="subsampling.html"><a href="subsampling.html"><i class="fa fa-check"></i><b>8</b> Spatiotemporal Subsampling</a><ul>
+<li class="chapter" data-level="8.1" data-path="subsampling.html"><a href="subsampling.html#subsampling-toy"><i class="fa fa-check"></i><b>8.1</b> A toy example</a></li>
+<li class="chapter" data-level="8.2" data-path="subsampling.html"><a href="subsampling.html#subsampling-ebird"><i class="fa fa-check"></i><b>8.2</b> Subsampling eBird data</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>8</b> Advanced Topics</a><ul>
-<li class="chapter" data-level="8.1" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>8.1</b> Custom downloads</a></li>
-<li class="chapter" data-level="8.2" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>8.2</b> Preparing for occupancy modeling</a></li>
-<li class="chapter" data-level="8.3" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>8.3</b> Reducing file size</a><ul>
-<li class="chapter" data-level="8.3.1" data-path="advanced.html"><a href="advanced.html#advanced-size-strict"><i class="fa fa-check"></i><b>8.3.1</b> Stricter filtering</a></li>
-<li class="chapter" data-level="8.3.2" data-path="advanced.html"><a href="advanced.html#advanced-size-columns"><i class="fa fa-check"></i><b>8.3.2</b> Removing columns</a></li>
-<li class="chapter" data-level="8.3.3" data-path="advanced.html"><a href="advanced.html#advanced-size-split"><i class="fa fa-check"></i><b>8.3.3</b> Splitting by species</a></li>
+<li class="chapter" data-level="9" data-path="applications.html"><a href="applications.html"><i class="fa fa-check"></i><b>9</b> Applications</a><ul>
+<li class="chapter" data-level="9.1" data-path="applications.html"><a href="applications.html#applications-trajectory"><i class="fa fa-check"></i><b>9.1</b> Frequency trajectories</a></li>
+<li class="chapter" data-level="9.2" data-path="applications.html"><a href="applications.html#applications-maps"><i class="fa fa-check"></i><b>9.2</b> Maps</a></li>
 </ul></li>
-<li class="chapter" data-level="8.4" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>8.4</b> Land cover covariates</a></li>
+<li class="chapter" data-level="10" data-path="advanced.html"><a href="advanced.html"><i class="fa fa-check"></i><b>10</b> Advanced Topics</a><ul>
+<li class="chapter" data-level="10.1" data-path="advanced.html"><a href="advanced.html#advanced-unmarked"><i class="fa fa-check"></i><b>10.1</b> Preparing for occupancy modeling</a></li>
+<li class="chapter" data-level="10.2" data-path="advanced.html"><a href="advanced.html#advanced-modis"><i class="fa fa-check"></i><b>10.2</b> Land cover covariates</a></li>
+<li class="chapter" data-level="10.3" data-path="advanced.html"><a href="advanced.html#advanced-custom"><i class="fa fa-check"></i><b>10.3</b> Custom downloads</a></li>
+<li class="chapter" data-level="10.4" data-path="advanced.html"><a href="advanced.html#advanced-size"><i class="fa fa-check"></i><b>10.4</b> Reducing file size</a><ul>
+<li class="chapter" data-level="10.4.1" data-path="advanced.html"><a href="advanced.html#advanced-size-strict"><i class="fa fa-check"></i><b>10.4.1</b> Stricter filtering</a></li>
+<li class="chapter" data-level="10.4.2" data-path="advanced.html"><a href="advanced.html#advanced-size-columns"><i class="fa fa-check"></i><b>10.4.2</b> Removing columns</a></li>
+<li class="chapter" data-level="10.4.3" data-path="advanced.html"><a href="advanced.html#advanced-size-split"><i class="fa fa-check"></i><b>10.4.3</b> Splitting by species</a></li>
 </ul></li>
+</ul></li>
+<li class="part"><span><b>II Distribution Modeling</b></span></li>
+<li class="chapter" data-level="11" data-path="model-intro.html"><a href="model-intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
 </ul>
 
       </nav>
@@ -174,7 +186,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">eBird Best Practices I</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">eBird Best Practices Workshop</a>
           </h1>
         </div>
 
@@ -183,13 +195,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
             <section class="normal" id="section-">
 <div id="header">
-<h1 class="title">eBird Best Practices I</h1>
+<h1 class="title">eBird Best Practices Workshop</h1>
 <p class="author"><em>Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink</em></p>
-<p class="date"><em>2019-07-10</em></p>
+<p class="date"><em>2019-11-03</em></p>
 </div>
 <div id="welcome" class="section level1 unnumbered">
 <h1>Welcome</h1>
-<p>These lessons comprise Part I of a workshop on best practices for using eBird data. This workshop covers extracting and processing eBird data with R, while Part II of the workshop covers using these data to model species distributions. The content of this workshop is also covered in the free online book <a href="http://strimas.com/ebird-best-practices">eBird Best Practices</a>.</p>
+<p>These lessons comprise a two part workshop on best practices for using eBird data. Part I of this workshop focuses on extracting and processing eBird data with R, while art II covers using these data to model species distributions. The workshop as a whole is typically given over two days; however, it is designed to be modular and a half-day or one-day workshop can be given based on a subset of the material. In particular, Part I and II are largely independent of each other and can be taught individually. This workshop acts as a complement to the free online book <a href="http://strimas.com/ebird-best-practices">eBird Best Practices</a> as well as an <a href="https://www.biorxiv.org/content/10.1101/574392v2">associated paper</a> on best practices for making reliable inferences from citizen science data. The contents of this workshop are addressed in greater detail in these resources.</p>
 
 </div>
 <script>
@@ -214,16 +226,18 @@ for (i = 0; i < coll.length; i++) {
         </div>
       </div>
 
-<a href="introduction.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="intro.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
