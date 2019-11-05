@@ -21,7 +21,7 @@ Despite the strengths of eBird data, species observations collected through citi
 </div>
 </div>
 
-Fortunately, all three of these challenges can largely be addressed by spatiotemporal subsampling of the eBird data prior to modeling. In particular, this consists of dividing space and time up into a regular grid (e.g. 5 km x 5 km x 1 month), and only selecting a subset of checklists from each grid cell. To deal with class imbalance, we can subsample detections and non-detections separately to ensure we don't lose too many detections.
+Fortunately, all three of these challenges can largely be addressed by spatiotemporal subsampling of the eBird data prior to modeling. In particular, this consists of dividing space and time up into a regular grid (e.g. 5 km x 5 km x 1 week), and only selecting a subset of checklists from each grid cell. To deal with class imbalance, we can subsample detections and non-detections separately to ensure we don't lose too many detections.
 
 For the spatial part of the subsampling we'll use the package `dggridR` to generate a regular hexagonal grid and assign points to the cells of this grid. Hexagonal grids are preferable to square grids because they exhibit significantly less spatial distortion.
 
@@ -66,6 +66,8 @@ ggplot() +
   geom_sf(data = pts_ss, col = "red") +
   theme_bw()
 ```
+
+In the above plot, black dots represent the original set of 500 randomly placed points, while red dots represent the subsampled data, one point per hexagonal cell.
 
 ## Subsampling eBird data {#subsampling-ebird}
 

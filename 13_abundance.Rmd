@@ -1,0 +1,13 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Abundance {#abundance}
+
+
+
+```{r part2-cleanup, echo = FALSE}
+unlink(list.files("data/", full.names = TRUE))
+```

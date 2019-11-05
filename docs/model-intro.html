@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-11-03" />
+<meta name="date" content="2019-11-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="advanced.html"/>
-
+<link rel="next" href="encounter.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -134,9 +134,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Welcome</a></li>
 <li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
-<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#format"><i class="fa fa-check"></i><b>1.1</b> Format</a></li>
-<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.2</b> Setup</a></li>
-<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-tidyverse"><i class="fa fa-check"></i><b>1.3</b> Tidyverse</a></li>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#intro-data"><i class="fa fa-check"></i><b>1.1</b> Data</a></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#intro-format"><i class="fa fa-check"></i><b>1.2</b> Format</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#intro-setup"><i class="fa fa-check"></i><b>1.3</b> Setup</a></li>
+<li class="chapter" data-level="1.4" data-path="intro.html"><a href="intro.html#intro-tidyverse"><i class="fa fa-check"></i><b>1.4</b> Tidyverse</a></li>
 </ul></li>
 <li class="part"><span><b>I eBird Data</b></span></li>
 <li class="chapter" data-level="2" data-path="ebird-intro.html"><a href="ebird-intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
@@ -176,7 +177,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 </ul></li>
 <li class="part"><span><b>II Distribution Modeling</b></span></li>
-<li class="chapter" data-level="11" data-path="model-intro.html"><a href="model-intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a></li>
+<li class="chapter" data-level="11" data-path="model-intro.html"><a href="model-intro.html"><i class="fa fa-check"></i><b>11</b> Introduction</a><ul>
+<li class="chapter" data-level="11.1" data-path="model-intro.html"><a href="model-intro.html#model-intro-data"><i class="fa fa-check"></i><b>11.1</b> Data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="encounter.html"><a href="encounter.html"><i class="fa fa-check"></i><b>12</b> Encounter Rate</a></li>
+<li class="chapter" data-level="13" data-path="occupancy.html"><a href="occupancy.html"><i class="fa fa-check"></i><b>13</b> Occupancy</a></li>
+<li class="chapter" data-level="14" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>14</b> Abundance</a></li>
 </ul>
 
       </nav>
@@ -196,7 +202,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="model-intro" class="section level1">
 <h1><span class="header-section-number">Lesson 11</span> Introduction</h1>
+<p>In <a href="ebird-intro.html#ebird-intro">Part I</a> of this workshop, we saw that eBird provides a wealth of open access bird observation data. The sheer volume of data, combined with the broad spatial, temporal, and taxonomic coverage, make the eBird database a valuable resource for answering a variety of ecological questions. Furthermore, eBird data have two key characteristics that distinguish it from many other citizen science projects and facilitate robust ecological analyses: the <strong>complete checklists</strong> allow non-detection to be inferred and the effort information associated with a checklist facilitates robust analyses by accounting for variation in the observation process.</p>
+<p>Despite the strengths of eBird data, species observations collected through citizen science projects present a number of challenges that are not found in conventional scientific data. The following are some of the primary challenges associated these data; challenges that will be addressed in the following lessons:</p>
+<ul>
+<li><strong>Taxonomic bias:</strong> eBirders often have preferences for certain species, which may lead to preferential recording of some species over others. Restricting analyses to complete checklists largely mitigates this issue.</li>
+<li><strong>Spatial and temporal bias:</strong> eBird data are not randomly distributed in space and time. Most eBirders submit data from times and places that are convenient (e.g. near roads or on weekends) or likely to produce checklists with high biodiversity (e.g. in good habitats, during migration, or early in the morning). Spatiotemporal subsampling, <a href="subsampling.html#subsampling">covered in Part I of this workshop</a>, can reduce the impact of spatial and temporal bias.</li>
+<li><strong>Class imbalance:</strong> bird species that are rare or hard to detect may have data with high class imbalance, with many more checklists with non-detections than detections. For these species, a distribution model predicting that the species is absent everywhere will have high accuracy, but no ecological value. Subsampling detections and non-detections independently can be used to address class imbalance.</li>
+<li><strong>Spatial precision:</strong> the spatial location of an eBird checklist is given as a single latitude-longitude point; however, this may not be precise for two main reasons. First, for traveling checklists, this location represents just one point on the journey. Second, eBird checklists are often assigned to a <strong>hotspot</strong> (a common location for all birders visiting a popular birding site) rather than their true location. Filtering eBird data to checklists below a given length (e.g. less than 5 km), and summarizing covariates within a neighborhood around the checklist location, will reduce the impact of spatial imprecision.</li>
+<li><strong>Variation in detectability:</strong> detectability describes the probability of a species that is present in an area being detected and identified. It varies by season, habitat, and species. Furthermore, eBird data are collected with high variation in effort, time of day, number of observers, and external conditions such as weather, all of which can affect the detectability of specie. Therefore, detectability is particularly important to consider when predictions are compared between seasons, habitats or species. Since eBird uses a semi-structured protocol, that collects variables associated with variation in detectability, we’ll be able to account for a larger proportion of this variation in our analyses.</li>
+</ul>
+<p>The following three lessons will focus on modeling patterns of bird distribution and abundance using eBird data. We won’t delve too deeply into the technical details of these models, rather we’ll focus on demonstrating a set of best practices for distribution modeling that address the specific challenges associated with eBird data. The three types of models that we’ll cover are:</p>
+<ul>
+<li><a href="encounter.html#encounter"><strong>Encounter rate</strong></a>: expected rate of an average eBirder encountering a species while traveling 1km, 1 hour, at the optimal time of day.</li>
+<li><a href="occupancy.html#occupancy"><strong>Occupancy</strong></a>: probability that a site hosts one or more individuals of a species. In this model, detection is explicitly estimated.</li>
+<li><a href="abundance.html#abundance"><strong>Relative abundance</strong></a>: expected count of a species by an average eBirder while traveling 1km, 1 hour, at the optimal time of day.</li>
+</ul>
+<p>Both encounter rate and relative abundance will be modeled using a machine learning approach, where the focus is primarily on prediction. In contrast, occupancy modeling is a more traditional likelihood approach, where the focus is on inference and trying to understand the process that generated the data. Machine learning has the additional benefit that it can learn complex, non-linear relationships between the response and predictor variables, while occupancy models are typically constrained to linear effect and simple interactions.</p>
+<div id="model-intro-data" class="section level2">
+<h2><span class="header-section-number">11.1</span> Data</h2>
+<p>For all the examples in the following lessons, we’ll focus on modeling Wood Thrush in June in <a href="http://nabci-us.org/resources/bird-conservation-regions/">Bird Conservation Region (BCR)</a> 27 (<a href="http://nabci-us.org/resources/bird-conservation-regions-map/#bcr27">Southeastern Coastal Plain</a>). To prepare data for these lessons, we extracted complete traveling and stationary eBird checklists from the past 10 years and <a href="presabs.html#presabs">zero-filled them to produce presence-absence data</a> following the methods outlined in <a href="ebird-intro.html#ebird-intro">Part I</a> of this workshop. In addition, to reduce the variation in detectability between checklists, we restricted checklists to less than 5 hours long and 5 km in length, and with 10 or fewer observers. Finally, we processed remotely sensed land cover and elevation data to be used as covariates for modeling. Specifically, within a 2.5 km neighborhood around each checklist, we used the <a href="https://lpdaac.usgs.gov/products/mcd12q1v006/">MODIS MCD12Q1</a> land cover product to calculate the percentage of 16 different land cover classes and <a href="http://www.earthenv.org/topography">a global elevation dataset</a> to calculate the mean and standard deviation of elevation.</p>
+<p>The <a href="https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebp-workshop.zip">workshop data package</a> discussed in the <a href="intro.html#intro">Introduction</a> contains all the prepared data. If you haven’t already done so, download and unzip this file, then move all the files in the <code>data/</code> subdirectory to the <code>data/</code> subdirectory of your RStudio project.</p>
+<p>The code used to generate these data is available in the <a href="http://strimas.com/ebird-best-practices/">eBird Best Practices book</a> associated with this workshop. Consult the chapter on <a href="http://strimas.com/ebird-best-practices/ebird.html">eBird Data</a> for details on the eBird data extraction and the chapter on <a href="http://strimas.com/ebird-best-practices/covariates.html">habitat covariates</a> for details on preparing the land cover and elevation data.</p>
 
+</div>
 </div>
 <script>
 var coll = document.getElementsByClassName("solution");
@@ -219,8 +247,8 @@ for (i = 0; i < coll.length; i++) {
           </div>
         </div>
       </div>
-<a href="advanced.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-
+<a href="advanced.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="encounter.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

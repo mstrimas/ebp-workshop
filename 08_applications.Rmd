@@ -46,7 +46,7 @@ cardellina_freq <- cardellina_zf %>%
   ungroup()
 ```
 
-In prepartion for plotting, we can add the common names of the species by joining in the `ebird_taxonomy` data frame, which is included with `auk`. In addition, we'll convert the integer month numbers to dates–using the midpoint of each month–to aid axis labelling.
+In preparation for plotting, we can add the common names of the species by joining in the `ebird_taxonomy` data frame, which is included with `auk`. In addition, we'll convert the integer month numbers to dates–using the midpoint of each month–to aid axis labeling.
 
 ```{r  applications-trajectory-common}
 cardellina_comm <- cardellina_freq %>% 

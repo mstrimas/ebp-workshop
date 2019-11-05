@@ -8,7 +8,11 @@ editor_options:
 
 The contents of this website comprise the notes for a workshop on best practices for using eBird data. [Part I](#ebird-intro) of this workshop will focus on extracting and processing eBird data, while [Part II](#model-intro) will cover using these data to model species distributions. The two parts are intentionally designed to be independent, which allows you to attend Part I, Part II, or both depending on your skills, background, and interests.
 
-## Format {#format}
+## Data {#intro-data}
+
+To follow along with the lessons in this workshop [download the workshop data package](https://github.com/mstrimas/ebp-workshop/raw/master/raw-data/ebp-workshop.zip). This package contains a variety of datasets for Parts I and II of this workshop. Instructions for how to use each dataset will be given in the relevant lesson.
+
+## Format {#intro-format}
 
 This format of this workshop will be loosely based on [Software Carpentry](https://software-carpentry.org/), the gold standard for workshops teaching scientific computing. As much as possible, the instructor will work through the lessons in real time, entering code live, while you code-along. Interspersed with the live coding will be exercises designed to give you a chance to practice on your own. This approach, known as [participatory live coding](https://carpentries.github.io/instructor-training/14-live/), has been shown to be a much more effective means of learning to code than using slides or a pre-written script.
 
@@ -44,7 +48,7 @@ Next [install or update RStudio](https://www.rstudio.com/products/rstudio/downlo
   Is your R version at least 3.5.0? Do you need help updating R?
 </div>
 
-Create a new RStudio project called `ebird-best-practices`. Next, install all the packages required for this workshop and part II, by running the following code:
+Create a new RStudio project called `ebird-best-practices`. Next, install all the packages required for this workshop and Part II, by running the following code:
 
 ```{r setup-install, eval = FALSE}
 install.packages("remotes")
