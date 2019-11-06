@@ -13,6 +13,10 @@ pre code {
   white-space: inherit;
 }
 
+/* live code chunk */
+pre.livecode {
+  background: #fcf7fc !important;
+}
 
 /* boxes */
 .checkpoint {
