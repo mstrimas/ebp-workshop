@@ -40,7 +40,6 @@ library(tidyverse)
 unlink("data/", recursive = TRUE)
 unzip("raw-data/ebp-workshop-data.zip")
 unlink("ebd/", recursive = TRUE)
-dir.create("output", showWarnings = FALSE)
 
 # map
 # load and project gis data

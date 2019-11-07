@@ -95,7 +95,7 @@ ebird_ss <- ebird %>%
 
 <div class="exercise">
   <h2>Exercise</h2>
-  How has the spatiotemporal subsampling affected the overall sample size as well as the prevalence of detections?
+  How did the spatiotemporal subsampling affect the overall sample size as well as the prevalence of detections?
   
   <button class="solution">Solution</button>
 <div class="solution-content">
