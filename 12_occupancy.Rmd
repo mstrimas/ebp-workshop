@@ -6,3 +6,21 @@ editor_options:
 
 # Occupancy {#occupancy}
 
+We'll start with a short presentation giving an introduction to occupancy modeling. The presentation can be downloaded in [PowerPoint](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pptx) or [PDF](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pdf) format, or [viewed on SpeakerDeck](https://speakerdeck.com/mstrimas/ebird-best-practices-ii-occupancy).
+
+<iframe src="https://speakerdeck.com/player/7375bae455c04703a770c0c6ab26dc6a" width="700px" height="400px" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:none;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
+
+## Exercises {#occupancy-exercises}
+
+Is 5 observers a good cut-off point, or do we loose a lot of information?
+
+What happens if you only use stationary counts? Or reduce the distance traveled to 1km?
+
+We defined a site by the location only. How do our results differ if we define a site by the location and unique observer?
+
+Could we sample more then one checklist per grid cell?
+
+Extra: Sample individual checklists in a grid cell to create the detection history
+
+
+
