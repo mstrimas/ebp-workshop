@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-11-06" />
+<meta name="date" content="2019-11-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -507,10 +507,7 @@ Calibrated RF
 <h2>
 Tip
 </h2>
-<p>Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="kw">read_csv</span>(<span class="st">&quot;data/mcd12q1_classes.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb76-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(class, name) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb76-3" data-line-number="3"><span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</a></code></pre></div>
+Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.
 <table>
 <thead>
 <tr>
@@ -666,41 +663,41 @@ Unclassified
 <div id="encounter-habitat-pd" class="section level3">
 <h3><span class="header-section-number">11.3.2</span> Partial dependence</h3>
 <p><strong>Partial dependence</strong> plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. We’ll use the R package <code>edarf</code> to construct partial dependence plots for the most important predictors.</p>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1"><span class="co"># top 9 predictors other than date</span></a>
-<a class="sourceLine" id="cb77-2" data-line-number="2">top_pred &lt;-<span class="st"> </span>pi <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>predictor <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;day_of_year&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-4" data-line-number="4"><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">9</span>, <span class="dt">wt =</span> importance) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-5" data-line-number="5"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(importance))</a>
-<a class="sourceLine" id="cb77-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb77-7" data-line-number="7"><span class="co"># calculate partial dependence for each predictor</span></a>
-<a class="sourceLine" id="cb77-8" data-line-number="8">pd &lt;-<span class="st"> </span>top_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-9" data-line-number="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pd =</span> <span class="kw">map</span>(predictor, partial_dependence, </a>
-<a class="sourceLine" id="cb77-10" data-line-number="10">                  <span class="dt">fit =</span> rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>train),</a>
-<a class="sourceLine" id="cb77-11" data-line-number="11">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, <span class="op">~</span><span class="st"> </span>.[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]),</a>
-<a class="sourceLine" id="cb77-12" data-line-number="12">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, set_names, <span class="dt">nm =</span> <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>,  <span class="st">&quot;encounter_rate&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-13" data-line-number="13"><span class="st">  </span><span class="kw">unnest</span>(<span class="dt">cols =</span> pd)</a>
-<a class="sourceLine" id="cb77-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb77-15" data-line-number="15"><span class="co"># calibrate predictions</span></a>
-<a class="sourceLine" id="cb77-16" data-line-number="16">pd<span class="op">$</span>encounter_rate &lt;-<span class="st"> </span><span class="kw">predict</span>(calibration_model, </a>
-<a class="sourceLine" id="cb77-17" data-line-number="17">                             <span class="dt">newdata =</span> <span class="kw">tibble</span>(<span class="dt">pred =</span> pd<span class="op">$</span>encounter_rate), </a>
-<a class="sourceLine" id="cb77-18" data-line-number="18">                             <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb77-19" data-line-number="19"><span class="st">  </span><span class="kw">as.numeric</span>()</a>
-<a class="sourceLine" id="cb77-20" data-line-number="20"><span class="co"># constrain probabilities to 0-1</span></a>
-<a class="sourceLine" id="cb77-21" data-line-number="21">pd<span class="op">$</span>encounter_rate &lt;-<span class="st"> </span><span class="kw">pmin</span>(<span class="kw">pmax</span>(pd<span class="op">$</span>encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb77-22" data-line-number="22">  </a>
-<a class="sourceLine" id="cb77-23" data-line-number="23"><span class="co"># plot</span></a>
-<a class="sourceLine" id="cb77-24" data-line-number="24"><span class="kw">ggplot</span>(pd) <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-25" data-line-number="25"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> encounter_rate) <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-26" data-line-number="26"><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-27" data-line-number="27"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-28" data-line-number="28"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-29" data-line-number="29"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span><span class="kw">as_factor</span>(predictor), <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-30" data-line-number="30"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Encounter Rate&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-31" data-line-number="31"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-32" data-line-number="32"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb77-33" data-line-number="33"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</a>
-<a class="sourceLine" id="cb77-34" data-line-number="34">        <span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>),</a>
-<a class="sourceLine" id="cb77-35" data-line-number="35">        <span class="dt">axis.ticks  =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="co"># top 9 predictors other than date</span></a>
+<a class="sourceLine" id="cb76-2" data-line-number="2">top_pred &lt;-<span class="st"> </span>pi <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>predictor <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;day_of_year&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-4" data-line-number="4"><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">9</span>, <span class="dt">wt =</span> importance) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-5" data-line-number="5"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(importance))</a>
+<a class="sourceLine" id="cb76-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb76-7" data-line-number="7"><span class="co"># calculate partial dependence for each predictor</span></a>
+<a class="sourceLine" id="cb76-8" data-line-number="8">pd &lt;-<span class="st"> </span>top_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-9" data-line-number="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pd =</span> <span class="kw">map</span>(predictor, partial_dependence, </a>
+<a class="sourceLine" id="cb76-10" data-line-number="10">                  <span class="dt">fit =</span> rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>train),</a>
+<a class="sourceLine" id="cb76-11" data-line-number="11">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, <span class="op">~</span><span class="st"> </span>.[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]),</a>
+<a class="sourceLine" id="cb76-12" data-line-number="12">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, set_names, <span class="dt">nm =</span> <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>,  <span class="st">&quot;encounter_rate&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-13" data-line-number="13"><span class="st">  </span><span class="kw">unnest</span>(<span class="dt">cols =</span> pd)</a>
+<a class="sourceLine" id="cb76-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb76-15" data-line-number="15"><span class="co"># calibrate predictions</span></a>
+<a class="sourceLine" id="cb76-16" data-line-number="16">pd<span class="op">$</span>encounter_rate &lt;-<span class="st"> </span><span class="kw">predict</span>(calibration_model, </a>
+<a class="sourceLine" id="cb76-17" data-line-number="17">                             <span class="dt">newdata =</span> <span class="kw">tibble</span>(<span class="dt">pred =</span> pd<span class="op">$</span>encounter_rate), </a>
+<a class="sourceLine" id="cb76-18" data-line-number="18">                             <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb76-19" data-line-number="19"><span class="st">  </span><span class="kw">as.numeric</span>()</a>
+<a class="sourceLine" id="cb76-20" data-line-number="20"><span class="co"># constrain probabilities to 0-1</span></a>
+<a class="sourceLine" id="cb76-21" data-line-number="21">pd<span class="op">$</span>encounter_rate &lt;-<span class="st"> </span><span class="kw">pmin</span>(<span class="kw">pmax</span>(pd<span class="op">$</span>encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb76-22" data-line-number="22">  </a>
+<a class="sourceLine" id="cb76-23" data-line-number="23"><span class="co"># plot</span></a>
+<a class="sourceLine" id="cb76-24" data-line-number="24"><span class="kw">ggplot</span>(pd) <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-25" data-line-number="25"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> encounter_rate) <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-26" data-line-number="26"><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-27" data-line-number="27"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-28" data-line-number="28"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-29" data-line-number="29"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span><span class="kw">as_factor</span>(predictor), <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-30" data-line-number="30"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Encounter Rate&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-31" data-line-number="31"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-32" data-line-number="32"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb76-33" data-line-number="33"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</a>
+<a class="sourceLine" id="cb76-34" data-line-number="34">        <span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>),</a>
+<a class="sourceLine" id="cb76-35" data-line-number="35">        <span class="dt">axis.ticks  =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>))</a></code></pre></div>
 <p><img src="ebp-workshop_files/figure-html/encounter-habitat-pd-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 </div>
@@ -708,99 +705,99 @@ Unclassified
 <h2><span class="header-section-number">11.4</span> Prediction</h2>
 <p>Finally, we can use the calibrated random forest model to make a map of Wood Thrush encounter rate in BCR 27! The data package contains a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. We’ll make predictions of encounter rate at these points. However, first we need to bring effort variables into this prediction surface. We’ll make predictions for a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count at the peak time of day for detecting this species.</p>
 <p>To find the time of day with the highest detection probability, we can look for the peak of the partial dependence plot, constraining the search to times of day for which there are enough data to make reasonable predictions (hours with at least 1% of checklists).</p>
-<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="co"># find peak time of day from partial dependence</span></a>
-<a class="sourceLine" id="cb78-2" data-line-number="2">pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>(rf, </a>
-<a class="sourceLine" id="cb78-3" data-line-number="3">                              <span class="dt">vars =</span> <span class="st">&quot;time_observations_started&quot;</span>, </a>
-<a class="sourceLine" id="cb78-4" data-line-number="4">                              <span class="co"># make estimates at 30 minute intervals</span></a>
-<a class="sourceLine" id="cb78-5" data-line-number="5">                              <span class="co"># use the entire training dataset for estimation</span></a>
-<a class="sourceLine" id="cb78-6" data-line-number="6">                              <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), </a>
-<a class="sourceLine" id="cb78-7" data-line-number="7">                              <span class="dt">data =</span> ebird_split<span class="op">$</span>train) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(time_observations_started, <span class="dt">encounter_rate =</span> <span class="st">`</span><span class="dt">TRUE</span><span class="st">`</span>)</a>
-<a class="sourceLine" id="cb78-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb78-10" data-line-number="10"><span class="co"># hours with at least 1% of checklists</span></a>
-<a class="sourceLine" id="cb78-11" data-line-number="11">search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb78-13" data-line-number="13"><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-15" data-line-number="15"><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</a>
-<a class="sourceLine" id="cb78-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb78-17" data-line-number="17"><span class="co"># constrained peak time</span></a>
-<a class="sourceLine" id="cb78-18" data-line-number="18">t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-19" data-line-number="19"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-20" data-line-number="20"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb78-21" data-line-number="21"><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</a>
-<a class="sourceLine" id="cb78-22" data-line-number="22">t_peak</a>
-<a class="sourceLine" id="cb78-23" data-line-number="23"><span class="co">#&gt; [1] 5.08</span></a></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1"><span class="co"># find peak time of day from partial dependence</span></a>
+<a class="sourceLine" id="cb77-2" data-line-number="2">pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>(rf, </a>
+<a class="sourceLine" id="cb77-3" data-line-number="3">                              <span class="dt">vars =</span> <span class="st">&quot;time_observations_started&quot;</span>, </a>
+<a class="sourceLine" id="cb77-4" data-line-number="4">                              <span class="co"># make estimates at 30 minute intervals</span></a>
+<a class="sourceLine" id="cb77-5" data-line-number="5">                              <span class="co"># use the entire training dataset for estimation</span></a>
+<a class="sourceLine" id="cb77-6" data-line-number="6">                              <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), </a>
+<a class="sourceLine" id="cb77-7" data-line-number="7">                              <span class="dt">data =</span> ebird_split<span class="op">$</span>train) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(time_observations_started, <span class="dt">encounter_rate =</span> <span class="st">&quot;TRUE&quot;</span>)</a>
+<a class="sourceLine" id="cb77-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb77-10" data-line-number="10"><span class="co"># hours with at least 1% of checklists</span></a>
+<a class="sourceLine" id="cb77-11" data-line-number="11">search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb77-13" data-line-number="13"><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-15" data-line-number="15"><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</a>
+<a class="sourceLine" id="cb77-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb77-17" data-line-number="17"><span class="co"># constrained peak time</span></a>
+<a class="sourceLine" id="cb77-18" data-line-number="18">t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-19" data-line-number="19"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-20" data-line-number="20"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb77-21" data-line-number="21"><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</a>
+<a class="sourceLine" id="cb77-22" data-line-number="22">t_peak</a>
+<a class="sourceLine" id="cb77-23" data-line-number="23"><span class="co">#&gt; [1] 5.08</span></a></code></pre></div>
 <p>Based on this analysis, the best time for detecting Wood Thrush is at 5:05 AM. Now we can use this time to make predictions.</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1"><span class="co"># add effort covariates to prediction </span></a>
-<a class="sourceLine" id="cb79-2" data-line-number="2">pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb79-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2018-06-15&quot;</span>),</a>
-<a class="sourceLine" id="cb79-4" data-line-number="4">         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</a>
-<a class="sourceLine" id="cb79-5" data-line-number="5">         <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date),</a>
-<a class="sourceLine" id="cb79-6" data-line-number="6">         <span class="dt">time_observations_started =</span> t_peak,</a>
-<a class="sourceLine" id="cb79-7" data-line-number="7">         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</a>
-<a class="sourceLine" id="cb79-8" data-line-number="8">         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb79-9" data-line-number="9">         <span class="dt">number_observers =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb79-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb79-11" data-line-number="11"><span class="co"># predict</span></a>
-<a class="sourceLine" id="cb79-12" data-line-number="12">pred_rf &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> pred_surface_eff, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb79-13" data-line-number="13">pred_rf &lt;-<span class="st"> </span>pred_rf<span class="op">$</span>predictions[, <span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb79-14" data-line-number="14"><span class="co"># apply calibration models</span></a>
-<a class="sourceLine" id="cb79-15" data-line-number="15">pred_rf_cal &lt;-<span class="st"> </span><span class="kw">predict</span>(calibration_model, </a>
-<a class="sourceLine" id="cb79-16" data-line-number="16">                       <span class="kw">data.frame</span>(<span class="dt">pred =</span> pred_rf), </a>
-<a class="sourceLine" id="cb79-17" data-line-number="17">                       <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb79-18" data-line-number="18"><span class="co"># add to prediction surface</span></a>
-<a class="sourceLine" id="cb79-19" data-line-number="19">pred_er &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface_eff, <span class="dt">encounter_rate =</span> pred_rf_cal) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb79-20" data-line-number="20"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, encounter_rate) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb79-21" data-line-number="21"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">encounter_rate =</span> <span class="kw">pmin</span>(<span class="kw">pmax</span>(encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb78-1" data-line-number="1"><span class="co"># add effort covariates to prediction </span></a>
+<a class="sourceLine" id="cb78-2" data-line-number="2">pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb78-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2018-06-15&quot;</span>),</a>
+<a class="sourceLine" id="cb78-4" data-line-number="4">         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</a>
+<a class="sourceLine" id="cb78-5" data-line-number="5">         <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date),</a>
+<a class="sourceLine" id="cb78-6" data-line-number="6">         <span class="dt">time_observations_started =</span> t_peak,</a>
+<a class="sourceLine" id="cb78-7" data-line-number="7">         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</a>
+<a class="sourceLine" id="cb78-8" data-line-number="8">         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb78-9" data-line-number="9">         <span class="dt">number_observers =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb78-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb78-11" data-line-number="11"><span class="co"># predict</span></a>
+<a class="sourceLine" id="cb78-12" data-line-number="12">pred_rf &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> pred_surface_eff, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
+<a class="sourceLine" id="cb78-13" data-line-number="13">pred_rf &lt;-<span class="st"> </span>pred_rf<span class="op">$</span>predictions[, <span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb78-14" data-line-number="14"><span class="co"># apply calibration models</span></a>
+<a class="sourceLine" id="cb78-15" data-line-number="15">pred_rf_cal &lt;-<span class="st"> </span><span class="kw">predict</span>(calibration_model, </a>
+<a class="sourceLine" id="cb78-16" data-line-number="16">                       <span class="kw">data.frame</span>(<span class="dt">pred =</span> pred_rf), </a>
+<a class="sourceLine" id="cb78-17" data-line-number="17">                       <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
+<a class="sourceLine" id="cb78-18" data-line-number="18"><span class="co"># add to prediction surface</span></a>
+<a class="sourceLine" id="cb78-19" data-line-number="19">pred_er &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface_eff, <span class="dt">encounter_rate =</span> pred_rf_cal) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb78-20" data-line-number="20"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, encounter_rate) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb78-21" data-line-number="21"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">encounter_rate =</span> <span class="kw">pmin</span>(<span class="kw">pmax</span>(encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>))</a></code></pre></div>
 <p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1">r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb80-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
-<a class="sourceLine" id="cb80-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb80-4" data-line-number="4"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb80-5" data-line-number="5"><span class="st">  </span><span class="co"># rasterize</span></a>
-<a class="sourceLine" id="cb80-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r)</a>
-<a class="sourceLine" id="cb80-7" data-line-number="7">r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</a></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1">r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb79-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
+<a class="sourceLine" id="cb79-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb79-4" data-line-number="4"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb79-5" data-line-number="5"><span class="st">  </span><span class="co"># rasterize</span></a>
+<a class="sourceLine" id="cb79-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r)</a>
+<a class="sourceLine" id="cb79-7" data-line-number="7">r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</a></code></pre></div>
 <p>Finally, we can map these predictions!</p>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb81-1" data-line-number="1"><span class="co"># project predictions</span></a>
-<a class="sourceLine" id="cb81-2" data-line-number="2">r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</a>
-<a class="sourceLine" id="cb81-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb81-4" data-line-number="4"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</a>
-<a class="sourceLine" id="cb81-5" data-line-number="5"><span class="co"># set up plot area</span></a>
-<a class="sourceLine" id="cb81-6" data-line-number="6"><span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</a>
-<a class="sourceLine" id="cb81-7" data-line-number="7"><span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb81-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb81-9" data-line-number="9"><span class="co"># encounter rate</span></a>
-<a class="sourceLine" id="cb81-10" data-line-number="10">r_max &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_pred_proj, max)) <span class="op">/</span><span class="st"> </span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb81-11" data-line-number="11">brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.025</span>)</a>
-<a class="sourceLine" id="cb81-12" data-line-number="12">lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.1</span>)</a>
-<a class="sourceLine" id="cb81-13" data-line-number="13"><span class="co"># ebird status and trends color palette</span></a>
-<a class="sourceLine" id="cb81-14" data-line-number="14">pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb81-15" data-line-number="15"><span class="kw">plot</span>(r_pred_proj, </a>
-<a class="sourceLine" id="cb81-16" data-line-number="16">     <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </a>
-<a class="sourceLine" id="cb81-17" data-line-number="17">     <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_pred_proj),</a>
-<a class="sourceLine" id="cb81-18" data-line-number="18">     <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb81-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb81-20" data-line-number="20"><span class="co"># borders</span></a>
-<a class="sourceLine" id="cb81-21" data-line-number="21"><span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb81-22" data-line-number="22"><span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb81-23" data-line-number="23"><span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb81-24" data-line-number="24"><span class="kw">box</span>()</a>
-<a class="sourceLine" id="cb81-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb81-26" data-line-number="26"><span class="co"># legend</span></a>
-<a class="sourceLine" id="cb81-27" data-line-number="27"><span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb81-28" data-line-number="28">title &lt;-<span class="st"> &quot;Wood Thrush Encounter Rate&quot;</span></a>
-<a class="sourceLine" id="cb81-29" data-line-number="29"><span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb81-30" data-line-number="30">           <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks,</a>
-<a class="sourceLine" id="cb81-31" data-line-number="31">           <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</a>
-<a class="sourceLine" id="cb81-32" data-line-number="32">           <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb81-33" data-line-number="33">           <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</a>
-<a class="sourceLine" id="cb81-34" data-line-number="34">                            <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</a>
-<a class="sourceLine" id="cb81-35" data-line-number="35">                            <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb81-36" data-line-number="36">                            <span class="dt">padj =</span> <span class="fl">-1.5</span>),</a>
-<a class="sourceLine" id="cb81-37" data-line-number="37">           <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</a>
-<a class="sourceLine" id="cb81-38" data-line-number="38">                              <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</a>
-<a class="sourceLine" id="cb81-39" data-line-number="39">                              <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb80-1" data-line-number="1"><span class="co"># project predictions</span></a>
+<a class="sourceLine" id="cb80-2" data-line-number="2">r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</a>
+<a class="sourceLine" id="cb80-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb80-4" data-line-number="4"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</a>
+<a class="sourceLine" id="cb80-5" data-line-number="5"><span class="co"># set up plot area</span></a>
+<a class="sourceLine" id="cb80-6" data-line-number="6"><span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</a>
+<a class="sourceLine" id="cb80-7" data-line-number="7"><span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb80-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb80-9" data-line-number="9"><span class="co"># encounter rate</span></a>
+<a class="sourceLine" id="cb80-10" data-line-number="10">r_max &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_pred_proj, max)) <span class="op">/</span><span class="st"> </span><span class="dv">10</span></a>
+<a class="sourceLine" id="cb80-11" data-line-number="11">brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.025</span>)</a>
+<a class="sourceLine" id="cb80-12" data-line-number="12">lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb80-13" data-line-number="13"><span class="co"># ebird status and trends color palette</span></a>
+<a class="sourceLine" id="cb80-14" data-line-number="14">pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb80-15" data-line-number="15"><span class="kw">plot</span>(r_pred_proj, </a>
+<a class="sourceLine" id="cb80-16" data-line-number="16">     <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </a>
+<a class="sourceLine" id="cb80-17" data-line-number="17">     <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_pred_proj),</a>
+<a class="sourceLine" id="cb80-18" data-line-number="18">     <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb80-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb80-20" data-line-number="20"><span class="co"># borders</span></a>
+<a class="sourceLine" id="cb80-21" data-line-number="21"><span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb80-22" data-line-number="22"><span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb80-23" data-line-number="23"><span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb80-24" data-line-number="24"><span class="kw">box</span>()</a>
+<a class="sourceLine" id="cb80-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb80-26" data-line-number="26"><span class="co"># legend</span></a>
+<a class="sourceLine" id="cb80-27" data-line-number="27"><span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</a>
+<a class="sourceLine" id="cb80-28" data-line-number="28">title &lt;-<span class="st"> &quot;Wood Thrush Encounter Rate&quot;</span></a>
+<a class="sourceLine" id="cb80-29" data-line-number="29"><span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </a>
+<a class="sourceLine" id="cb80-30" data-line-number="30">           <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks,</a>
+<a class="sourceLine" id="cb80-31" data-line-number="31">           <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</a>
+<a class="sourceLine" id="cb80-32" data-line-number="32">           <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb80-33" data-line-number="33">           <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</a>
+<a class="sourceLine" id="cb80-34" data-line-number="34">                            <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</a>
+<a class="sourceLine" id="cb80-35" data-line-number="35">                            <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</a>
+<a class="sourceLine" id="cb80-36" data-line-number="36">                            <span class="dt">padj =</span> <span class="fl">-1.5</span>),</a>
+<a class="sourceLine" id="cb80-37" data-line-number="37">           <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</a>
+<a class="sourceLine" id="cb80-38" data-line-number="38">                              <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</a>
+<a class="sourceLine" id="cb80-39" data-line-number="39">                              <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</a></code></pre></div>
 <p><img src="ebp-workshop_files/figure-html/encounter-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 <div id="encouter-exercises" class="section level2">

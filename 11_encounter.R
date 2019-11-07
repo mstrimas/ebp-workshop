@@ -1,15 +1,3 @@
-#' ---
-#' output: html_document
-#' editor_options: 
-#'   chunk_output_type: console
-#' ---
-#' 
-#' # Encounter Rate {#encounter}
-#' 
-#' In this chapter we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We'll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data.
-#' 
-#' Let's start by loading all the packages and data we'll need for this lesson.
-#' 
 ## ----encounter-----------------------------------------------------------
 library(sf)
 library(raster)
@@ -62,16 +50,7 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
   st_transform(crs = map_proj) %>% 
   st_geometry()
 
-#' 
-#' ## Data preparation {#encounter-prep}
-#' 
-#' As we learned in [Part I](#subsampling) of this workshop, spatiotemporal subsampling can reduce spatial and temporal bias, and class imbalance, provided we sample detections and non-detections separately. So, we'll apply subsampling prior to fitting the random forest model.
-#' 
-#' <div class="tip">
-#'   <h2>Tip</h2>
-#'   Sampling detections and non-detections separately will change the prevalence rate of the detections in the data. As a result, the estimated probability of occurrence based on these subsampled data will be larger than the true occurrence rate. When examining the outputs from the models it will be important to recall that we altered the prevalence rate at this stage. 
-#' </div>
-#' 
+
 ## ----encounter-prep-ss---------------------------------------------------
 # generate hexagonal grid with ~ 5 km betweeen cells
 dggs <- dgconstruct(spacing = 5)
@@ -87,14 +66,7 @@ ebird_ss <- checklist_cell %>%
   sample_n(size = 1) %>% 
   ungroup()
 
-#' 
-#' <div class="exercise">
-#'   <h2>Exercise</h2>
-#'   For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. How would you modify the above code to do this?
-#'   
-#'   <button class="solution">Solution</button>
-#' <div class="solution-content">
-#' 
+
 ## ----encounter-prep-ss-sol-----------------------------------------------
 split_det <- split(checklist_cell, checklist_cell$species_observed)
 ebird_all_det <- split_det$`FALSE` %>% 
@@ -103,19 +75,12 @@ ebird_all_det <- split_det$`FALSE` %>%
   ungroup() %>% 
   bind_rows(split_det$`TRUE`)
 
-#' 
-#' This approach leads to significantly more detections being kept in the data.
-#' 
+
 ## ----encounter-prep-ss-sol2----------------------------------------------
 sum(ebird_ss$species_observed)
 sum(ebird_all_det$species_observed)
 
-#' 
-#' </div>
-#' </div>
-#' 
-#' In preparation for modeling, we'll select only the the columns that will be used as predictors in the model. We include both habitat predictors, which we expect to influence whether a species is present at a site, and also effort predictors to help control for variation in detectability.
-#' 
+
 ## ----encounter-prep-fact, class.source="livecode"------------------------
 ebird_ss <- ebird_ss %>% 
   select(species_observed,
@@ -126,24 +91,16 @@ ebird_ss <- ebird_ss %>%
          starts_with("elevation_")) %>% 
   drop_na()
 
-#' 
-#' Finally, we'll hold 20% of the data aside so we have an independent test set, which we can later use to assess the performance of our model.
-#' 
+
 ## ----encounter-prep-tt---------------------------------------------------
 ebird_split <- ebird_ss %>% 
   split(if_else(runif(nrow(.)) <= 0.8, "train", "test"))
 
-#' 
-#' ## Random forests {#encounter-rf}
-#' 
-#' Random forests is an excellent, general purpose machine learning method suitable for modeling encounter rate in a wide variety of scenarios. To address the issue of class imbalance, we'll use a **balanced random forest** approach, a modification of the traditional random forest algorithm specifically designed to handle scenarios in which one class (detections) is much more common than the other (non-detections). To implement a balanced random forest, we'll first need to calculate the detection frequency.
-#' 
+
 ## ----encounter-rf-detfreq------------------------------------------------
 detection_freq <- mean(ebird_split$train$species_observed)
 
-#' 
-#' Now we can use the [`ranger`](https://github.com/imbs-hl/ranger) package to fit a random forest model to the eBird data.
-#' 
+
 ## ----encounter-rf-fit, class.source="livecode"---------------------------
 # ranger requires a factor response to do classification
 ebird_split$train$species_observed <- factor(ebird_split$train$species_observed)
@@ -155,11 +112,7 @@ rf <- ranger(formula =  species_observed ~ .,
              replace = TRUE, 
              sample.fraction = c(detection_freq, detection_freq))
 
-#' 
-#' ### Calibration {#encounter-rf-cal}
-#' 
-#' For various reasons, the predicted probabilities from models do not always align with the observed frequencies of detections. We'll address this mismatch using **model calibration**, which aligns the estimated probabilities to the observed frequencies. In particular, to calibrate our model results, we predict encounter rate for each checklist in the training set, then fit a binomial Generalized Additive Model (GAM) with the real observations as the response and the predicted encounter rate as the predictor variable.
-#' 
+
 ## ----encounter-rf-cal----------------------------------------------------
 # make predictions on training data
 occ_pred <- rf$predictions[, 2]
@@ -186,11 +139,7 @@ ggplot(cal_pred) +
        y = "Calibrated prediction",
        title = "Calibration model")
 
-#' 
-#' ### Assessment {#encounter-rf-assess}
-#' 
-#' To assess model quality, we'll validate the model’s ability to predict the observed patterns of occupancy using independent validation data (i.e. the 20% test data set). We'll use a range of predictive performance metrics to compare the predictions to the actual observations.
-#' 
+
 ## ----encounter-rf-assess-------------------------------------------------
 # predict on test data using calibrated model
 p_fitted <- predict(rf, data = ebird_split$test, type = "response")
@@ -239,15 +188,7 @@ rf_assessment <- tibble(
 )
 knitr::kable(rf_assessment, digits = 3)
 
-#' 
-#' ## Habitat associations {#encounter-habitat}
-#' 
-#' From the random forest model, we can glean two important sources of information about the association between Wood Thrush detection and features of their local environment. First, **predictor importance** is a measure of the predictive power of each covariate, and is calculated as a byproduct of fitting a random forest model. Second, **partial dependence** plots estimate the marginal effect of one predictor holding all other predictors constant.
-#' 
-#' ### Predictor importance {#encounter-habitat-pi}
-#' 
-#' During the process of fitting a random forest model, some variables are removed at each node of the trees that make up the random forest. **Predictor importance** is based on the mean decrease in accuracy of the model when a given covariate is not used.
-#' 
+
 ## ----encounter-habitat-pi------------------------------------------------
 pi <- enframe(rf$variable.importance, "predictor", "importance")
 # plots
@@ -263,21 +204,13 @@ ggplot(pi) +
   theme(panel.grid = element_blank(),
         panel.grid.major.x = element_line(colour = "#cccccc", size = 0.5))
 
-#' 
-#' <div class="tip">
-#'   <h2>Tip</h2>
-#'   Consult the file `data/mcd12q1_classes.csv` for a key to the different `pland_` variables.
-## ----encounter-habitat-pi-pland------------------------------------------
+
+## ----encounter-habitat-pi-pland, echo=FALSE------------------------------
 read_csv("data/mcd12q1_classes.csv") %>% 
   select(class, name) %>% 
   knitr::kable()
 
-#' </div>
-#' 
-#' ### Partial dependence {#encounter-habitat-pd}
-#' 
-#' **Partial dependence** plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. We'll use the R package `edarf` to construct partial dependence plots for the most important predictors.
-#' 
+
 ## ----encounter-habitat-pd------------------------------------------------
 # top 9 predictors other than date
 top_pred <- pi %>% 
@@ -315,13 +248,7 @@ ggplot(pd) +
         axis.line = element_line(color = "grey60"),
         axis.ticks  = element_line(color = "grey60"))
 
-#' 
-#' ## Prediction {#encounter-predict}
-#' 
-#' Finally, we can use the calibrated random forest model to make a map of Wood Thrush encounter rate in BCR 27! The data package contains a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. We'll make predictions of encounter rate at these points. However, first we need to bring effort variables into this prediction surface. We'll make predictions for a **standard eBird checklist**: a 1 km, 1 hour traveling count at the peak time of day for detecting this species.
-#' 
-#' To find the time of day with the highest detection probability, we can look for the peak of the partial dependence plot, constraining the search to times of day for which there are enough data to make reasonable predictions (hours with at least 1% of checklists).
-#' 
+
 ## ----encounter-predict-time----------------------------------------------
 # find peak time of day from partial dependence
 pd_time <- partial_dependence(rf, 
@@ -330,7 +257,7 @@ pd_time <- partial_dependence(rf,
                               # use the entire training dataset for estimation
                               n = c(24 * 2, nrow(ebird_split$train)), 
                               data = ebird_split$train) %>% 
-  select(time_observations_started, encounter_rate = `TRUE`)
+  select(time_observations_started, encounter_rate = "TRUE")
 
 # hours with at least 1% of checklists
 search_hours <- ebird_split$train %>% 
@@ -346,16 +273,14 @@ t_peak <- pd_time %>%
   pull(time_observations_started)
 t_peak
 
-#' 
+
 ## ----encounter-predict-readable, echo = FALSE----------------------------
 human_time <- str_glue("{h}:{m} {ap}", 
                        h = floor(t_peak),
                        m = str_pad(round((t_peak %% 1) * 60), 2, pad = "0"),
                        ap = ifelse(t_peak > 12, "PM", "AM"))
 
-#' 
-#' Based on this analysis, the best time for detecting Wood Thrush is at `r human_time`. Now we can use this time to make predictions.
-#' 
+
 ## ----encounter-predict-effort, class.source="livecode"-------------------
 # add effort covariates to prediction 
 pred_surface_eff <- pred_surface %>% 
@@ -379,9 +304,7 @@ pred_er <- bind_cols(pred_surface_eff, encounter_rate = pred_rf_cal) %>%
   select(latitude, longitude, encounter_rate) %>% 
   mutate(encounter_rate = pmin(pmax(encounter_rate, 0), 1))
 
-#' 
-#' Next, we'll convert this data frame to spatial features using `sf`, then rasterize the points using the prediction surface raster template.
-#' 
+
 ## ----encounter-predict-rasterize, class.source="livecode"----------------
 r_pred <- pred_er %>% 
   # convert to spatial features
@@ -391,9 +314,7 @@ r_pred <- pred_er %>%
   rasterize(r)
 r_pred <- r_pred[[-1]]
 
-#' 
-#' Finally, we can map these predictions!
-#' 
+
 ## ----encounter-predict-map-----------------------------------------------
 # project predictions
 r_pred_proj <- projectRaster(r_pred, crs = map_proj$proj4string, method = "ngb")
@@ -435,20 +356,7 @@ image.plot(zlim = range(brks), legend.only = TRUE,
                               side = 3, col = "black",
                               cex = 1, line = 0))
 
-#' 
-#' ## Exercises {#encouter-exercises}
-#' 
-#' Now that you've completed this lesson, try modifying your script to complete at least one of the following exercises:
-#' 
-#' 1. How does changing the subsampling grid cell size affect the model performance?
-#' 
-#' 2. What happens to the predictions if you make them for an eBirder traveling further than 1 km, or birding for longer than 1 hour?
-#' 
-#' 3. Limit the data to checklists conducted for shorter time periods, or shorter distances traveled. How does this affect model performance?
-#' 
-#' 4. An alternative approach to dealing with class imbalance, is to grid sample only the non-detections, while keeping all the non-detections. Try this subsampling approach and see what the affect is on the predictive performance metrics?
-#' 
-## ----encounter-purl------------------------------------------------------
-knitr::purl("11_encounter.Rmd")
 
-#' 
+## ----encounter-purl, eval=FALSE, echo=FALSE------------------------------
+## knitr::purl("11_encounter.Rmd")
+

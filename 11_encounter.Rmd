@@ -267,7 +267,7 @@ ggplot(pi) +
 <div class="tip">
   <h2>Tip</h2>
   Consult the file `data/mcd12q1_classes.csv` for a key to the different `pland_` variables.
-```{r encounter-habitat-pi-pland}
+```{r encounter-habitat-pi-pland, echo=FALSE}
 read_csv("data/mcd12q1_classes.csv") %>% 
   select(class, name) %>% 
   knitr::kable()
@@ -330,7 +330,7 @@ pd_time <- partial_dependence(rf,
                               # use the entire training dataset for estimation
                               n = c(24 * 2, nrow(ebird_split$train)), 
                               data = ebird_split$train) %>% 
-  select(time_observations_started, encounter_rate = `TRUE`)
+  select(time_observations_started, encounter_rate = "TRUE")
 
 # hours with at least 1% of checklists
 search_hours <- ebird_split$train %>% 
@@ -448,7 +448,6 @@ Now that you've completed this lesson, try modifying your script to complete at 
 
 4. An alternative approach to dealing with class imbalance, is to grid sample only the non-detections, while keeping all the non-detections. Try this subsampling approach and see what the affect is on the predictive performance metrics?
 
-```{r encounter-purl}
+```{r encounter-purl, eval=FALSE, echo=FALSE}
 knitr::purl("11_encounter.Rmd")
 ```
-
