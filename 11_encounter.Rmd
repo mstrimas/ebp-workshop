@@ -6,7 +6,7 @@ editor_options:
 
 # Encounter Rate {#encounter}
 
-In this chapter we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We'll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data.
+In this lesson, we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We'll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data.
 
 Let's start by loading all the packages and data we'll need for this lesson.
 

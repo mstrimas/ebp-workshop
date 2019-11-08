@@ -126,7 +126,7 @@ sed <- read_sampling(f_sed)
 
 <div class="tip">
   <h2>Tip</h2>
-  This method will only work if the custom download data and the Sampling Event Data are from the same release of the EBD. The EBD is updated monthly, so you'll want to make sure you download a copy of the Sampling Event Data at the same time as you submit a custom download request
+  This method will only work if the custom download data and the Sampling Event Data are from the same release of the EBD. The EBD is updated monthly, so you'll want to make sure you download a copy of the Sampling Event Data at the same time as you submit a custom download request.
 </div>
 
 Finally, we can combine these two data frames together with `auk_zerofill()` to produce zero-filled presence-absence data.

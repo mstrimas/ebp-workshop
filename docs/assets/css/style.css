@@ -15,7 +15,11 @@ pre code {
 
 /* live code chunk */
 pre.livecode {
-  background: #fcf7fc !important;
+  background: #f7fcf5 !important;
+}
+/* dont run chunk */
+pre.dontrun {
+  background: #fff5f0 !important;
 }
 
 /* boxes */
