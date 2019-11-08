@@ -192,7 +192,7 @@ summary(occ_model)
 The MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test can be used to assess the occupancy model fit. Note that to produce accurate results, this process requires simulating about 1,000 bootstrap samples, which can take a long time to run. For the sake of speed, if you want to run the below code, we suggest using `nsim = 5`.
 
 ```{r occupancy-model-assess, eval=FALSE, echo=1:2, class.source="dontrun"}
-occ_gof <- mb.gof.test(occ_model, nsim = 1, plot.hist = FALSE)
+occ_gof <- mb.gof.test(occ_model, nsim = 1000, plot.hist = FALSE)
 print(occ_gof)
 saveRDS(occ_gof, "raw-data/woothr_occupancy-model_gof.rds")
 ```
@@ -354,7 +354,7 @@ pred_occ_avg <- bind_cols(pred_surface,
   select(latitude, longitude, occ_prob, occ_se)
 ```
 
-## Detection model {#occupancy-select-detection}
+### Detection model {#occupancy-select-detection}
 
 A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection, which wasn't possible using the machine learning approach in lesson \@ref(encounter). We included deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance.
 
