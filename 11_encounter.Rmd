@@ -6,7 +6,7 @@ editor_options:
 
 # Encounter Rate {#encounter}
 
-In this lesson, we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We'll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data.
+In this lesson, we'll estimate the **encounter rate** of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We'll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data. For the purposes of this tutorial, we'll treat the random forest as a black box method. 
 
 Let's start by loading all the packages and data we'll need for this lesson.
 
@@ -80,6 +80,9 @@ checklist_cell <- ebird_habitat %>%
   mutate(cell = dgGEO_to_SEQNUM(dggs, longitude, latitude)$seqnum,
          year = year(observation_date),
          week = week(observation_date))
+```
+
+```{r encounter-prep-ss-sample, class.source="livecode"}
 # sample one checklist per grid cell per week
 # sample detection/non-detection independently 
 ebird_ss <- checklist_cell %>% 
@@ -90,10 +93,12 @@ ebird_ss <- checklist_cell %>%
 
 <div class="exercise">
   <h2>Exercise</h2>
-  For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. How would you modify the above code to do this?
+  For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. How could you modify the above code to do this?
   
   <button class="solution">Solution</button>
 <div class="solution-content">
+
+There are several valid ways to code this in R, but here is our approach.
 
 ```{r encounter-prep-ss-sol}
 split_det <- split(checklist_cell, checklist_cell$species_observed)
@@ -104,12 +109,14 @@ ebird_all_det <- split_det$`FALSE` %>%
   bind_rows(split_det$`TRUE`)
 ```
 
-This approach leads to significantly more detections being kept in the data.
+This approach leads to many more detections being kept in the data. 
 
 ```{r encounter-prep-ss-sol2}
 sum(ebird_ss$species_observed)
 sum(ebird_all_det$species_observed)
 ```
+
+However, some of the extra detections we have with this approach are in the same 5km cell and the same week, they may not be independent.  There are trade-offs to many of these decisions about post-hoc sampling. 
 
 </div>
 </div>
@@ -136,7 +143,7 @@ ebird_split <- ebird_ss %>%
 
 ## Random forests {#encounter-rf}
 
-Random forests is an excellent, general purpose machine learning method suitable for modeling encounter rate in a wide variety of scenarios. To address the issue of class imbalance, we'll use a **balanced random forest** approach, a modification of the traditional random forest algorithm specifically designed to handle scenarios in which one class (detections) is much more common than the other (non-detections). To implement a balanced random forest, we'll first need to calculate the detection frequency.
+Random forests are an excellent, general purpose machine learning method suitable for modeling encounter rate in a wide variety of scenarios. To address the issue of class imbalance, we'll use a **balanced random forest** approach, a modification of the traditional random forest algorithm specifically designed to handle scenarios in which one class (in our case: species detections) is much more common than the other (non-detections). To implement a balanced random forest, we'll first need to calculate the frequency of detections (the smaller class).
 
 ```{r encounter-rf-detfreq}
 detection_freq <- mean(ebird_split$train$species_observed)
@@ -169,12 +176,15 @@ occ_obs <- ebird_split$train$species_observed %>%
   as.integer()
 rf_pred_train <- tibble(obs = occ_obs, pred = occ_pred) %>% 
   drop_na()
-
+```
+```{r encounter-rf-cal-scam, class.source="livecode"}
 # fit calibration model
+# this fits a GAM, but the package scam allows us to use constrained shapes for the smooths
 calibration_model <- scam(obs ~ s(pred, k = 6, bs = "mpi"), 
                           gamma = 2,
                           data = rf_pred_train)
-
+```
+```{r encounter-rf-cal-plot}
 # plot
 cal_pred <- tibble(pred = seq(0, 1, length.out = 100))
 cal_pred <- predict(calibration_model, cal_pred, type = "response") %>% 
@@ -184,12 +194,13 @@ ggplot(cal_pred) +
   geom_line() +
   labs(x = "RF prediction",
        y = "Calibrated prediction",
-       title = "Calibration model")
+       title = "Calibration model") + 
+  xlim(0, 1) + ylim(0, 1)
 ```
 
-### Assessment {#encounter-rf-assess}
+### Model assessment {#encounter-rf-assess}
 
-To assess model quality, we'll validate the model’s ability to predict the observed patterns of occupancy using independent validation data (i.e. the 20% test data set). We'll use a range of predictive performance metrics to compare the predictions to the actual observations.
+To assess model quality, we'll validate the model’s ability to predict the observed patterns of occurrence using independent validation data (i.e. the 20% test data set that we removed earlier). We'll use a range of predictive performance metrics to compare the predictions to the actual observations. Different performance metrics reveal different aspects of the data and we can choose to emphasise some over others, depending on the specific goals of our analysis. For example, if we want to minimise the number of false negatives (i.e. we don't want to miss any places where the species actually occurs), we would focus on sensitivity. 
 
 ```{r encounter-rf-assess}
 # predict on test data using calibrated model
@@ -229,6 +240,7 @@ metrics_cal <- rf_pred_test %>%
                             na.rm = TRUE, 
                             st.dev = FALSE)
 
+# combine various performance metrics together
 rf_assessment <- tibble(
   model = c("RF", "Calibrated RF"),
   mse = c(mse_fit, mse_cal),
@@ -444,9 +456,9 @@ Now that you've completed this lesson, try modifying your script to complete at 
 
 2. What happens to the predictions if you make them for an eBirder traveling further than 1 km, or birding for longer than 1 hour?
 
-3. Limit the data to checklists conducted for shorter time periods, or shorter distances traveled. How does this affect model performance?
+3. Filter the data to only shorter duration checklists or shorter distances traveled. How does this affect model performance?
 
-4. An alternative approach to dealing with class imbalance, is to grid sample only the non-detections, while keeping all the non-detections. Try this subsampling approach and see what the affect is on the predictive performance metrics?
+4. An alternative approach to dealing with class imbalance, is to grid sample only the non-detections, while keeping all the detections. Try this subsampling approach and see what the affect is on the predictive performance metrics.
 
 ```{r encounter-purl, eval=FALSE, echo=FALSE}
 knitr::purl("11_encounter.Rmd")
