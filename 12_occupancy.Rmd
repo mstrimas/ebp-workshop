@@ -6,7 +6,7 @@ editor_options:
 
 # Occupancy {#occupancy}
 
-In this lesson, we'll use occupancy models to estimate the occupancy of occupancy of Wood Thrush on eBird checklists in June in BCR 27, while accounting for imperfect detection explicitly. First, we'll give a short presentation introducing occupancy modeling. The presentation can be downloaded in [PowerPoint](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pptx) or [PDF](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pdf) format, or [viewed on SpeakerDeck](https://speakerdeck.com/mstrimas/ebird-best-practices-ii-occupancy).
+In this lesson, we'll use occupancy models to estimate the occupancy of occupancy of Wood Thrush on eBird checklists in June in BCR 27, while explicitly accounting for imperfect detection. First, we'll give a short presentation introducing occupancy modeling. The presentation can be downloaded in [PowerPoint](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pptx) or [PDF](https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pdf) format, or [viewed on SpeakerDeck](https://speakerdeck.com/mstrimas/ebird-best-practices-ii-occupancy).
 
 <iframe src="https://speakerdeck.com/player/7375bae455c04703a770c0c6ab26dc6a" width="700px" height="400px" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:none;" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
 
@@ -75,9 +75,9 @@ ebird_filtered <- filter(ebird_habitat,
                          year == max(year))
 ```
 
-As we learned in [Part I](#advanced-unmarked) of this workshop, we can use the `auk` function `filter_repeat_visits()` to extract just the eBird records that are suitable for occupancy modeling. Specifically, we want repeat visits to the same site, as defined by location and observer ID.
+As we learned in [Part I](#advanced-unmarked) of this workshop, we can use the `auk` function `filter_repeat_visits()` to extract just the eBird records that are suitable for occupancy modeling. Specifically, we want repeat visits to the same location by the same observer, so we'll use latitude, longitude, and observer ID to define 'sites'.
 
-```{r occupancy-prep-repeats}
+```{r occupancy-prep-repeats, class.source="livecode"}
 # subset for occupancy modeling
 occ <- filter_repeat_visits(ebird_filtered, 
                             min_obs = 2, max_obs = 10,
@@ -147,7 +147,7 @@ occ_wide <- format_unmarked_occu(occ,
                                               "pland_05"))
 ```
 
-As described in lesson \@ref(subsampling), we'll use spatial subsampling to reduce spatial bias. However, here we'll subsample at the level of sites rather than observations.
+As described in lesson \@ref(subsampling), we'll use spatial subsampling to reduce spatial bias. However, here we'll subsample at the level of 'sites' rather than observations.
 
 ```{r encounter-prep-sss, results = "hide"}
 # generate hexagonal grid with ~ 5 km betweeen cells
@@ -163,7 +163,7 @@ occ_ss <- occ_wide_cell %>%
   select(-cell)
 ```
 
-Finally, we'll convert this data frame of observations into an `unmarked` object to start fitting occupancy models.
+Finally, we'll convert this data frame of observations into an `unmarked` object in order to fit occupancy models.
 
 ```{r encounter-data-unmarked, class.source="livecode"}
 occ_um <- formatWide(occ_ss, type = "unmarkedFrameOccu")
@@ -207,7 +207,7 @@ print(occ_gof)
 
 ## Prediction {#occupancy-predict}
 
-Now we can estimate the distribution of Wood Thrush in BCR 27 and produce a map. Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables in our prediction surface. We don't need to do that here because the occupancy submodel doesn't depend on the effort covariates, these only occur in the detection submodel. In addition, `predict()` produce both predictions as well as estimates of the standard error.
+Now we can estimate the distribution of Wood Thrush in BCR 27 and produce a map. Recall that when we [predicted encouter rate](#encounter-predict), we had to include effort variables in our prediction surface. We don't need to do that here because the estimated occupancy doesn't depend on the effort covariates, these only occur in the detection submodel. In addition, `predict()` can produce both predictions as well as estimates of the standard error.
 
 ```{r occupancy-predict-predict, eval=FALSE, echo=1:10, class.source="livecode"}
 # make prediction for bcr 27
@@ -233,7 +233,7 @@ pred_occ <- readRDS("raw-data/woothr_occupancy-model_predictions.rds")
   Predicting on the full prediction surface will typically take several minutes. As the above code runs, let's take a short break.
 </div>
 
-Next, we'll convert this data frame to spatial features using `sf`, then rasterize the points using the prediction surface raster template.
+Next, we want to plot these predictions. We'll convert this data frame to spatial features using `sf`, then rasterize the points using the prediction surface raster template.
 
 ```{r occupancy-predict-rasterize}
 r_pred <- pred_occ %>% 
@@ -303,7 +303,7 @@ for (nm in names(r_pred)) {
 
 ## Model selection {#occupancy-select}
 
-So far, we've been using a global model that includes all of the covariates we believe will influence the occupancy and detection probabilities; however, a more thoughtful approach is to use model selection to compare and rank a set of candidate models, each containing different subsets of the covariates. We'll use the `dredge()` function, which evaluates a set of candidate models generated by using different combinations of the terms in the global model. Since we know from prior experience that the effort covariates are almost always important, we'll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.
+So far, we've been using a global model that includes all of the covariates we believe will influence the occupancy and detection probabilities; however, a more thorough approach is to use model selection to compare and rank a set of candidate models, each containing different subsets of the covariates. We'll use the `dredge()` function, which evaluates a set of candidate models generated by using different combinations of the terms in the global model. Since we know from prior experience that the effort covariates are almost always important, we'll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.
 
 ```{r occupancy-model-select-dredge, class.source="livecode"}
 # get list of all possible terms, then subset to those we want to keep
@@ -311,7 +311,7 @@ det_terms <- getAllTerms(occ_model) %>%
   # retain the detection submodel covariates
   discard(str_detect, pattern = "psi")
 
-# dredge all possibe combinations of the occupancy covariates
+# fit all possible combinations of the occupancy covariates, using the dredge function
 occ_dredge <- dredge(occ_model, fixed = det_terms)
 
 # model comparison
@@ -325,7 +325,7 @@ select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight) %>%
   To determine which candidate model each row corresponds to, note that he columns beginning with `psi(` give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.
 </div>
 
-The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the performance of each model, relative to the other models in the candidate set, adjusting for the number of parameters. Lower values indicate models with a better fit to the data, penalizing for the number of parameters. Delta is the difference between the AICc values for the given model and that for the top model (i.e. the one with the lowest AICc). Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data.
+The corrected [Akaike Information Criterion (AICc)](https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc) measures the performance of each model, relative to the other models in the candidate set, adjusting for the number of parameters. Lower values indicate models with a better fit to the data, penalizing for the number of parameters. Delta is the difference between the AICc values for the given model and that for the top model (i.e. the one with the lowest AICc). Finally, the AIC weight is a transformation of delta that can be interpreted as the likelihood that the given model is the most likely one of the candidate models to have generated the data.
 
 There doesn't appear to be a clear single model, or even a small set of models, that are most likely to have generated our data. Given this, we'll average across the top models (those comprising 95% of the weights), weighted by AICc, to produce a model-averaged prediction.
 
@@ -336,11 +336,9 @@ occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
 # average models based on model weights 
 occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
 
-# model coefficients
-t(occ_avg$coefficients)
 ```
 
-Making model-averaged predictions works in exactly the same way as for making [predictions from a single global model](#occupancy-predict). However, it takes significantly more time to run, so we won't run the below code or produce maps based on model-averaged predictions during the workshop, instead leaving it as an exercise.
+Making model-averaged predictions works in the same way as for making [predictions from a single global model](#occupancy-predict). However, it takes significantly more time to run, so we won't run the below code or produce maps based on model-averaged predictions during the workshop, instead leaving it as an exercise.
 
 ```{r occupancy-model-select-predict, eval=FALSE, class.source="dontrun"}
 occ_pred_avg <- predict(occ_avg, 
@@ -359,15 +357,16 @@ pred_occ_avg <- bind_cols(pred_surface,
 A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection, which wasn't possible using the machine learning approach in lesson \@ref(encounter). We included deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance.
 
 ```{r occupancy-select-detection-define}
-# define a null detection model
+# define a formula for an occupancy model. the detection submodel (first part of formula) has only effort covariates and the occupancy submodel (second part of formula) includes effort covariates
 det_mod <- ~ time_observations_started + 
   duration_minutes + 
   effort_distance_km + 
   number_observers + 
-  protocol_type ~
-  pland_04 + pland_05 + pland_12 + pland_13
+  protocol_type 
+  ~ pland_04 + pland_05 + pland_12 + pland_13
 
-# define and fit candidate models
+# define new formulae with the landcover forest covariates added to the detection submodel
+# then fit candidate models
 mods <- list(det_mod_null = det_mod, 
              det_mod_dec = update.formula(det_mod, ~ . + pland_04 ~ .),
              det_mod_mix = update.formula(det_mod, ~ . + pland_05 ~ .),
@@ -384,7 +383,7 @@ mod_sel <- fitList(fits = mods) %>%
 mod_sel
 ```
 
-From these results, it's clear that including these forest habitat covariates–especially deciduous broadleaf forest–leads to a marked improvement in model performance, as by the AIC and AIC weights. Let's look at the coefficients from the global model for these covariates to see how they're impacting detection and occupancy. 
+From these results, it's clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as by the AIC and AIC weights. Let's look at the coefficients from the global model for these covariates to see how they're impacting detection and occupancy. 
 
 ```{r occupancy-select-detection-coef}
 coef(occ_model) %>% 
@@ -392,17 +391,19 @@ coef(occ_model) %>%
   filter(str_detect(name, "pland_0"))
 ```
 
-The `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.
+The `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling. In order to do this, it's useful to have some covariates that you know in advance will only impact either detection or occupancy. 
 
 ## Exercises {#occupancy-exercises}
 
 Now that you've completed this lesson, try modifying your script to complete at least one of the following exercises:
 
-1. What happens if you only use stationary counts, or reduce the distance traveled to 1 km?
+1. Try sampling more than a single checklist per grid cell in the spatiotemporal sampling. How does that affect model fit and predictions?
 
-2. Try sampling more than a single checklist per grid cell in the spatiotemporal sampling. How does that affect model fit and predictions?
+2. What happens to the size of dataset if you only use stationary counts, or reduce the distance traveled to 1 km? How does it impact the results? How does the different input data affect your interpretation of the results? 
 
-3. Produce a map based on model averaged predictions. Note that making these predictions may take up to an hour.
+3. What happens to the size of the dataset if you allow repeat visits to be by multiple observers? How does this impact the results. 
+
+4. Produce a map based on model averaged predictions. Note that making these predictions may take up to an hour.
 
 ```{r occupancy-purl, eval=FALSE, echo=FALSE}
 knitr::purl("12_occupancy.Rmd")
