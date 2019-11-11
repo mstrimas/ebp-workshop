@@ -59,6 +59,9 @@ checklist_cell <- ebird_habitat %>%
   mutate(cell = dgGEO_to_SEQNUM(dggs, longitude, latitude)$seqnum,
          year = year(observation_date),
          week = week(observation_date))
+
+
+## ----encounter-prep-ss-sample, class.source="livecode"-------------------
 # sample one checklist per grid cell per week
 # sample detection/non-detection independently 
 ebird_ss <- checklist_cell %>% 
@@ -123,11 +126,14 @@ occ_obs <- ebird_split$train$species_observed %>%
 rf_pred_train <- tibble(obs = occ_obs, pred = occ_pred) %>% 
   drop_na()
 
+## ----encounter-rf-cal-scam, class.source="livecode"----------------------
 # fit calibration model
+# this fits a GAM, but the package scam allows us to use constrained shapes for the smooths
 calibration_model <- scam(obs ~ s(pred, k = 6, bs = "mpi"), 
                           gamma = 2,
                           data = rf_pred_train)
 
+## ----encounter-rf-cal-plot-----------------------------------------------
 # plot
 cal_pred <- tibble(pred = seq(0, 1, length.out = 100))
 cal_pred <- predict(calibration_model, cal_pred, type = "response") %>% 
@@ -137,7 +143,8 @@ ggplot(cal_pred) +
   geom_line() +
   labs(x = "RF prediction",
        y = "Calibrated prediction",
-       title = "Calibration model")
+       title = "Calibration model") + 
+  xlim(0, 1) + ylim(0, 1)
 
 
 ## ----encounter-rf-assess-------------------------------------------------
@@ -178,6 +185,7 @@ metrics_cal <- rf_pred_test %>%
                             na.rm = TRUE, 
                             st.dev = FALSE)
 
+# combine various performance metrics together
 rf_assessment <- tibble(
   model = c("RF", "Calibrated RF"),
   mse = c(mse_fit, mse_cal),
