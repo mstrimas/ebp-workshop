@@ -70,6 +70,7 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
 Since we'll be fitting a single-season occupancy models, we'll need to start by focusing on observations from June of a single year, in this case the most recent year for which we have data. At this point, we also suggest subsetting the data to observations with 5 or fewer observers since there are few checklists with more than 5 observers.
 
 ```{r occupancy-prep-filter}
+# filter to a single year of data
 ebird_filtered <- filter(ebird_habitat, 
                          number_observers <= 5,
                          year == max(year))
@@ -247,7 +248,7 @@ r_pred <- r_pred[[c("occ_prob", "occ_se")]]
 
 Finally, we can map these predictions!
 
-```{r occupancy-predict-map, fig.asp = 1.236}
+```{r occupancy-predict-map, fig.asp=1.236}
 # project predictions
 r_pred_proj <- projectRaster(r_pred, crs = map_proj$proj4string, method = "ngb")
 
@@ -311,7 +312,7 @@ det_terms <- getAllTerms(occ_model) %>%
   # retain the detection submodel covariates
   discard(str_detect, pattern = "psi")
 
-# fit all possible combinations of the occupancy covariates, using the dredge function
+# fit all possible combinations of the occupancy covariates
 occ_dredge <- dredge(occ_model, fixed = det_terms)
 
 # model comparison
@@ -335,12 +336,12 @@ occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
 
 # average models based on model weights 
 occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
-
 ```
 
 Making model-averaged predictions works in the same way as for making [predictions from a single global model](#occupancy-predict). However, it takes significantly more time to run, so we won't run the below code or produce maps based on model-averaged predictions during the workshop, instead leaving it as an exercise.
 
 ```{r occupancy-model-select-predict, eval=FALSE, class.source="dontrun"}
+# 
 occ_pred_avg <- predict(occ_avg, 
                         newdata = as.data.frame(pred_surface), 
                         type = "state")
@@ -357,21 +358,21 @@ pred_occ_avg <- bind_cols(pred_surface,
 A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection, which wasn't possible using the machine learning approach in lesson \@ref(encounter). We included deciduous broadleaf forest (`pland_04`) and mixed forest (`pland_05`) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance.
 
 ```{r occupancy-select-detection-define}
-# define a formula for an occupancy model. the detection submodel (first part of formula) has only effort covariates and the occupancy submodel (second part of formula) includes effort covariates
+# define occupancy model formula with only effort in detection submodel
 det_mod <- ~ time_observations_started + 
   duration_minutes + 
   effort_distance_km + 
   number_observers + 
-  protocol_type 
-  ~ pland_04 + pland_05 + pland_12 + pland_13
+  protocol_type ~ 
+  pland_04 + pland_05 + pland_12 + pland_13
 
-# define new formulae with the landcover forest covariates added to the detection submodel
-# then fit candidate models
+# create new formulae with landcover covariates added to the detection submodel
 mods <- list(det_mod_null = det_mod, 
              det_mod_dec = update.formula(det_mod, ~ . + pland_04 ~ .),
              det_mod_mix = update.formula(det_mod, ~ . + pland_05 ~ .),
              global = update.formula(det_mod, 
                                      ~ . + pland_04 + pland_05 ~ .)) %>% 
+  # fit candidate models
   map(occu, data = occ_um)
 ```
 

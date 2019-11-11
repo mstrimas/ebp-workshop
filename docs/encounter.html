@@ -360,12 +360,12 @@ Exercise
 <a class="sourceLine" id="cb74-6" data-line-number="6"><span class="st">  </span><span class="kw">as.integer</span>()</a>
 <a class="sourceLine" id="cb74-7" data-line-number="7">rf_pred_train &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">obs =</span> occ_obs, <span class="dt">pred =</span> occ_pred) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb74-8" data-line-number="8"><span class="st">  </span><span class="kw">drop_na</span>()</a></code></pre></div>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1"><span class="co"># fit calibration model</span></a>
-<a class="sourceLine" id="cb75-2" data-line-number="2"><span class="co"># this fits a GAM, but the package scam allows us to use constrained shapes for the smooths</span></a>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1"><span class="co"># fit gam calibration model</span></a>
+<a class="sourceLine" id="cb75-2" data-line-number="2"><span class="co"># scam allows us to use constrained shapes for the smooths</span></a>
 <a class="sourceLine" id="cb75-3" data-line-number="3">calibration_model &lt;-<span class="st"> </span><span class="kw">scam</span>(obs <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(pred, <span class="dt">k =</span> <span class="dv">6</span>, <span class="dt">bs =</span> <span class="st">&quot;mpi&quot;</span>), </a>
 <a class="sourceLine" id="cb75-4" data-line-number="4">                          <span class="dt">gamma =</span> <span class="dv">2</span>,</a>
 <a class="sourceLine" id="cb75-5" data-line-number="5">                          <span class="dt">data =</span> rf_pred_train)</a></code></pre></div>
-<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="co"># plot</span></a>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="co"># plot calibration curve</span></a>
 <a class="sourceLine" id="cb76-2" data-line-number="2">cal_pred &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">pred =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">100</span>))</a>
 <a class="sourceLine" id="cb76-3" data-line-number="3">cal_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(calibration_model, cal_pred, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb76-4" data-line-number="4"><span class="st">  </span><span class="kw">bind_cols</span>(cal_pred, <span class="dt">calibrated =</span> .)</a>

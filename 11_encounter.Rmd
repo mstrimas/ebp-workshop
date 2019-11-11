@@ -72,7 +72,7 @@ As we learned in [Part I](#subsampling) of this workshop, spatiotemporal subsamp
   Sampling detections and non-detections separately will change the prevalence rate of the detections in the data. As a result, the estimated probability of occurrence based on these subsampled data will be larger than the true occurrence rate. When examining the outputs from the models it will be important to recall that we altered the prevalence rate at this stage. 
 </div>
 
-```{r encounter-prep-ss}
+```{r encounter-prep-ss-grid}
 # generate hexagonal grid with ~ 5 km betweeen cells
 dggs <- dgconstruct(spacing = 5)
 # get hexagonal cell id and week number for each checklist
@@ -82,7 +82,7 @@ checklist_cell <- ebird_habitat %>%
          week = week(observation_date))
 ```
 
-```{r encounter-prep-ss-sample, class.source="livecode"}
+```{r encounter-prep-ss, class.source="livecode"}
 # sample one checklist per grid cell per week
 # sample detection/non-detection independently 
 ebird_ss <- checklist_cell %>% 
@@ -123,7 +123,7 @@ However, some of the extra detections we have with this approach are in the same
 
 In preparation for modeling, we'll select only the the columns that will be used as predictors in the model. We include both habitat predictors, which we expect to influence whether a species is present at a site, and also effort predictors to help control for variation in detectability.
 
-```{r encounter-prep-fact, class.source="livecode"}
+```{r encounter-prep-select, class.source="livecode"}
 ebird_ss <- ebird_ss %>% 
   select(species_observed,
          year, day_of_year,
@@ -177,15 +177,17 @@ occ_obs <- ebird_split$train$species_observed %>%
 rf_pred_train <- tibble(obs = occ_obs, pred = occ_pred) %>% 
   drop_na()
 ```
+
 ```{r encounter-rf-cal-scam, class.source="livecode"}
-# fit calibration model
-# this fits a GAM, but the package scam allows us to use constrained shapes for the smooths
+# fit gam calibration model
+# scam allows us to use constrained shapes for the smooths
 calibration_model <- scam(obs ~ s(pred, k = 6, bs = "mpi"), 
                           gamma = 2,
                           data = rf_pred_train)
 ```
+
 ```{r encounter-rf-cal-plot}
-# plot
+# plot calibration curve
 cal_pred <- tibble(pred = seq(0, 1, length.out = 100))
 cal_pred <- predict(calibration_model, cal_pred, type = "response") %>% 
   bind_cols(cal_pred, calibrated = .)

@@ -225,7 +225,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="occupancy" class="section level1">
 <h1><span class="header-section-number">Lesson 12</span> Occupancy</h1>
-<p>In this lesson, we’ll use occupancy models to estimate the occupancy of occupancy of Wood Thrush on eBird checklists in June in BCR 27, while accounting for imperfect detection explicitly. First, we’ll give a short presentation introducing occupancy modeling. The presentation can be downloaded in <a href="https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pptx">PowerPoint</a> or <a href="https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pdf">PDF</a> format, or <a href="https://speakerdeck.com/mstrimas/ebird-best-practices-ii-occupancy">viewed on SpeakerDeck</a>.</p>
+<p>In this lesson, we’ll use occupancy models to estimate the occupancy of occupancy of Wood Thrush on eBird checklists in June in BCR 27, while explicitly accounting for imperfect detection. First, we’ll give a short presentation introducing occupancy modeling. The presentation can be downloaded in <a href="https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pptx">PowerPoint</a> or <a href="https://github.com/mstrimas/ebp-workshop/raw/master/12_occupancy.pdf">PDF</a> format, or <a href="https://speakerdeck.com/mstrimas/ebird-best-practices-ii-occupancy">viewed on SpeakerDeck</a>.</p>
 <iframe src="https://speakerdeck.com/player/7375bae455c04703a770c0c6ab26dc6a" width="700px" height="400px" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:none;" allowfullscreen webkitallowfullscreen mozallowfullscreen>
 </iframe>
 <p>Let’s start by loading the packages and data required for this lesson.</p>
@@ -282,11 +282,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="occupancy-prep" class="section level2">
 <h2><span class="header-section-number">12.1</span> Data preparation</h2>
 <p>Since we’ll be fitting a single-season occupancy models, we’ll need to start by focusing on observations from June of a single year, in this case the most recent year for which we have data. At this point, we also suggest subsetting the data to observations with 5 or fewer observers since there are few checklists with more than 5 observers.</p>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1">ebird_filtered &lt;-<span class="st"> </span><span class="kw">filter</span>(ebird_habitat, </a>
-<a class="sourceLine" id="cb85-2" data-line-number="2">                         number_observers <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>,</a>
-<a class="sourceLine" id="cb85-3" data-line-number="3">                         year <span class="op">==</span><span class="st"> </span><span class="kw">max</span>(year))</a></code></pre></div>
-<p>As we learned in <a href="advanced.html#advanced-unmarked">Part I</a> of this workshop, we can use the <code>auk</code> function <code>filter_repeat_visits()</code> to extract just the eBird records that are suitable for occupancy modeling. Specifically, we want repeat visits to the same site, as defined by location and observer ID.</p>
-<div class="sourceCode" id="cb86"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="co"># subset for occupancy modeling</span></a>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb85-1" data-line-number="1"><span class="co"># filter to a single year of data</span></a>
+<a class="sourceLine" id="cb85-2" data-line-number="2">ebird_filtered &lt;-<span class="st"> </span><span class="kw">filter</span>(ebird_habitat, </a>
+<a class="sourceLine" id="cb85-3" data-line-number="3">                         number_observers <span class="op">&lt;=</span><span class="st"> </span><span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb85-4" data-line-number="4">                         year <span class="op">==</span><span class="st"> </span><span class="kw">max</span>(year))</a></code></pre></div>
+<p>As we learned in <a href="advanced.html#advanced-unmarked">Part I</a> of this workshop, we can use the <code>auk</code> function <code>filter_repeat_visits()</code> to extract just the eBird records that are suitable for occupancy modeling. Specifically, we want repeat visits to the same location by the same observer, so we’ll use latitude, longitude, and observer ID to define ‘sites’.</p>
+<div class="sourceCode" id="cb86"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb86-1" data-line-number="1"><span class="co"># subset for occupancy modeling</span></a>
 <a class="sourceLine" id="cb86-2" data-line-number="2">occ &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebird_filtered, </a>
 <a class="sourceLine" id="cb86-3" data-line-number="3">                            <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,</a>
 <a class="sourceLine" id="cb86-4" data-line-number="4">                            <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,</a>
@@ -343,7 +344,7 @@ Exercise
 <a class="sourceLine" id="cb89-19" data-line-number="19">                                              <span class="st">&quot;protocol_type&quot;</span>,</a>
 <a class="sourceLine" id="cb89-20" data-line-number="20">                                              <span class="st">&quot;pland_04&quot;</span>, </a>
 <a class="sourceLine" id="cb89-21" data-line-number="21">                                              <span class="st">&quot;pland_05&quot;</span>))</a></code></pre></div>
-<p>As described in lesson <a href="subsampling.html#subsampling">7</a>, we’ll use spatial subsampling to reduce spatial bias. However, here we’ll subsample at the level of sites rather than observations.</p>
+<p>As described in lesson <a href="subsampling.html#subsampling">7</a>, we’ll use spatial subsampling to reduce spatial bias. However, here we’ll subsample at the level of ‘sites’ rather than observations.</p>
 <div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb90-1" data-line-number="1"><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></a>
 <a class="sourceLine" id="cb90-2" data-line-number="2">dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</a>
 <a class="sourceLine" id="cb90-3" data-line-number="3"><span class="co"># get hexagonal cell id for each site</span></a>
@@ -355,7 +356,7 @@ Exercise
 <a class="sourceLine" id="cb90-9" data-line-number="9"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb90-10" data-line-number="10"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb90-11" data-line-number="11"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell)</a></code></pre></div>
-<p>Finally, we’ll convert this data frame of observations into an <code>unmarked</code> object to start fitting occupancy models.</p>
+<p>Finally, we’ll convert this data frame of observations into an <code>unmarked</code> object in order to fit occupancy models.</p>
 <div class="sourceCode" id="cb91"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb91-1" data-line-number="1">occ_um &lt;-<span class="st"> </span><span class="kw">formatWide</span>(occ_ss, <span class="dt">type =</span> <span class="st">&quot;unmarkedFrameOccu&quot;</span>)</a></code></pre></div>
 </div>
 <div id="occupancy-model" class="section level2">
@@ -423,7 +424,7 @@ Exercise
 </div>
 <div id="occupancy-predict" class="section level2">
 <h2><span class="header-section-number">12.3</span> Prediction</h2>
-<p>Now we can estimate the distribution of Wood Thrush in BCR 27 and produce a map. Recall that when we <a href="encounter.html#encounter-predict">predicted encouter rate</a>, we had to include effort variables in our prediction surface. We don’t need to do that here because the occupancy submodel doesn’t depend on the effort covariates, these only occur in the detection submodel. In addition, <code>predict()</code> produce both predictions as well as estimates of the standard error.</p>
+<p>Now we can estimate the distribution of Wood Thrush in BCR 27 and produce a map. Recall that when we <a href="encounter.html#encounter-predict">predicted encouter rate</a>, we had to include effort variables in our prediction surface. We don’t need to do that here because the estimated occupancy doesn’t depend on the effort covariates, these only occur in the detection submodel. In addition, <code>predict()</code> can produce both predictions as well as estimates of the standard error.</p>
 <div class="sourceCode" id="cb95"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb95-1" data-line-number="1"><span class="co"># make prediction for bcr 27</span></a>
 <a class="sourceLine" id="cb95-2" data-line-number="2">occ_pred &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_model, </a>
 <a class="sourceLine" id="cb95-3" data-line-number="3">                    <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), </a>
@@ -440,7 +441,7 @@ Checkpoint
 </h2>
 <p>Predicting on the full prediction surface will typically take several minutes. As the above code runs, let’s take a short break.</p>
 </div>
-<p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
+<p>Next, we want to plot these predictions. We’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb96-1" data-line-number="1">r_pred &lt;-<span class="st"> </span>pred_occ <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb96-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
 <a class="sourceLine" id="cb96-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -504,13 +505,13 @@ Checkpoint
 </div>
 <div id="occupancy-select" class="section level2">
 <h2><span class="header-section-number">12.4</span> Model selection</h2>
-<p>So far, we’ve been using a global model that includes all of the covariates we believe will influence the occupancy and detection probabilities; however, a more thoughtful approach is to use model selection to compare and rank a set of candidate models, each containing different subsets of the covariates. We’ll use the <code>dredge()</code> function, which evaluates a set of candidate models generated by using different combinations of the terms in the global model. Since we know from prior experience that the effort covariates are almost always important, we’ll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.</p>
+<p>So far, we’ve been using a global model that includes all of the covariates we believe will influence the occupancy and detection probabilities; however, a more thorough approach is to use model selection to compare and rank a set of candidate models, each containing different subsets of the covariates. We’ll use the <code>dredge()</code> function, which evaluates a set of candidate models generated by using different combinations of the terms in the global model. Since we know from prior experience that the effort covariates are almost always important, we’ll lock these variables in, and consider a candidate set consisting of all possible combinations of the ecological covariates in the occupancy submodel.</p>
 <div class="sourceCode" id="cb98"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb98-1" data-line-number="1"><span class="co"># get list of all possible terms, then subset to those we want to keep</span></a>
 <a class="sourceLine" id="cb98-2" data-line-number="2">det_terms &lt;-<span class="st"> </span><span class="kw">getAllTerms</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb98-3" data-line-number="3"><span class="st">  </span><span class="co"># retain the detection submodel covariates</span></a>
 <a class="sourceLine" id="cb98-4" data-line-number="4"><span class="st">  </span><span class="kw">discard</span>(str_detect, <span class="dt">pattern =</span> <span class="st">&quot;psi&quot;</span>)</a>
 <a class="sourceLine" id="cb98-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb98-6" data-line-number="6"><span class="co"># dredge all possibe combinations of the occupancy covariates</span></a>
+<a class="sourceLine" id="cb98-6" data-line-number="6"><span class="co"># fit all possible combinations of the occupancy covariates</span></a>
 <a class="sourceLine" id="cb98-7" data-line-number="7">occ_dredge &lt;-<span class="st"> </span><span class="kw">dredge</span>(occ_model, <span class="dt">fixed =</span> det_terms)</a>
 <a class="sourceLine" id="cb98-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb98-9" data-line-number="9"><span class="co"># model comparison</span></a>
@@ -939,58 +940,43 @@ Tip
 </h2>
 <p>To determine which candidate model each row corresponds to, note that he columns beginning with <code>psi(</code> give the model coefficients for each of the habitat covariates in the occupancy submodel; missing values indicate that that covariate was not included in the given model.</p>
 </div>
-<p>The corrected <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc">Akaike Information Criterion (AICc)</a> measures the performance of each model, relative to the other models in the candidate set, adjusting for the number of parameters. Lower values indicate models with a better fit to the data, penalizing for the number of parameters. Delta is the difference between the AICc values for the given model and that for the top model (i.e. the one with the lowest AICc). Finally, the AIC weight is a transformation of delta that can be interpreted as the probability that the given model is the most likely one of the candidate models to have generated the data.</p>
+<p>The corrected <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion#AICc">Akaike Information Criterion (AICc)</a> measures the performance of each model, relative to the other models in the candidate set, adjusting for the number of parameters. Lower values indicate models with a better fit to the data, penalizing for the number of parameters. Delta is the difference between the AICc values for the given model and that for the top model (i.e. the one with the lowest AICc). Finally, the AIC weight is a transformation of delta that can be interpreted as the likelihood that the given model is the most likely one of the candidate models to have generated the data.</p>
 <p>There doesn’t appear to be a clear single model, or even a small set of models, that are most likely to have generated our data. Given this, we’ll average across the top models (those comprising 95% of the weights), weighted by AICc, to produce a model-averaged prediction.</p>
 <div class="sourceCode" id="cb99"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb99-1" data-line-number="1"><span class="co"># select models with the most suport for model averaging</span></a>
 <a class="sourceLine" id="cb99-2" data-line-number="2">occ_dredge_<span class="dv">95</span> &lt;-<span class="st"> </span><span class="kw">get.models</span>(occ_dredge, <span class="dt">subset =</span> <span class="kw">cumsum</span>(weight) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.95</span>)</a>
 <a class="sourceLine" id="cb99-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb99-4" data-line-number="4"><span class="co"># average models based on model weights </span></a>
-<a class="sourceLine" id="cb99-5" data-line-number="5">occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge_<span class="dv">95</span>, <span class="dt">fit =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb99-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb99-7" data-line-number="7"><span class="co"># model coefficients</span></a>
-<a class="sourceLine" id="cb99-8" data-line-number="8"><span class="kw">t</span>(occ_avg<span class="op">$</span>coefficients)</a>
-<a class="sourceLine" id="cb99-9" data-line-number="9"><span class="co">#&gt;                                   full    subset</span></a>
-<a class="sourceLine" id="cb99-10" data-line-number="10"><span class="co">#&gt; psi(Int)                     -1.912051 -1.912051</span></a>
-<a class="sourceLine" id="cb99-11" data-line-number="11"><span class="co">#&gt; psi(pland_04)                 7.135056  7.135056</span></a>
-<a class="sourceLine" id="cb99-12" data-line-number="12"><span class="co">#&gt; psi(pland_13)                -2.603092 -2.603092</span></a>
-<a class="sourceLine" id="cb99-13" data-line-number="13"><span class="co">#&gt; p(Int)                       -1.806778 -1.806778</span></a>
-<a class="sourceLine" id="cb99-14" data-line-number="14"><span class="co">#&gt; p(duration_minutes)          -0.000185 -0.000185</span></a>
-<a class="sourceLine" id="cb99-15" data-line-number="15"><span class="co">#&gt; p(effort_distance_km)         0.234465  0.234465</span></a>
-<a class="sourceLine" id="cb99-16" data-line-number="16"><span class="co">#&gt; p(number_observers)           0.146161  0.146161</span></a>
-<a class="sourceLine" id="cb99-17" data-line-number="17"><span class="co">#&gt; p(pland_04)                  -0.951254 -0.951254</span></a>
-<a class="sourceLine" id="cb99-18" data-line-number="18"><span class="co">#&gt; p(pland_05)                   2.776882  2.776882</span></a>
-<a class="sourceLine" id="cb99-19" data-line-number="19"><span class="co">#&gt; p(protocol_typeTraveling)     0.796855  0.796855</span></a>
-<a class="sourceLine" id="cb99-20" data-line-number="20"><span class="co">#&gt; p(time_observations_started)  0.025168  0.025168</span></a>
-<a class="sourceLine" id="cb99-21" data-line-number="21"><span class="co">#&gt; psi(pland_05)                 0.373100  1.079238</span></a>
-<a class="sourceLine" id="cb99-22" data-line-number="22"><span class="co">#&gt; psi(pland_12)                -0.331345 -1.496503</span></a></code></pre></div>
-<p>Making model-averaged predictions works in exactly the same way as for making <a href="occupancy.html#occupancy-predict">predictions from a single global model</a>. However, it takes significantly more time to run, so we won’t run the below code or produce maps based on model-averaged predictions during the workshop, instead leaving it as an exercise.</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r dontrun"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1">occ_pred_avg &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, </a>
-<a class="sourceLine" id="cb100-2" data-line-number="2">                        <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), </a>
-<a class="sourceLine" id="cb100-3" data-line-number="3">                        <span class="dt">type =</span> <span class="st">&quot;state&quot;</span>)</a>
-<a class="sourceLine" id="cb100-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb100-5" data-line-number="5"><span class="co"># add to prediction surface</span></a>
-<a class="sourceLine" id="cb100-6" data-line-number="6">pred_occ_avg &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface, </a>
-<a class="sourceLine" id="cb100-7" data-line-number="7">                          <span class="dt">occ_prob =</span> occ_pred_avg<span class="op">$</span>fit, </a>
-<a class="sourceLine" id="cb100-8" data-line-number="8">                          <span class="dt">occ_se =</span> occ_pred_avg<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb100-9" data-line-number="9"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</a></code></pre></div>
+<a class="sourceLine" id="cb99-5" data-line-number="5">occ_avg &lt;-<span class="st"> </span><span class="kw">model.avg</span>(occ_dredge_<span class="dv">95</span>, <span class="dt">fit =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>Making model-averaged predictions works in the same way as for making <a href="occupancy.html#occupancy-predict">predictions from a single global model</a>. However, it takes significantly more time to run, so we won’t run the below code or produce maps based on model-averaged predictions during the workshop, instead leaving it as an exercise.</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r dontrun"><code class="sourceCode r"><a class="sourceLine" id="cb100-1" data-line-number="1"><span class="co"># </span></a>
+<a class="sourceLine" id="cb100-2" data-line-number="2">occ_pred_avg &lt;-<span class="st"> </span><span class="kw">predict</span>(occ_avg, </a>
+<a class="sourceLine" id="cb100-3" data-line-number="3">                        <span class="dt">newdata =</span> <span class="kw">as.data.frame</span>(pred_surface), </a>
+<a class="sourceLine" id="cb100-4" data-line-number="4">                        <span class="dt">type =</span> <span class="st">&quot;state&quot;</span>)</a>
+<a class="sourceLine" id="cb100-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb100-6" data-line-number="6"><span class="co"># add to prediction surface</span></a>
+<a class="sourceLine" id="cb100-7" data-line-number="7">pred_occ_avg &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface, </a>
+<a class="sourceLine" id="cb100-8" data-line-number="8">                          <span class="dt">occ_prob =</span> occ_pred_avg<span class="op">$</span>fit, </a>
+<a class="sourceLine" id="cb100-9" data-line-number="9">                          <span class="dt">occ_se =</span> occ_pred_avg<span class="op">$</span>se.fit) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb100-10" data-line-number="10"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, occ_prob, occ_se)</a></code></pre></div>
 <div id="occupancy-select-detection" class="section level3">
 <h3><span class="header-section-number">12.4.1</span> Detection model</h3>
 <p>A unique feature of occupancy models, is that we can investigate whether certain covariates influence detection, which wasn’t possible using the machine learning approach in lesson <a href="encounter.html#encounter">11</a>. We included deciduous broadleaf forest (<code>pland_04</code>) and mixed forest (<code>pland_05</code>) as detection covariates in the global model, and we can compare a set of models with and without these covariates to assess their importance.</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" data-line-number="1"><span class="co"># define a null detection model</span></a>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb101-1" data-line-number="1"><span class="co"># define occupancy model formula with only effort in detection submodel</span></a>
 <a class="sourceLine" id="cb101-2" data-line-number="2">det_mod &lt;-<span class="st"> </span><span class="er">~</span><span class="st"> </span>time_observations_started <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb101-3" data-line-number="3"><span class="st">  </span>duration_minutes <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb101-4" data-line-number="4"><span class="st">  </span>effort_distance_km <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb101-5" data-line-number="5"><span class="st">  </span>number_observers <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb101-6" data-line-number="6"><span class="st">  </span>protocol_type <span class="op">~</span></a>
+<a class="sourceLine" id="cb101-6" data-line-number="6"><span class="st">  </span>protocol_type <span class="op">~</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb101-7" data-line-number="7"><span class="st">  </span>pland_<span class="dv">04</span> <span class="op">+</span><span class="st"> </span>pland_<span class="dv">05</span> <span class="op">+</span><span class="st"> </span>pland_<span class="dv">12</span> <span class="op">+</span><span class="st"> </span>pland_<span class="dv">13</span></a>
 <a class="sourceLine" id="cb101-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb101-9" data-line-number="9"><span class="co"># define and fit candidate models</span></a>
+<a class="sourceLine" id="cb101-9" data-line-number="9"><span class="co"># create new formulae with landcover covariates added to the detection submodel</span></a>
 <a class="sourceLine" id="cb101-10" data-line-number="10">mods &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">det_mod_null =</span> det_mod, </a>
 <a class="sourceLine" id="cb101-11" data-line-number="11">             <span class="dt">det_mod_dec =</span> <span class="kw">update.formula</span>(det_mod, <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span>pland_<span class="dv">04</span> <span class="op">~</span><span class="st"> </span>.),</a>
 <a class="sourceLine" id="cb101-12" data-line-number="12">             <span class="dt">det_mod_mix =</span> <span class="kw">update.formula</span>(det_mod, <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span>pland_<span class="dv">05</span> <span class="op">~</span><span class="st"> </span>.),</a>
 <a class="sourceLine" id="cb101-13" data-line-number="13">             <span class="dt">global =</span> <span class="kw">update.formula</span>(det_mod, </a>
 <a class="sourceLine" id="cb101-14" data-line-number="14">                                     <span class="op">~</span><span class="st"> </span>. <span class="op">+</span><span class="st"> </span>pland_<span class="dv">04</span> <span class="op">+</span><span class="st"> </span>pland_<span class="dv">05</span> <span class="op">~</span><span class="st"> </span>.)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb101-15" data-line-number="15"><span class="st">  </span><span class="kw">map</span>(occu, <span class="dt">data =</span> occ_um)</a></code></pre></div>
+<a class="sourceLine" id="cb101-15" data-line-number="15"><span class="st">  </span><span class="co"># fit candidate models</span></a>
+<a class="sourceLine" id="cb101-16" data-line-number="16"><span class="st">  </span><span class="kw">map</span>(occu, <span class="dt">data =</span> occ_um)</a></code></pre></div>
 <p>Now we can perform model selection on this set to compare the different candidate models.</p>
 <div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb102-1" data-line-number="1">mod_sel &lt;-<span class="st"> </span><span class="kw">fitList</span>(<span class="dt">fits =</span> mods) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb102-2" data-line-number="2"><span class="st">  </span><span class="kw">modSel</span>()</a>
@@ -1000,7 +986,7 @@ Tip
 <a class="sourceLine" id="cb102-6" data-line-number="6"><span class="co">#&gt; det_mod_mix     12 675.34  1.28 0.300     0.87</span></a>
 <a class="sourceLine" id="cb102-7" data-line-number="7"><span class="co">#&gt; det_mod_dec     12 677.53  3.46 0.101     0.97</span></a>
 <a class="sourceLine" id="cb102-8" data-line-number="8"><span class="co">#&gt; det_mod_null    11 680.01  5.95 0.029     1.00</span></a></code></pre></div>
-<p>From these results, it’s clear that including these forest habitat covariates–especially deciduous broadleaf forest–leads to a marked improvement in model performance, as by the AIC and AIC weights. Let’s look at the coefficients from the global model for these covariates to see how they’re impacting detection and occupancy.</p>
+<p>From these results, it’s clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as by the AIC and AIC weights. Let’s look at the coefficients from the global model for these covariates to see how they’re impacting detection and occupancy.</p>
 <div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb103-1" data-line-number="1"><span class="kw">coef</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb103-2" data-line-number="2"><span class="st">  </span><span class="kw">enframe</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb103-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(name, <span class="st">&quot;pland_0&quot;</span>))</a>
@@ -1011,15 +997,16 @@ Tip
 <a class="sourceLine" id="cb103-8" data-line-number="8"><span class="co">#&gt; 2 psi(pland_05)  1.02 </span></a>
 <a class="sourceLine" id="cb103-9" data-line-number="9"><span class="co">#&gt; 3 p(pland_04)   -0.989</span></a>
 <a class="sourceLine" id="cb103-10" data-line-number="10"><span class="co">#&gt; 4 p(pland_05)    2.58</span></a></code></pre></div>
-<p>The <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling.</p>
+<p>The <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling. In order to do this, it’s useful to have some covariates that you know in advance will only impact either detection or occupancy.</p>
 </div>
 </div>
 <div id="occupancy-exercises" class="section level2">
 <h2><span class="header-section-number">12.5</span> Exercises</h2>
 <p>Now that you’ve completed this lesson, try modifying your script to complete at least one of the following exercises:</p>
 <ol style="list-style-type: decimal">
-<li><p>What happens if you only use stationary counts, or reduce the distance traveled to 1 km?</p></li>
 <li><p>Try sampling more than a single checklist per grid cell in the spatiotemporal sampling. How does that affect model fit and predictions?</p></li>
+<li><p>What happens to the size of dataset if you only use stationary counts, or reduce the distance traveled to 1 km? How does it impact the results? How does the different input data affect your interpretation of the results?</p></li>
+<li><p>What happens to the size of the dataset if you allow repeat visits to be by multiple observers? How does this impact the results.</p></li>
 <li><p>Produce a map based on model averaged predictions. Note that making these predictions may take up to an hour.</p></li>
 </ol>
 
