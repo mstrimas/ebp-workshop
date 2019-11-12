@@ -165,7 +165,7 @@ metrics_cal <- rf_pred_test %>%
                             st.dev = FALSE)
 
 # combine various performance metrics together
-rf_assessment <- tibble(
+tibble(
   model = c("RF", "Calibrated RF"),
   mse = c(mse_fit, mse_cal),
   sensitivity = c(metrics_fit$sensitivity, metrics_cal$sensitivity),
@@ -173,7 +173,6 @@ rf_assessment <- tibble(
   auc = c(metrics_fit$AUC, metrics_cal$AUC),
   kappa = c(metrics_fit$Kappa, metrics_cal$Kappa)
 )
-knitr::kable(rf_assessment, digits = 3)
 
 
 ## ----encounter-habitat-pi------------------------------------------------

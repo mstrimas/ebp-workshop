@@ -125,12 +125,11 @@ hist(ebird_ss$observation_count, main = "Histogram of counts",
 pos_counts <- keep(ebird_ss$observation_count, ~ . > 0)
 hist(pos_counts, main = "Histogram of counts > 0", 
      xlab = "Observed non-zero count")
-
-prop_zero <- round(sum(ebird_ss$observation_count==0)/nrow(ebird_ss),0)
-
+prop_zero <- sum(ebird_ss$observation_count == 0) / nrow(ebird_ss)
+prop_zero
 ```
 
-After the subsampling `r prop_zero` proportion of the counts are zeros. The plot that includes zeros (top row) show an extremely zero-inflated and skewed distribution, due to the large number of zero-counts (checklists with no Wood Thrush detections). With zeros removed there is still a distribution of counts with a strong skew. 
+After the subsampling, `r scales::percent(prop_zero)` of the counts are zeros. The plot that includes zeros (top row) show an extremely zero-inflated and skewed distribution, due to the large number of zero-counts (checklists with no Wood Thrush detections). With zeros removed there is still a distribution of counts with a strong skew. 
 
 
 ## Abundance models {#abundance-model}
