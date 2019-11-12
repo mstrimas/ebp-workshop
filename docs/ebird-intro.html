@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-11-11" />
+<meta name="date" content="2019-11-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -205,7 +205,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="12.5" data-path="occupancy.html"><a href="occupancy.html#occupancy-exercises"><i class="fa fa-check"></i><b>12.5</b> Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="13" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>13</b> Abundance</a></li>
+<li class="chapter" data-level="13" data-path="abundance.html"><a href="abundance.html"><i class="fa fa-check"></i><b>13</b> Abundance</a><ul>
+<li class="chapter" data-level="13.1" data-path="abundance.html"><a href="abundance.html#abundance-prep"><i class="fa fa-check"></i><b>13.1</b> Data preparation</a></li>
+<li class="chapter" data-level="13.2" data-path="abundance.html"><a href="abundance.html#abundance-explore"><i class="fa fa-check"></i><b>13.2</b> Exploratory data analysis</a></li>
+<li class="chapter" data-level="13.3" data-path="abundance.html"><a href="abundance.html#abundance-model"><i class="fa fa-check"></i><b>13.3</b> Abundance models</a></li>
+<li class="chapter" data-level="13.4" data-path="abundance.html"><a href="abundance.html#abundance-assess"><i class="fa fa-check"></i><b>13.4</b> Asssessment</a><ul>
+<li class="chapter" data-level="13.4.1" data-path="abundance.html"><a href="abundance.html#abundance-assess-cov"><i class="fa fa-check"></i><b>13.4.1</b> Assessing covariate effects</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="abundance.html"><a href="abundance.html#abundance-predict"><i class="fa fa-check"></i><b>13.5</b> Prediction</a></li>
+<li class="chapter" data-level="13.6" data-path="abundance.html"><a href="abundance.html#abundance-exercises"><i class="fa fa-check"></i><b>13.6</b> Exercises</a></li>
+</ul></li>
 </ul>
 
       </nav>
@@ -316,6 +325,20 @@ gitbook.start({
 });
 </script>
 
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
 </body>
 
 </html>

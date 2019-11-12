@@ -137,9 +137,25 @@ ebird_ss <- ebird_ss %>%
 Finally, we'll hold 20% of the data aside so we have an independent test set, which we can later use to assess the performance of our model.
 
 ```{r encounter-prep-tt}
+# split 80/20
 ebird_split <- ebird_ss %>% 
   split(if_else(runif(nrow(.)) <= 0.8, "train", "test"))
 ```
+
+<div class="exercise">
+  <h2>Exercise</h2>
+  How would you modify the above code to include 25% of data in the test set?
+  
+  <button class="solution">Solution</button>
+<div class="solution-content">
+
+```{r encounter-prep-tt-sol}
+ebird_split_25 <- ebird_ss %>% 
+  split(if_else(runif(nrow(.)) <= 0.75, "train", "test"))
+```
+
+</div>
+</div>
 
 ## Random forests {#encounter-rf}
 
