@@ -150,7 +150,7 @@ occ_wide <- format_unmarked_occu(occ,
 
 As described in lesson \@ref(subsampling), we'll use spatial subsampling to reduce spatial bias. However, here we'll subsample at the level of 'sites' rather than observations.
 
-```{r encounter-prep-sss, results = "hide"}
+```{r encounter-prep-sss, results="hide"}
 # generate hexagonal grid with ~ 5 km betweeen cells
 dggs <- dgconstruct(spacing = 5)
 # get hexagonal cell id for each site
@@ -167,6 +167,7 @@ occ_ss <- occ_wide_cell %>%
 Finally, we'll convert this data frame of observations into an `unmarked` object in order to fit occupancy models.
 
 ```{r encounter-data-unmarked, class.source="livecode"}
+# creat unmarked object
 occ_um <- formatWide(occ_ss, type = "unmarkedFrameOccu")
 ```
 
@@ -407,5 +408,6 @@ Now that you've completed this lesson, try modifying your script to complete at 
 4. Produce a map based on model averaged predictions. Note that making these predictions may take up to an hour.
 
 ```{r occupancy-purl, eval=FALSE, echo=FALSE}
+unlink("12_occupancy.R")
 knitr::purl("12_occupancy.Rmd")
 ```

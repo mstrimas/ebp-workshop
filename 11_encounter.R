@@ -51,7 +51,7 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
   st_geometry()
 
 
-## ----encounter-prep-ss---------------------------------------------------
+## ----encounter-prep-ss-grid----------------------------------------------
 # generate hexagonal grid with ~ 5 km betweeen cells
 dggs <- dgconstruct(spacing = 5)
 # get hexagonal cell id and week number for each checklist
@@ -61,41 +61,21 @@ checklist_cell <- ebird_habitat %>%
          week = week(observation_date))
 
 
-## ----encounter-prep-ss-sample, class.source="livecode"-------------------
+## ----encounter-prep-ss, class.source="livecode"--------------------------
 # sample one checklist per grid cell per week
 # sample detection/non-detection independently 
-ebird_ss <- checklist_cell %>% 
-  group_by(species_observed, year, week, cell) %>% 
-  sample_n(size = 1) %>% 
-  ungroup()
+
+### LIVE CODE ###
 
 
-## ----encounter-prep-ss-sol-----------------------------------------------
-split_det <- split(checklist_cell, checklist_cell$species_observed)
-ebird_all_det <- split_det$`FALSE` %>% 
-  group_by(year, week, cell) %>% 
-  sample_n(size = 1) %>% 
-  ungroup() %>% 
-  bind_rows(split_det$`TRUE`)
+## ----encounter-prep-select, class.source="livecode"----------------------
+# select covariates for model
 
-
-## ----encounter-prep-ss-sol2----------------------------------------------
-sum(ebird_ss$species_observed)
-sum(ebird_all_det$species_observed)
-
-
-## ----encounter-prep-fact, class.source="livecode"------------------------
-ebird_ss <- ebird_ss %>% 
-  select(species_observed,
-         year, day_of_year,
-         time_observations_started, duration_minutes,
-         effort_distance_km, number_observers, 
-         starts_with("pland_"),
-         starts_with("elevation_")) %>% 
-  drop_na()
+### LIVE CODE ###
 
 
 ## ----encounter-prep-tt---------------------------------------------------
+# split 80/20
 ebird_split <- ebird_ss %>% 
   split(if_else(runif(nrow(.)) <= 0.8, "train", "test"))
 
@@ -106,14 +86,12 @@ detection_freq <- mean(ebird_split$train$species_observed)
 
 ## ----encounter-rf-fit, class.source="livecode"---------------------------
 # ranger requires a factor response to do classification
-ebird_split$train$species_observed <- factor(ebird_split$train$species_observed)
+
+### LIVE CODE ###
+
 # grow random forest
-rf <- ranger(formula =  species_observed ~ ., 
-             data = ebird_split$train,
-             importance = "impurity",
-             probability = TRUE,
-             replace = TRUE, 
-             sample.fraction = c(detection_freq, detection_freq))
+
+### LIVE CODE ###
 
 
 ## ----encounter-rf-cal----------------------------------------------------
@@ -126,15 +104,16 @@ occ_obs <- ebird_split$train$species_observed %>%
 rf_pred_train <- tibble(obs = occ_obs, pred = occ_pred) %>% 
   drop_na()
 
+
 ## ----encounter-rf-cal-scam, class.source="livecode"----------------------
-# fit calibration model
-# this fits a GAM, but the package scam allows us to use constrained shapes for the smooths
-calibration_model <- scam(obs ~ s(pred, k = 6, bs = "mpi"), 
-                          gamma = 2,
-                          data = rf_pred_train)
+# fit gam calibration model
+# scam allows us to use constrained shapes for the smooths
+
+### LIVE CODE ###
+
 
 ## ----encounter-rf-cal-plot-----------------------------------------------
-# plot
+# plot calibration curve
 cal_pred <- tibble(pred = seq(0, 1, length.out = 100))
 cal_pred <- predict(calibration_model, cal_pred, type = "response") %>% 
   bind_cols(cal_pred, calibrated = .)
@@ -215,8 +194,7 @@ ggplot(pi) +
 
 ## ----encounter-habitat-pi-pland, echo=FALSE------------------------------
 read_csv("data/mcd12q1_classes.csv") %>% 
-  select(class, name) %>% 
-  knitr::kable()
+  select(class, name)
 
 
 ## ----encounter-habitat-pd------------------------------------------------
@@ -291,36 +269,26 @@ human_time <- str_glue("{h}:{m} {ap}",
 
 ## ----encounter-predict-effort, class.source="livecode"-------------------
 # add effort covariates to prediction 
-pred_surface_eff <- pred_surface %>% 
-  mutate(observation_date = ymd("2018-06-15"),
-         year = year(observation_date),
-         day_of_year = yday(observation_date),
-         time_observations_started = t_peak,
-         duration_minutes = 60,
-         effort_distance_km = 1,
-         number_observers = 1)
+
+### LIVE CODE ###
 
 # predict
-pred_rf <- predict(rf, data = pred_surface_eff, type = "response")
-pred_rf <- pred_rf$predictions[, 2]
+
+### LIVE CODE ###
+
 # apply calibration models
-pred_rf_cal <- predict(calibration_model, 
-                       data.frame(pred = pred_rf), 
-                       type = "response")
+
+### LIVE CODE ###
+
 # add to prediction surface
-pred_er <- bind_cols(pred_surface_eff, encounter_rate = pred_rf_cal) %>% 
-  select(latitude, longitude, encounter_rate) %>% 
-  mutate(encounter_rate = pmin(pmax(encounter_rate, 0), 1))
+
+### LIVE CODE ###
 
 
 ## ----encounter-predict-rasterize, class.source="livecode"----------------
-r_pred <- pred_er %>% 
-  # convert to spatial features
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>% 
-  st_transform(crs = projection(r)) %>% 
-  # rasterize
-  rasterize(r)
-r_pred <- r_pred[[-1]]
+# rasterize predictions
+
+### LIVE CODE ###
 
 
 ## ----encounter-predict-map-----------------------------------------------
@@ -365,6 +333,18 @@ image.plot(zlim = range(brks), legend.only = TRUE,
                               cex = 1, line = 0))
 
 
-## ----encounter-purl, eval=FALSE, echo=FALSE------------------------------
-## knitr::purl("11_encounter.Rmd")
+# Exercises ----
 
+# 1. How does changing the subsampling grid cell size affect the model
+# performance?
+
+# 2. What happens to the predictions if you make them for an eBirder traveling
+# further than 1 km, or birding for longer than 1 hour?
+
+# 3. Filter the data to only shorter duration checklists or shorter distances
+# traveled. How does this affect model performance?
+
+# 4. An alternative approach to dealing with class imbalance, is to grid sample
+# only the non-detections, while keeping all the detections. Try this
+# subsampling approach and see what the affect is on the predictive performance
+# metrics.

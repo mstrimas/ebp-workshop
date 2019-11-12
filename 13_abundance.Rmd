@@ -523,6 +523,7 @@ Now that you've completed this lesson, try modifying your script to complete at 
 5. Fit an encounter rate random forest model then use the predicted encounter rate as a new covariate in the abundance model. Compare the model performance. 
 
 ```{r abundance-purl, eval=FALSE, echo=FALSE}
+unlink("13_abundance.R")
 knitr::purl("13_abundance.Rmd")
 ```
 

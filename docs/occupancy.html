@@ -366,7 +366,8 @@ Exercise
 <a class="sourceLine" id="cb91-10" data-line-number="10"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb91-11" data-line-number="11"><span class="st">  </span><span class="kw">select</span>(<span class="op">-</span>cell)</a></code></pre></div>
 <p>Finally, we’ll convert this data frame of observations into an <code>unmarked</code> object in order to fit occupancy models.</p>
-<div class="sourceCode" id="cb92"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" data-line-number="1">occ_um &lt;-<span class="st"> </span><span class="kw">formatWide</span>(occ_ss, <span class="dt">type =</span> <span class="st">&quot;unmarkedFrameOccu&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb92-1" data-line-number="1"><span class="co"># creat unmarked object</span></a>
+<a class="sourceLine" id="cb92-2" data-line-number="2">occ_um &lt;-<span class="st"> </span><span class="kw">formatWide</span>(occ_ss, <span class="dt">type =</span> <span class="st">&quot;unmarkedFrameOccu&quot;</span>)</a></code></pre></div>
 </div>
 <div id="occupancy-model" class="section level2">
 <h2><span class="header-section-number">12.2</span> Occupancy modeling</h2>

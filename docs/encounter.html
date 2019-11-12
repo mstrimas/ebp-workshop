@@ -332,14 +332,15 @@ Exercise
 </div>
 </div>
 <p>In preparation for modeling, we’ll select only the the columns that will be used as predictors in the model. We include both habitat predictors, which we expect to influence whether a species is present at a site, and also effort predictors to help control for variation in detectability.</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1">ebird_ss &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb70-2" data-line-number="2"><span class="st">  </span><span class="kw">select</span>(species_observed,</a>
-<a class="sourceLine" id="cb70-3" data-line-number="3">         year, day_of_year,</a>
-<a class="sourceLine" id="cb70-4" data-line-number="4">         time_observations_started, duration_minutes,</a>
-<a class="sourceLine" id="cb70-5" data-line-number="5">         effort_distance_km, number_observers, </a>
-<a class="sourceLine" id="cb70-6" data-line-number="6">         <span class="kw">starts_with</span>(<span class="st">&quot;pland_&quot;</span>),</a>
-<a class="sourceLine" id="cb70-7" data-line-number="7">         <span class="kw">starts_with</span>(<span class="st">&quot;elevation_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb70-8" data-line-number="8"><span class="st">  </span><span class="kw">drop_na</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="co"># select covariates for model</span></a>
+<a class="sourceLine" id="cb70-2" data-line-number="2">ebird_ss &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb70-3" data-line-number="3"><span class="st">  </span><span class="kw">select</span>(species_observed,</a>
+<a class="sourceLine" id="cb70-4" data-line-number="4">         year, day_of_year,</a>
+<a class="sourceLine" id="cb70-5" data-line-number="5">         time_observations_started, duration_minutes,</a>
+<a class="sourceLine" id="cb70-6" data-line-number="6">         effort_distance_km, number_observers, </a>
+<a class="sourceLine" id="cb70-7" data-line-number="7">         <span class="kw">starts_with</span>(<span class="st">&quot;pland_&quot;</span>),</a>
+<a class="sourceLine" id="cb70-8" data-line-number="8">         <span class="kw">starts_with</span>(<span class="st">&quot;elevation_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb70-9" data-line-number="9"><span class="st">  </span><span class="kw">drop_na</span>()</a></code></pre></div>
 <p>Finally, we’ll hold 20% of the data aside so we have an independent test set, which we can later use to assess the performance of our model.</p>
 <div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb71-1" data-line-number="1"><span class="co"># split 80/20</span></a>
 <a class="sourceLine" id="cb71-2" data-line-number="2">ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -785,13 +786,14 @@ Unclassified
 <a class="sourceLine" id="cb82-20" data-line-number="20"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, encounter_rate) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb82-21" data-line-number="21"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">encounter_rate =</span> <span class="kw">pmin</span>(<span class="kw">pmax</span>(encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>))</a></code></pre></div>
 <p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
-<div class="sourceCode" id="cb83"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1">r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb83-2" data-line-number="2"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
-<a class="sourceLine" id="cb83-3" data-line-number="3"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb83-4" data-line-number="4"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb83-5" data-line-number="5"><span class="st">  </span><span class="co"># rasterize</span></a>
-<a class="sourceLine" id="cb83-6" data-line-number="6"><span class="st">  </span><span class="kw">rasterize</span>(r)</a>
-<a class="sourceLine" id="cb83-7" data-line-number="7">r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</a></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb83-1" data-line-number="1"><span class="co"># rasterize predictions</span></a>
+<a class="sourceLine" id="cb83-2" data-line-number="2">r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb83-3" data-line-number="3"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
+<a class="sourceLine" id="cb83-4" data-line-number="4"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb83-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb83-6" data-line-number="6"><span class="st">  </span><span class="co"># rasterize</span></a>
+<a class="sourceLine" id="cb83-7" data-line-number="7"><span class="st">  </span><span class="kw">rasterize</span>(r)</a>
+<a class="sourceLine" id="cb83-8" data-line-number="8">r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</a></code></pre></div>
 <p>Finally, we can map these predictions!</p>
 <div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb84-1" data-line-number="1"><span class="co"># project predictions</span></a>
 <a class="sourceLine" id="cb84-2" data-line-number="2">r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</a>

@@ -52,60 +52,25 @@ ne_state_lines <- read_sf("data/gis-data.gpkg", "ne_state_lines") %>%
 
 
 ## ----occupancy-prep-filter-----------------------------------------------
+# filter to a single year of data
 ebird_filtered <- filter(ebird_habitat, 
                          number_observers <= 5,
                          year == max(year))
 
 
-## ----occupancy-prep-repeats----------------------------------------------
+## ----occupancy-prep-repeats, class.source="livecode"---------------------
 # subset for occupancy modeling
-occ <- filter_repeat_visits(ebird_filtered, 
-                            min_obs = 2, max_obs = 10,
-                            annual_closure = TRUE,
-                            date_var = "observation_date",
-                            site_vars = c("latitude", "longitude", 
-                                          "observer_id"))
 
-
-## ----occupancy-prep-repeats-sol------------------------------------------
-occ_days <- filter_repeat_visits(ebird_filtered, 
-                                 min_obs = 2, max_obs = 10,
-                                 n_days = 7,
-                                 date_var = "observation_date",
-                                 site_vars = c("latitude", "longitude", 
-                                               "observer_id"))
-
-
-## ----occupancy-prep-loss-sol---------------------------------------------
-nrow(occ) / nrow(ebird_habitat)
-n_distinct(occ$site)
+### LIVE CODE ###
 
 
 ## ----occupancy-prep-unmarked, class.source="livecode"--------------------
 # format for unmarked, select occupancy and detection covariates
-occ_wide <- format_unmarked_occu(occ, 
-                                 site_id = "site", 
-                                 response = "species_observed",
-                                 site_covs = c("n_observations", 
-                                               "latitude", "longitude", 
-                                               # % deciduous forest
-                                               "pland_04", 
-                                               # % mixed forest
-                                               "pland_05",
-                                               # % cropland
-                                               "pland_12",
-                                               # % urban
-                                               "pland_13"),
-                                 obs_covs = c("time_observations_started", 
-                                              "duration_minutes", 
-                                              "effort_distance_km", 
-                                              "number_observers", 
-                                              "protocol_type",
-                                              "pland_04", 
-                                              "pland_05"))
+
+### LIVE CODE ###
 
 
-## ----encounter-prep-sss, results = "hide"--------------------------------
+## ----encounter-prep-sss, results="hide"----------------------------------
 # generate hexagonal grid with ~ 5 km betweeen cells
 dggs <- dgconstruct(spacing = 5)
 # get hexagonal cell id for each site
@@ -120,54 +85,25 @@ occ_ss <- occ_wide_cell %>%
 
 
 ## ----encounter-data-unmarked, class.source="livecode"--------------------
-occ_um <- formatWide(occ_ss, type = "unmarkedFrameOccu")
+# creat unmarked object
+
+### LIVE CODE ###
 
 
 ## ----occupancy-model-fit, class.source="livecode"------------------------
 # fit model
-occ_model <- occu(~ time_observations_started + 
-                    duration_minutes + 
-                    effort_distance_km + 
-                    number_observers + 
-                    protocol_type +
-                    pland_04 + pland_05
-                  ~ pland_04 + pland_05 + pland_12 + pland_13, 
-                  data = occ_um)
-# look at the regression coefficients from the model
-summary(occ_model)
+
+### LIVE CODE ###
 
 
 ## ----occupancy-model-assess, eval=FALSE, echo=1:2, class.source="dontrun"----
-## occ_gof <- mb.gof.test(occ_model, nsim = 1, plot.hist = FALSE)
-## print(occ_gof)
-## saveRDS(occ_gof, "raw-data/woothr_occupancy-model_gof.rds")
-
-
-## ----occupancy-model-assess-actual, echo=FALSE---------------------------
-# read in saved gof test results 
-occ_gof <- readRDS("raw-data/woothr_occupancy-model_gof.rds")
-# print without chisq table
-occ_gof$chisq.table <- NULL
+occ_gof <- mb.gof.test(occ_model, nsim = 10, plot.hist = FALSE)
 print(occ_gof)
 
 
 ## ----occupancy-predict-predict, eval=FALSE, echo=1:10, class.source="livecode"----
-## # make prediction for bcr 27
-## occ_pred <- predict(occ_model,
-##                     newdata = as.data.frame(pred_surface),
-##                     type = "state")
-## 
-## # add to prediction surface
-## pred_occ <- bind_cols(pred_surface,
-##                       occ_prob = occ_pred$Predicted,
-##                       occ_se = occ_pred$SE) %>%
-##   select(latitude, longitude, occ_prob, occ_se)
-## 
-## saveRDS(pred_occ, "raw-data/woothr_occupancy-model_predictions.rds")
 
-
-## ----occupancy-predict-predict-load, echo=FALSE--------------------------
-pred_occ <- readRDS("raw-data/woothr_occupancy-model_predictions.rds")
+### LIVE CODE ###
 
 
 ## ----occupancy-predict-rasterize-----------------------------------------
@@ -180,7 +116,7 @@ r_pred <- pred_occ %>%
 r_pred <- r_pred[[c("occ_prob", "occ_se")]]
 
 
-## ----occupancy-predict-map, fig.asp = 1.236------------------------------
+## ----occupancy-predict-map, fig.asp=1.236--------------------------------
 # project predictions
 r_pred_proj <- projectRaster(r_pred, crs = map_proj$proj4string, method = "ngb")
 
@@ -235,32 +171,17 @@ for (nm in names(r_pred)) {
 
 
 ## ----occupancy-model-select-dredge, class.source="livecode"--------------
-# get list of all possible terms, then subset to those we want to keep
-det_terms <- getAllTerms(occ_model) %>% 
-  # retain the detection submodel covariates
-  discard(str_detect, pattern = "psi")
 
-# dredge all possibe combinations of the occupancy covariates
-occ_dredge <- dredge(occ_model, fixed = det_terms)
-
-# model comparison
-select(occ_dredge, starts_with("psi(p"), df, AICc, delta, weight) %>% 
-  mutate_all(~ round(., 3)) %>% 
-  knitr::kable()
+### LIVE CODE ###
 
 
 ## ----occupancy-model-select-average, class.source="livecode"-------------
-# select models with the most suport for model averaging
-occ_dredge_95 <- get.models(occ_dredge, subset = cumsum(weight) <= 0.95)
 
-# average models based on model weights 
-occ_avg <- model.avg(occ_dredge_95, fit = TRUE)
-
-# model coefficients
-t(occ_avg$coefficients)
+### LIVE CODE ###
 
 
 ## ----occupancy-model-select-predict, eval=FALSE, class.source="dontrun"----
+## #
 ## occ_pred_avg <- predict(occ_avg,
 ##                         newdata = as.data.frame(pred_surface),
 ##                         type = "state")
@@ -273,20 +194,21 @@ t(occ_avg$coefficients)
 
 
 ## ----occupancy-select-detection-define-----------------------------------
-# define a null detection model
+# define occupancy model formula with only effort in detection submodel
 det_mod <- ~ time_observations_started + 
   duration_minutes + 
   effort_distance_km + 
   number_observers + 
-  protocol_type ~
+  protocol_type ~ 
   pland_04 + pland_05 + pland_12 + pland_13
 
-# define and fit candidate models
+# create new formulae with landcover covariates added to the detection submodel
 mods <- list(det_mod_null = det_mod, 
              det_mod_dec = update.formula(det_mod, ~ . + pland_04 ~ .),
              det_mod_mix = update.formula(det_mod, ~ . + pland_05 ~ .),
              global = update.formula(det_mod, 
                                      ~ . + pland_04 + pland_05 ~ .)) %>% 
+  # fit candidate models
   map(occu, data = occ_um)
 
 
@@ -302,6 +224,17 @@ coef(occ_model) %>%
   filter(str_detect(name, "pland_0"))
 
 
-## ----encounter-purl, eval=FALSE, echo=FALSE------------------------------
-## knitr::purl("12_occupancy.Rmd")
+# Exercises ----
 
+# 1. Try sampling more than a single checklist per grid cell in the
+# spatiotemporal sampling. How does that affect model fit and predictions?
+
+# 2. What happens to the size of dataset if you only use stationary counts, or
+# reduce the distance traveled to 1 km? How does it impact the results? How does
+# the different input data affect your interpretation of the results?
+
+# 3. What happens to the size of the dataset if you allow repeat visits to be by
+# multiple observers? How does this impact the results.
+
+# 4. Produce a map based on model averaged predictions. Note that making these
+# predictions may take up to an hour.
