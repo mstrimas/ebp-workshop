@@ -327,8 +327,8 @@ We recommend also assessing the fitted covariate effects to see whether they sho
 
 Calling the `plot()` function on the GAM object produces plots of the smooth functions for each of the separate predictors, which gives us a sense of the effect of each predictor on the count response.
 
-```{r abundance-model-cov-plot, fig.asp=1.236}
-par(mai = c(0.5, 0.25, 0.2, 0.25))
+```{r abundance-model-cov-plot, fig.asp=1}
+par(mai = c(0.75, 0.25, 0.2, 0.25))
 plot(pred_model, pages = 1, ylab = "")
 ```
 
