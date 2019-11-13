@@ -385,12 +385,12 @@ mod_sel <- fitList(fits = mods) %>%
 mod_sel
 ```
 
-From these results, it's clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as by the AIC and AIC weights. Let's look at the coefficients from the global model for these covariates to see how they're impacting detection and occupancy. 
+From these results, it's clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as shown by the AIC and AIC weights. Let's look at the coefficients from the global model for these covariates to see how they're impacting detection and occupancy. 
 
 ```{r occupancy-select-detection-coef}
 coef(occ_model) %>% 
   enframe() %>% 
-  filter(str_detect(name, "pland_0"))
+  filter(str_detect(name, "pland_"))
 ```
 
 The `psi()` coefficients are from the occupancy submodel and the `p()` coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling. In order to do this, it's useful to have some covariates that you know in advance will only impact either detection or occupancy. 

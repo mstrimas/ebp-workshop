@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-11-12" />
+<meta name="date" content="2019-11-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -996,17 +996,19 @@ Tip
 <a class="sourceLine" id="cb103-6" data-line-number="6"><span class="co">#&gt; det_mod_mix     12 675.34  1.28 0.300     0.87</span></a>
 <a class="sourceLine" id="cb103-7" data-line-number="7"><span class="co">#&gt; det_mod_dec     12 677.53  3.46 0.101     0.97</span></a>
 <a class="sourceLine" id="cb103-8" data-line-number="8"><span class="co">#&gt; det_mod_null    11 680.01  5.95 0.029     1.00</span></a></code></pre></div>
-<p>From these results, it’s clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as by the AIC and AIC weights. Let’s look at the coefficients from the global model for these covariates to see how they’re impacting detection and occupancy.</p>
+<p>From these results, it’s clear that including these forest habitat covariates (especially deciduous broadleaf forest) leads to a marked improvement in model performance, as shown by the AIC and AIC weights. Let’s look at the coefficients from the global model for these covariates to see how they’re impacting detection and occupancy.</p>
 <div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb104-1" data-line-number="1"><span class="kw">coef</span>(occ_model) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb104-2" data-line-number="2"><span class="st">  </span><span class="kw">enframe</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb104-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(name, <span class="st">&quot;pland_0&quot;</span>))</a>
-<a class="sourceLine" id="cb104-4" data-line-number="4"><span class="co">#&gt; # A tibble: 4 x 2</span></a>
+<a class="sourceLine" id="cb104-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">str_detect</span>(name, <span class="st">&quot;pland_&quot;</span>))</a>
+<a class="sourceLine" id="cb104-4" data-line-number="4"><span class="co">#&gt; # A tibble: 6 x 2</span></a>
 <a class="sourceLine" id="cb104-5" data-line-number="5"><span class="co">#&gt;   name           value</span></a>
 <a class="sourceLine" id="cb104-6" data-line-number="6"><span class="co">#&gt;   &lt;chr&gt;          &lt;dbl&gt;</span></a>
 <a class="sourceLine" id="cb104-7" data-line-number="7"><span class="co">#&gt; 1 psi(pland_04)  7.06 </span></a>
 <a class="sourceLine" id="cb104-8" data-line-number="8"><span class="co">#&gt; 2 psi(pland_05)  1.02 </span></a>
-<a class="sourceLine" id="cb104-9" data-line-number="9"><span class="co">#&gt; 3 p(pland_04)   -0.989</span></a>
-<a class="sourceLine" id="cb104-10" data-line-number="10"><span class="co">#&gt; 4 p(pland_05)    2.58</span></a></code></pre></div>
+<a class="sourceLine" id="cb104-9" data-line-number="9"><span class="co">#&gt; 3 psi(pland_12) -1.30 </span></a>
+<a class="sourceLine" id="cb104-10" data-line-number="10"><span class="co">#&gt; 4 psi(pland_13) -2.53 </span></a>
+<a class="sourceLine" id="cb104-11" data-line-number="11"><span class="co">#&gt; 5 p(pland_04)   -0.989</span></a>
+<a class="sourceLine" id="cb104-12" data-line-number="12"><span class="co">#&gt; 6 p(pland_05)    2.58</span></a></code></pre></div>
 <p>The <code>psi()</code> coefficients are from the occupancy submodel and the <code>p()</code> coefficients are from the detection submodel. With this in mind, we see that increasing forest cover increases occupancy probability, since Wood Thrush are forest-associated species, but it decreases detection probability, since birds are harder to see and hear in dense forest. The ability to tease apart the differing effects that covariates have on detection and occupancy is one of the strengths of occupancy modeling. In order to do this, it’s useful to have some covariates that you know in advance will only impact either detection or occupancy.</p>
 </div>
 </div>
