@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2019-11-13" />
+<meta name="date" content="2019-11-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -748,21 +748,22 @@ Unclassified
 <a class="sourceLine" id="cb81-6" data-line-number="6">                              <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), </a>
 <a class="sourceLine" id="cb81-7" data-line-number="7">                              <span class="dt">data =</span> ebird_split<span class="op">$</span>train) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb81-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(time_observations_started, <span class="dt">encounter_rate =</span> <span class="st">&quot;TRUE&quot;</span>)</a>
-<a class="sourceLine" id="cb81-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb81-10" data-line-number="10"><span class="co"># hours with at least 1% of checklists</span></a>
-<a class="sourceLine" id="cb81-11" data-line-number="11">search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb81-13" data-line-number="13"><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-15" data-line-number="15"><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</a>
-<a class="sourceLine" id="cb81-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb81-17" data-line-number="17"><span class="co"># constrained peak time</span></a>
-<a class="sourceLine" id="cb81-18" data-line-number="18">t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-19" data-line-number="19"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-20" data-line-number="20"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb81-21" data-line-number="21"><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</a>
-<a class="sourceLine" id="cb81-22" data-line-number="22">t_peak</a>
-<a class="sourceLine" id="cb81-23" data-line-number="23"><span class="co">#&gt; [1] 5.08</span></a></code></pre></div>
+<a class="sourceLine" id="cb81-9" data-line-number="9"><span class="co">#&gt; Aggregating predictions.. Progress: 90%. Estimated remaining time: 3 seconds.</span></a>
+<a class="sourceLine" id="cb81-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb81-11" data-line-number="11"><span class="co"># hours with at least 1% of checklists</span></a>
+<a class="sourceLine" id="cb81-12" data-line-number="12">search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-13" data-line-number="13"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb81-14" data-line-number="14"><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-15" data-line-number="15"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-16" data-line-number="16"><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</a>
+<a class="sourceLine" id="cb81-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb81-18" data-line-number="18"><span class="co"># constrained peak time</span></a>
+<a class="sourceLine" id="cb81-19" data-line-number="19">t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-20" data-line-number="20"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-21" data-line-number="21"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb81-22" data-line-number="22"><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</a>
+<a class="sourceLine" id="cb81-23" data-line-number="23">t_peak</a>
+<a class="sourceLine" id="cb81-24" data-line-number="24"><span class="co">#&gt; [1] 5.08</span></a></code></pre></div>
 <p>Based on this analysis, the best time for detecting Wood Thrush is at 5:05 AM. Now we can use this time to make predictions.</p>
 <div class="sourceCode" id="cb82"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb82-1" data-line-number="1"><span class="co"># add effort covariates to prediction </span></a>
 <a class="sourceLine" id="cb82-2" data-line-number="2">pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></a>
