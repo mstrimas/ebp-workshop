@@ -285,14 +285,11 @@ Tip
 <a class="sourceLine" id="cb56-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(species_observed, year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb56-5" data-line-number="5"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb56-6" data-line-number="6"><span class="st">  </span><span class="kw">ungroup</span>()</a></code></pre></div>
-<div class="exercise">
+<div class="tip">
 <h2>
-Exercise
+Tip
 </h2>
-<p>For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. How could you modify the above code to do this?</p>
-<button class="solution">Solution</button>
-<div class="solution-content">
-<p>There are several valid ways to code this in R, but here is our approach.</p>
+<p>For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. Here’s one way of accomplishing this.</p>
 <div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">split_det &lt;-<span class="st"> </span><span class="kw">split</span>(checklist_cell, checklist_cell<span class="op">$</span>species_observed)</a>
 <a class="sourceLine" id="cb57-2" data-line-number="2">ebird_all_det &lt;-<span class="st"> </span>split_det<span class="op">$</span><span class="st">`</span><span class="dt">FALSE</span><span class="st">`</span> <span class="op">%&gt;%</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb57-3" data-line-number="3"><span class="st">  </span><span class="kw">group_by</span>(year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></a>
@@ -383,31 +380,55 @@ Exercise
 <a class="sourceLine" id="cb64-31" data-line-number="31">knitr<span class="op">::</span><span class="kw">kable</span>(rf_assessment, <span class="dt">digits =</span> <span class="dv">3</span>)</a></code></pre></div>
 <table>
 <thead>
-<tr class="header">
-<th align="left">metric</th>
-<th align="right">value</th>
+<tr>
+<th style="text-align:left;">
+metric
+</th>
+<th style="text-align:right;">
+value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">mse</td>
-<td align="right">0.135</td>
+<tr>
+<td style="text-align:left;">
+mse
+</td>
+<td style="text-align:right;">
+0.135
+</td>
 </tr>
-<tr class="even">
-<td align="left">sensitivity</td>
-<td align="right">0.485</td>
+<tr>
+<td style="text-align:left;">
+sensitivity
+</td>
+<td style="text-align:right;">
+0.485
+</td>
 </tr>
-<tr class="odd">
-<td align="left">specificity</td>
-<td align="right">0.927</td>
+<tr>
+<td style="text-align:left;">
+specificity
+</td>
+<td style="text-align:right;">
+0.927
+</td>
 </tr>
-<tr class="even">
-<td align="left">auc</td>
-<td align="right">0.852</td>
+<tr>
+<td style="text-align:left;">
+auc
+</td>
+<td style="text-align:right;">
+0.852
+</td>
 </tr>
-<tr class="odd">
-<td align="left">kappa</td>
-<td align="right">0.337</td>
+<tr>
+<td style="text-align:left;">
+kappa
+</td>
+<td style="text-align:right;">
+0.337
+</td>
 </tr>
 </tbody>
 </table>
@@ -437,26 +458,157 @@ Exercise
 <h2>
 Tip
 </h2>
-<p>Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.</p>
-<p>class name<br />
-—— ————————————
-0 Water bodies<br />
-1 Evergreen Needleleaf Forests<br />
-2 Evergreen Broadleaf Forests<br />
-3 Deciduous Needleleaf Forests<br />
-4 Deciduous Broadleaf Forests<br />
-5 Mixed Forests<br />
-6 Closed Shrublands<br />
-7 Open Shrublands<br />
-8 Woody Savannas<br />
-9 Savannas<br />
-10 Grasslands<br />
-11 Permanent Wetlands<br />
-12 Croplands<br />
-13 Urban and Built-up Lands<br />
-14 Cropland/Natural Vegetation Mosaics
-15 Non-Vegetated Lands<br />
-255 Unclassified</p>
+Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+class
+</th>
+<th style="text-align:left;">
+name
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+Water bodies
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+Evergreen Needleleaf Forests
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+Evergreen Broadleaf Forests
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+Deciduous Needleleaf Forests
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+Deciduous Broadleaf Forests
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Mixed Forests
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+Closed Shrublands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+Open Shrublands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+Woody Savannas
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+Savannas
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+Grasslands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+Permanent Wetlands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+Croplands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+Urban and Built-up Lands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+Cropland/Natural Vegetation Mosaics
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+Non-Vegetated Lands
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+255
+</td>
+<td style="text-align:left;">
+Unclassified
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div id="encounter-habitat-pd" class="section level3">

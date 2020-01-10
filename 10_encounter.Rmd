@@ -91,14 +91,9 @@ ebird_ss <- checklist_cell %>%
   ungroup()
 ```
 
-<div class="exercise">
-  <h2>Exercise</h2>
-  For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. How could you modify the above code to do this?
-  
-  <button class="solution">Solution</button>
-<div class="solution-content">
-
-There are several valid ways to code this in R, but here is our approach.
+<div class="tip">
+  <h2>Tip</h2>
+  For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. Here's one way of accomplishing this.
 
 ```{r encounter-prep-ss-sol}
 split_det <- split(checklist_cell, checklist_cell$species_observed)
