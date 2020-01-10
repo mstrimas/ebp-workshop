@@ -38,6 +38,9 @@ To define a filter, start by creating an `auk_ebd` object, then pipe this into o
 ```{r filter-country}
 library(auk)
 
+# output directory
+dir.create("data/", showWarnings = FALSE)
+
 auk_ebd("ebd_2014-2015_yucatan.txt") %>% 
   auk_country("Guatemala")
 ```
