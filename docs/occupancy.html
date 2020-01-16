@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2020-01-10" />
+<meta name="date" content="2020-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -276,27 +276,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>min_obs</code> and <code>max_obs</code>: the minimum and maximum number of repeat visits to a given site. Occupancy modeling requires at least two visits to each site.</li>
 <li><code>date_var</code>: the column name of the date variable used to define the period of closure.</li>
 <li><code>annual_closure</code>: define the period of closure as the entire year. This works here because we’ve already subset the data to only keep observations from January, which results in the period of closure being the month of January in given year. The <code>n_days</code> argument can be used to define the period of closure more flexibly.</li>
-<li><code>site_vars</code>: a character vector of names of columns that define a site. This is typically the combination of variables defining the location (<code>latitude</code> and <code>longitude</code>) and observer (<code>observer_id</code>).</li>
+<li><code>site_vars</code>: a character vector of names of columns that define a site. This is typically the combination of variables defining the location (<code>locality_id</code> or <code>latitude</code>/<code>longitude</code>) and observer (<code>observer_id</code>).</li>
 </ul>
 <div class="sourceCode" id="cb73"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb73-1" data-line-number="1"><span class="co"># subset for occupancy modeling</span></a>
 <a class="sourceLine" id="cb73-2" data-line-number="2">occ &lt;-<span class="st"> </span><span class="kw">filter_repeat_visits</span>(ebird_filtered, </a>
 <a class="sourceLine" id="cb73-3" data-line-number="3">                            <span class="dt">min_obs =</span> <span class="dv">2</span>, <span class="dt">max_obs =</span> <span class="dv">10</span>,</a>
 <a class="sourceLine" id="cb73-4" data-line-number="4">                            <span class="dt">annual_closure =</span> <span class="ot">TRUE</span>,</a>
 <a class="sourceLine" id="cb73-5" data-line-number="5">                            <span class="dt">date_var =</span> <span class="st">&quot;observation_date&quot;</span>,</a>
-<a class="sourceLine" id="cb73-6" data-line-number="6">                            <span class="dt">site_vars =</span> <span class="kw">c</span>(<span class="st">&quot;latitude&quot;</span>, <span class="st">&quot;longitude&quot;</span>, </a>
-<a class="sourceLine" id="cb73-7" data-line-number="7">                                          <span class="st">&quot;observer_id&quot;</span>))</a></code></pre></div>
+<a class="sourceLine" id="cb73-6" data-line-number="6">                            <span class="dt">site_vars =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;observer_id&quot;</span>))</a></code></pre></div>
 <p>Three new columns are added to the dataset when using the function <code>filter_repeat_visits()</code>: <code>site</code> is a unique site ID, <code>closure_id</code> identifies the primary period of closure (in this example the year), and <code>n_observations</code> is the number of visits to each site.</p>
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1"><span class="kw">select</span>(occ, site, closure_id, n_observations)</a>
-<a class="sourceLine" id="cb74-2" data-line-number="2"><span class="co">#&gt; # A tibble: 3,662 x 3</span></a>
-<a class="sourceLine" id="cb74-3" data-line-number="3"><span class="co">#&gt;   site                                closure_id n_observations</span></a>
-<a class="sourceLine" id="cb74-4" data-line-number="4"><span class="co">#&gt;   &lt;chr&gt;                               &lt;chr&gt;               &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb74-5" data-line-number="5"><span class="co">#&gt; 1 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-6" data-line-number="6"><span class="co">#&gt; 2 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-7" data-line-number="7"><span class="co">#&gt; 3 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-8" data-line-number="8"><span class="co">#&gt; 4 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-9" data-line-number="9"><span class="co">#&gt; 5 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-10" data-line-number="10"><span class="co">#&gt; 6 29.6835705_-83.0099676_obs5474_2019 2019                   10</span></a>
-<a class="sourceLine" id="cb74-11" data-line-number="11"><span class="co">#&gt; # … with 3,656 more rows</span></a></code></pre></div>
+<a class="sourceLine" id="cb74-2" data-line-number="2"><span class="co">#&gt; # A tibble: 3,656 x 3</span></a>
+<a class="sourceLine" id="cb74-3" data-line-number="3"><span class="co">#&gt;   site                    closure_id n_observations</span></a>
+<a class="sourceLine" id="cb74-4" data-line-number="4"><span class="co">#&gt;   &lt;chr&gt;                   &lt;chr&gt;               &lt;int&gt;</span></a>
+<a class="sourceLine" id="cb74-5" data-line-number="5"><span class="co">#&gt; 1 L1005433_obs119886_2019 2019                    3</span></a>
+<a class="sourceLine" id="cb74-6" data-line-number="6"><span class="co">#&gt; 2 L1005433_obs119886_2019 2019                    3</span></a>
+<a class="sourceLine" id="cb74-7" data-line-number="7"><span class="co">#&gt; 3 L1005433_obs119886_2019 2019                    3</span></a>
+<a class="sourceLine" id="cb74-8" data-line-number="8"><span class="co">#&gt; 4 L1007991_obs132896_2019 2019                    2</span></a>
+<a class="sourceLine" id="cb74-9" data-line-number="9"><span class="co">#&gt; 5 L1007991_obs132896_2019 2019                    2</span></a>
+<a class="sourceLine" id="cb74-10" data-line-number="10"><span class="co">#&gt; 6 L1007991_obs970026_2019 2019                    3</span></a>
+<a class="sourceLine" id="cb74-11" data-line-number="11"><span class="co">#&gt; # … with 3,650 more rows</span></a></code></pre></div>
 <div class="exercise">
 <h2>
 Exercise
@@ -320,9 +319,9 @@ Exercise
 <button class="solution">Solution</button>
 <div class="solution-content">
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1"><span class="kw">nrow</span>(occ) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(ebird_habitat)</a>
-<a class="sourceLine" id="cb76-2" data-line-number="2"><span class="co">#&gt; [1] 0.077</span></a>
+<a class="sourceLine" id="cb76-2" data-line-number="2"><span class="co">#&gt; [1] 0.0768</span></a>
 <a class="sourceLine" id="cb76-3" data-line-number="3"><span class="kw">n_distinct</span>(occ<span class="op">$</span>site)</a>
-<a class="sourceLine" id="cb76-4" data-line-number="4"><span class="co">#&gt; [1] 969</span></a></code></pre></div>
+<a class="sourceLine" id="cb76-4" data-line-number="4"><span class="co">#&gt; [1] 966</span></a></code></pre></div>
 </div>
 </div>
 <p>Now that we have data suitable for occupancy modeling, we need to reformat the data to be accepted by <code>unmarked</code>. The documentation for the <code>unmarked</code> function <code>formatWide()</code> outlines the details of this format. In the EBD, each row is a checklist; however, <code>unmarked</code> requires each row to be a site with the first column specifying the site ID and subsequent columns specifying whether the species was observed on each of the visits to that site. The next group of columns contains site-level covariates, those that vary between sites but are constant across visits to the same site, such as latitude, longitude, and any habitat covariates we might have. Finally, the observation-level covariates, such as distance and duration, each get a set of columns corresponding to the the presence-absence columns. Here’s a simple example with some made up data to illustrate the format:</p>
@@ -638,28 +637,28 @@ Exercise
 <a class="sourceLine" id="cb80-16" data-line-number="16"><span class="co">#&gt;     pland_05 ~ pland_04 + pland_05 + pland_12 + pland_13, data = occ_um)</span></a>
 <a class="sourceLine" id="cb80-17" data-line-number="17"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb80-18" data-line-number="18"><span class="co">#&gt; Occupancy (logit-scale):</span></a>
-<a class="sourceLine" id="cb80-19" data-line-number="19"><span class="co">#&gt;             Estimate    SE      z  P(&gt;|z|)</span></a>
-<a class="sourceLine" id="cb80-20" data-line-number="20"><span class="co">#&gt; (Intercept)    -1.95 0.235 -8.304 1.01e-16</span></a>
-<a class="sourceLine" id="cb80-21" data-line-number="21"><span class="co">#&gt; pland_04        7.06 1.963  3.598 3.21e-04</span></a>
-<a class="sourceLine" id="cb80-22" data-line-number="22"><span class="co">#&gt; pland_05        1.02 0.817  1.246 2.13e-01</span></a>
-<a class="sourceLine" id="cb80-23" data-line-number="23"><span class="co">#&gt; pland_12       -1.30 1.947 -0.667 5.05e-01</span></a>
-<a class="sourceLine" id="cb80-24" data-line-number="24"><span class="co">#&gt; pland_13       -2.53 1.106 -2.291 2.19e-02</span></a>
+<a class="sourceLine" id="cb80-19" data-line-number="19"><span class="co">#&gt;             Estimate    SE     z  P(&gt;|z|)</span></a>
+<a class="sourceLine" id="cb80-20" data-line-number="20"><span class="co">#&gt; (Intercept)   -1.930 0.239 -8.09 5.98e-16</span></a>
+<a class="sourceLine" id="cb80-21" data-line-number="21"><span class="co">#&gt; pland_04       7.698 2.342  3.29 1.01e-03</span></a>
+<a class="sourceLine" id="cb80-22" data-line-number="22"><span class="co">#&gt; pland_05       0.925 0.793  1.17 2.43e-01</span></a>
+<a class="sourceLine" id="cb80-23" data-line-number="23"><span class="co">#&gt; pland_12      -1.088 1.907 -0.57 5.68e-01</span></a>
+<a class="sourceLine" id="cb80-24" data-line-number="24"><span class="co">#&gt; pland_13      -2.179 1.006 -2.17 3.02e-02</span></a>
 <a class="sourceLine" id="cb80-25" data-line-number="25"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb80-26" data-line-number="26"><span class="co">#&gt; Detection (logit-scale):</span></a>
-<a class="sourceLine" id="cb80-27" data-line-number="27"><span class="co">#&gt;                            Estimate      SE       z P(&gt;|z|)</span></a>
-<a class="sourceLine" id="cb80-28" data-line-number="28"><span class="co">#&gt; (Intercept)               -1.772865 0.55751 -3.1800 0.00147</span></a>
-<a class="sourceLine" id="cb80-29" data-line-number="29"><span class="co">#&gt; time_observations_started  0.025283 0.03089  0.8184 0.41310</span></a>
-<a class="sourceLine" id="cb80-30" data-line-number="30"><span class="co">#&gt; duration_minutes          -0.000237 0.00341 -0.0695 0.94462</span></a>
-<a class="sourceLine" id="cb80-31" data-line-number="31"><span class="co">#&gt; effort_distance_km         0.232872 0.15363  1.5158 0.12956</span></a>
-<a class="sourceLine" id="cb80-32" data-line-number="32"><span class="co">#&gt; number_observers           0.157766 0.27220  0.5796 0.56218</span></a>
-<a class="sourceLine" id="cb80-33" data-line-number="33"><span class="co">#&gt; protocol_typeTraveling     0.789782 0.38424  2.0555 0.03984</span></a>
-<a class="sourceLine" id="cb80-34" data-line-number="34"><span class="co">#&gt; pland_04                  -0.989359 0.55028 -1.7979 0.07219</span></a>
-<a class="sourceLine" id="cb80-35" data-line-number="35"><span class="co">#&gt; pland_05                   2.579188 1.07191  2.4062 0.01612</span></a>
+<a class="sourceLine" id="cb80-27" data-line-number="27"><span class="co">#&gt;                           Estimate      SE      z P(&gt;|z|)</span></a>
+<a class="sourceLine" id="cb80-28" data-line-number="28"><span class="co">#&gt; (Intercept)               -1.48021 0.60437 -2.449 0.01432</span></a>
+<a class="sourceLine" id="cb80-29" data-line-number="29"><span class="co">#&gt; time_observations_started -0.03619 0.02915 -1.242 0.21437</span></a>
+<a class="sourceLine" id="cb80-30" data-line-number="30"><span class="co">#&gt; duration_minutes           0.00113 0.00339  0.332 0.73982</span></a>
+<a class="sourceLine" id="cb80-31" data-line-number="31"><span class="co">#&gt; effort_distance_km         0.07467 0.15358  0.486 0.62684</span></a>
+<a class="sourceLine" id="cb80-32" data-line-number="32"><span class="co">#&gt; number_observers           0.48063 0.33169  1.449 0.14733</span></a>
+<a class="sourceLine" id="cb80-33" data-line-number="33"><span class="co">#&gt; protocol_typeTraveling     0.88882 0.37258  2.386 0.01705</span></a>
+<a class="sourceLine" id="cb80-34" data-line-number="34"><span class="co">#&gt; pland_04                  -0.73640 0.53583 -1.374 0.16934</span></a>
+<a class="sourceLine" id="cb80-35" data-line-number="35"><span class="co">#&gt; pland_05                   3.25239 1.06567  3.052 0.00227</span></a>
 <a class="sourceLine" id="cb80-36" data-line-number="36"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb80-37" data-line-number="37"><span class="co">#&gt; AIC: 674 </span></a>
-<a class="sourceLine" id="cb80-38" data-line-number="38"><span class="co">#&gt; Number of sites: 576</span></a>
+<a class="sourceLine" id="cb80-37" data-line-number="37"><span class="co">#&gt; AIC: 690 </span></a>
+<a class="sourceLine" id="cb80-38" data-line-number="38"><span class="co">#&gt; Number of sites: 575</span></a>
 <a class="sourceLine" id="cb80-39" data-line-number="39"><span class="co">#&gt; optim convergence code: 0</span></a>
-<a class="sourceLine" id="cb80-40" data-line-number="40"><span class="co">#&gt; optim iterations: 52 </span></a>
+<a class="sourceLine" id="cb80-40" data-line-number="40"><span class="co">#&gt; optim iterations: 61 </span></a>
 <a class="sourceLine" id="cb80-41" data-line-number="41"><span class="co">#&gt; Bootstrap iterations: 0</span></a></code></pre></div>
 <div id="occupancy-model-assess" class="section level3">
 <h3><span class="header-section-number">11.2.1</span> Assessment</h3>

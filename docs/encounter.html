@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2020-01-10" />
+<meta name="date" content="2020-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -380,55 +380,31 @@ Exercise
 <a class="sourceLine" id="cb64-31" data-line-number="31">knitr<span class="op">::</span><span class="kw">kable</span>(rf_assessment, <span class="dt">digits =</span> <span class="dv">3</span>)</a></code></pre></div>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-metric
-</th>
-<th style="text-align:right;">
-value
-</th>
+<tr class="header">
+<th align="left">metric</th>
+<th align="right">value</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-mse
-</td>
-<td style="text-align:right;">
-0.135
-</td>
+<tr class="odd">
+<td align="left">mse</td>
+<td align="right">0.135</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-sensitivity
-</td>
-<td style="text-align:right;">
-0.485
-</td>
+<tr class="even">
+<td align="left">sensitivity</td>
+<td align="right">0.485</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-specificity
-</td>
-<td style="text-align:right;">
-0.927
-</td>
+<tr class="odd">
+<td align="left">specificity</td>
+<td align="right">0.927</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-auc
-</td>
-<td style="text-align:right;">
-0.852
-</td>
+<tr class="even">
+<td align="left">auc</td>
+<td align="right">0.852</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-kappa
-</td>
-<td style="text-align:right;">
-0.337
-</td>
+<tr class="odd">
+<td align="left">kappa</td>
+<td align="right">0.337</td>
 </tr>
 </tbody>
 </table>
@@ -458,157 +434,26 @@ kappa
 <h2>
 Tip
 </h2>
-Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.
-<table>
-<thead>
-<tr>
-<th style="text-align:right;">
-class
-</th>
-<th style="text-align:left;">
-name
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:left;">
-Water bodies
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-Evergreen Needleleaf Forests
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-2
-</td>
-<td style="text-align:left;">
-Evergreen Broadleaf Forests
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-3
-</td>
-<td style="text-align:left;">
-Deciduous Needleleaf Forests
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:left;">
-Deciduous Broadleaf Forests
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-5
-</td>
-<td style="text-align:left;">
-Mixed Forests
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-6
-</td>
-<td style="text-align:left;">
-Closed Shrublands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-7
-</td>
-<td style="text-align:left;">
-Open Shrublands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-8
-</td>
-<td style="text-align:left;">
-Woody Savannas
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-9
-</td>
-<td style="text-align:left;">
-Savannas
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-10
-</td>
-<td style="text-align:left;">
-Grasslands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:left;">
-Permanent Wetlands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-12
-</td>
-<td style="text-align:left;">
-Croplands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-13
-</td>
-<td style="text-align:left;">
-Urban and Built-up Lands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-14
-</td>
-<td style="text-align:left;">
-Cropland/Natural Vegetation Mosaics
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-15
-</td>
-<td style="text-align:left;">
-Non-Vegetated Lands
-</td>
-</tr>
-<tr>
-<td style="text-align:right;">
-255
-</td>
-<td style="text-align:left;">
-Unclassified
-</td>
-</tr>
-</tbody>
-</table>
+<p>Consult the file <code>data/mcd12q1_classes.csv</code> for a key to the different <code>pland_</code> variables.</p>
+<p>class name<br />
+—— ————————————
+0 Water bodies<br />
+1 Evergreen Needleleaf Forests<br />
+2 Evergreen Broadleaf Forests<br />
+3 Deciduous Needleleaf Forests<br />
+4 Deciduous Broadleaf Forests<br />
+5 Mixed Forests<br />
+6 Closed Shrublands<br />
+7 Open Shrublands<br />
+8 Woody Savannas<br />
+9 Savannas<br />
+10 Grasslands<br />
+11 Permanent Wetlands<br />
+12 Croplands<br />
+13 Urban and Built-up Lands<br />
+14 Cropland/Natural Vegetation Mosaics
+15 Non-Vegetated Lands<br />
+255 Unclassified</p>
 </div>
 </div>
 <div id="encounter-habitat-pd" class="section level3">

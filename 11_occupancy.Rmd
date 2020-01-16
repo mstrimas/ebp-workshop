@@ -81,7 +81,7 @@ Next, we need to extract a subset of observations that are suitable for occupanc
 - `min_obs` and `max_obs`: the minimum and maximum number of repeat visits to a given site.  Occupancy modeling requires at least two visits to each site.
 - `date_var`: the column name of the date variable used to define the period of closure.
 - `annual_closure`: define the period of closure as the entire year. This works here because we've already subset the data to only keep observations from January, which results in the period of closure being the month of January in given year. The `n_days` argument can be used to define the period of closure more flexibly. 
-- `site_vars`: a character vector of names of columns that define a site. This is typically the combination of variables defining the location (`latitude` and `longitude`) and observer (`observer_id`).
+- `site_vars`: a character vector of names of columns that define a site. This is typically the combination of variables defining the location (`locality_id` or `latitude`/`longitude`) and observer (`observer_id`).
 
 ```{r occupancy-prep-repeats, class.source="livecode"}
 # subset for occupancy modeling
@@ -89,8 +89,7 @@ occ <- filter_repeat_visits(ebird_filtered,
                             min_obs = 2, max_obs = 10,
                             annual_closure = TRUE,
                             date_var = "observation_date",
-                            site_vars = c("latitude", "longitude", 
-                                          "observer_id"))
+                            site_vars = c("locality_id", "observer_id"))
 ```
 
 Three new columns are added to the dataset when using the function `filter_repeat_visits()`: `site` is a unique site ID, `closure_id` identifies the primary period of closure (in this example the year), and `n_observations` is the number of visits to each site.
