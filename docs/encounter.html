@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Lesson 10 Encounter Rate | eBird Best Practices Workshop</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Lesson 10 Encounter Rate | eBird Best Practices Workshop" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2020-01-16" />
+<meta name="date" content="2020-03-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,9 +54,9 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -65,14 +65,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -81,9 +83,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -212,56 +214,56 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Lesson 10</span> Encounter Rate</h1>
 <p>In this lesson, we’ll estimate the <strong>encounter rate</strong> of Wood Thrush on eBird checklists in June in BCR 27, where encounter rate is defined as the probability of an eBirder encountering a species on a standard eBird checklist. We’ll be using random forests in this lesson, a machine learning technique that uses an ensemble of many decision trees, each of which is fit using a bootstrap sampled of the data. For the purposes of this tutorial, we’ll treat the random forest as a black box method.</p>
 <p>Let’s start by loading all the packages and data we’ll need for this lesson.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb54-1" data-line-number="1"><span class="kw">library</span>(sf)</a>
-<a class="sourceLine" id="cb54-2" data-line-number="2"><span class="kw">library</span>(raster)</a>
-<a class="sourceLine" id="cb54-3" data-line-number="3"><span class="kw">library</span>(dggridR)</a>
-<a class="sourceLine" id="cb54-4" data-line-number="4"><span class="kw">library</span>(lubridate)</a>
-<a class="sourceLine" id="cb54-5" data-line-number="5"><span class="kw">library</span>(ranger)</a>
-<a class="sourceLine" id="cb54-6" data-line-number="6"><span class="kw">library</span>(scam)</a>
-<a class="sourceLine" id="cb54-7" data-line-number="7"><span class="kw">library</span>(PresenceAbsence)</a>
-<a class="sourceLine" id="cb54-8" data-line-number="8"><span class="kw">library</span>(verification)</a>
-<a class="sourceLine" id="cb54-9" data-line-number="9"><span class="kw">library</span>(edarf)</a>
-<a class="sourceLine" id="cb54-10" data-line-number="10"><span class="kw">library</span>(ebirdst)</a>
-<a class="sourceLine" id="cb54-11" data-line-number="11"><span class="kw">library</span>(fields)</a>
-<a class="sourceLine" id="cb54-12" data-line-number="12"><span class="kw">library</span>(gridExtra)</a>
-<a class="sourceLine" id="cb54-13" data-line-number="13"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb54-14" data-line-number="14"><span class="co"># resolve namespace conflicts</span></a>
-<a class="sourceLine" id="cb54-15" data-line-number="15">select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select</a>
-<a class="sourceLine" id="cb54-16" data-line-number="16">projection &lt;-<span class="st"> </span>raster<span class="op">::</span>projection</a>
-<a class="sourceLine" id="cb54-17" data-line-number="17">map &lt;-<span class="st"> </span>purrr<span class="op">::</span>map</a>
-<a class="sourceLine" id="cb54-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb54-19" data-line-number="19"><span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb54-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb54-21" data-line-number="21"><span class="co"># ebird data</span></a>
-<a class="sourceLine" id="cb54-22" data-line-number="22">ebird &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-23" data-line-number="23"><span class="st">  </span><span class="co"># year required to join to habitat data</span></a>
-<a class="sourceLine" id="cb54-24" data-line-number="24"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">year</span>(observation_date))</a>
-<a class="sourceLine" id="cb54-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb54-26" data-line-number="26"><span class="co"># modis habitat covariates</span></a>
-<a class="sourceLine" id="cb54-27" data-line-number="27">habitat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-28" data-line-number="28"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(year))</a>
-<a class="sourceLine" id="cb54-29" data-line-number="29"></a>
-<a class="sourceLine" id="cb54-30" data-line-number="30"><span class="co"># combine ebird and habitat data</span></a>
-<a class="sourceLine" id="cb54-31" data-line-number="31">ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird, habitat, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;year&quot;</span>))</a>
-<a class="sourceLine" id="cb54-32" data-line-number="32"></a>
-<a class="sourceLine" id="cb54-33" data-line-number="33"><span class="co"># prediction surface</span></a>
-<a class="sourceLine" id="cb54-34" data-line-number="34">pred_surface &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb54-35" data-line-number="35">r &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/prediction-surface.tif&quot;</span>)</a>
-<a class="sourceLine" id="cb54-36" data-line-number="36"></a>
-<a class="sourceLine" id="cb54-37" data-line-number="37"><span class="co"># load gis data for making maps</span></a>
-<a class="sourceLine" id="cb54-38" data-line-number="38">map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)</a>
-<a class="sourceLine" id="cb54-39" data-line-number="39">ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-40" data-line-number="40"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-41" data-line-number="41"><span class="st">  </span><span class="kw">st_geometry</span>()</a>
-<a class="sourceLine" id="cb54-42" data-line-number="42">bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-43" data-line-number="43"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-44" data-line-number="44"><span class="st">  </span><span class="kw">st_geometry</span>()</a>
-<a class="sourceLine" id="cb54-45" data-line-number="45">ne_country_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_country_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-46" data-line-number="46"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-47" data-line-number="47"><span class="st">  </span><span class="kw">st_geometry</span>()</a>
-<a class="sourceLine" id="cb54-48" data-line-number="48">ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-49" data-line-number="49"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb54-50" data-line-number="50"><span class="st">  </span><span class="kw">st_geometry</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="encounter.html#cb54-1"></a><span class="kw">library</span>(sf)</span>
+<span id="cb54-2"><a href="encounter.html#cb54-2"></a><span class="kw">library</span>(raster)</span>
+<span id="cb54-3"><a href="encounter.html#cb54-3"></a><span class="kw">library</span>(dggridR)</span>
+<span id="cb54-4"><a href="encounter.html#cb54-4"></a><span class="kw">library</span>(lubridate)</span>
+<span id="cb54-5"><a href="encounter.html#cb54-5"></a><span class="kw">library</span>(ranger)</span>
+<span id="cb54-6"><a href="encounter.html#cb54-6"></a><span class="kw">library</span>(scam)</span>
+<span id="cb54-7"><a href="encounter.html#cb54-7"></a><span class="kw">library</span>(PresenceAbsence)</span>
+<span id="cb54-8"><a href="encounter.html#cb54-8"></a><span class="kw">library</span>(verification)</span>
+<span id="cb54-9"><a href="encounter.html#cb54-9"></a><span class="kw">library</span>(edarf)</span>
+<span id="cb54-10"><a href="encounter.html#cb54-10"></a><span class="kw">library</span>(ebirdst)</span>
+<span id="cb54-11"><a href="encounter.html#cb54-11"></a><span class="kw">library</span>(fields)</span>
+<span id="cb54-12"><a href="encounter.html#cb54-12"></a><span class="kw">library</span>(gridExtra)</span>
+<span id="cb54-13"><a href="encounter.html#cb54-13"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb54-14"><a href="encounter.html#cb54-14"></a><span class="co"># resolve namespace conflicts</span></span>
+<span id="cb54-15"><a href="encounter.html#cb54-15"></a>select &lt;-<span class="st"> </span>dplyr<span class="op">::</span>select</span>
+<span id="cb54-16"><a href="encounter.html#cb54-16"></a>projection &lt;-<span class="st"> </span>raster<span class="op">::</span>projection</span>
+<span id="cb54-17"><a href="encounter.html#cb54-17"></a>map &lt;-<span class="st"> </span>purrr<span class="op">::</span>map</span>
+<span id="cb54-18"><a href="encounter.html#cb54-18"></a></span>
+<span id="cb54-19"><a href="encounter.html#cb54-19"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb54-20"><a href="encounter.html#cb54-20"></a></span>
+<span id="cb54-21"><a href="encounter.html#cb54-21"></a><span class="co"># ebird data</span></span>
+<span id="cb54-22"><a href="encounter.html#cb54-22"></a>ebird &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/ebd_woothr_june_bcr27_zf.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-23"><a href="encounter.html#cb54-23"></a><span class="st">  </span><span class="co"># year required to join to habitat data</span></span>
+<span id="cb54-24"><a href="encounter.html#cb54-24"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">year</span>(observation_date))</span>
+<span id="cb54-25"><a href="encounter.html#cb54-25"></a></span>
+<span id="cb54-26"><a href="encounter.html#cb54-26"></a><span class="co"># modis habitat covariates</span></span>
+<span id="cb54-27"><a href="encounter.html#cb54-27"></a>habitat &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_location-year.csv&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-28"><a href="encounter.html#cb54-28"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">year =</span> <span class="kw">as.integer</span>(year))</span>
+<span id="cb54-29"><a href="encounter.html#cb54-29"></a></span>
+<span id="cb54-30"><a href="encounter.html#cb54-30"></a><span class="co"># combine ebird and habitat data</span></span>
+<span id="cb54-31"><a href="encounter.html#cb54-31"></a>ebird_habitat &lt;-<span class="st"> </span><span class="kw">inner_join</span>(ebird, habitat, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">&quot;locality_id&quot;</span>, <span class="st">&quot;year&quot;</span>))</span>
+<span id="cb54-32"><a href="encounter.html#cb54-32"></a></span>
+<span id="cb54-33"><a href="encounter.html#cb54-33"></a><span class="co"># prediction surface</span></span>
+<span id="cb54-34"><a href="encounter.html#cb54-34"></a>pred_surface &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">&quot;data/pland-elev_prediction-surface.csv&quot;</span>)</span>
+<span id="cb54-35"><a href="encounter.html#cb54-35"></a>r &lt;-<span class="st"> </span><span class="kw">raster</span>(<span class="st">&quot;data/prediction-surface.tif&quot;</span>)</span>
+<span id="cb54-36"><a href="encounter.html#cb54-36"></a></span>
+<span id="cb54-37"><a href="encounter.html#cb54-37"></a><span class="co"># load gis data for making maps</span></span>
+<span id="cb54-38"><a href="encounter.html#cb54-38"></a>map_proj &lt;-<span class="st"> </span><span class="kw">st_crs</span>(<span class="dv">102003</span>)</span>
+<span id="cb54-39"><a href="encounter.html#cb54-39"></a>ne_land &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_land&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-40"><a href="encounter.html#cb54-40"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-41"><a href="encounter.html#cb54-41"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb54-42"><a href="encounter.html#cb54-42"></a>bcr &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;bcr&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-43"><a href="encounter.html#cb54-43"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-44"><a href="encounter.html#cb54-44"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb54-45"><a href="encounter.html#cb54-45"></a>ne_country_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_country_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-46"><a href="encounter.html#cb54-46"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-47"><a href="encounter.html#cb54-47"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span>
+<span id="cb54-48"><a href="encounter.html#cb54-48"></a>ne_state_lines &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">&quot;data/gis-data.gpkg&quot;</span>, <span class="st">&quot;ne_state_lines&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-49"><a href="encounter.html#cb54-49"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> map_proj) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb54-50"><a href="encounter.html#cb54-50"></a><span class="st">  </span><span class="kw">st_geometry</span>()</span></code></pre></div>
 <div id="encounter-prep" class="section level2">
 <h2><span class="header-section-number">10.1</span> Data preparation</h2>
 <p>As we learned in <a href="subsampling.html#subsampling">Part I</a> of this workshop, spatiotemporal subsampling can reduce spatial and temporal bias, and class imbalance, provided we sample detections and non-detections separately. So, we’ll apply subsampling prior to fitting the random forest model.</p>
@@ -271,53 +273,53 @@ Tip
 </h2>
 <p>Sampling detections and non-detections separately will change the prevalence rate of the detections in the data. As a result, the estimated probability of occurrence based on these subsampled data will be larger than the true occurrence rate. When examining the outputs from the models it will be important to recall that we altered the prevalence rate at this stage.</p>
 </div>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb55-1" data-line-number="1"><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></a>
-<a class="sourceLine" id="cb55-2" data-line-number="2">dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb55-3" data-line-number="3"><span class="co">#&gt; Resolution: 13, Area (km^2): 31.9926151554038, Spacing (km): 5.58632116604266, CLS (km): 6.38233997895802</span></a>
-<a class="sourceLine" id="cb55-4" data-line-number="4"><span class="co"># get hexagonal cell id and week number for each checklist</span></a>
-<a class="sourceLine" id="cb55-5" data-line-number="5">checklist_cell &lt;-<span class="st"> </span>ebird_habitat <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb55-6" data-line-number="6"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell =</span> <span class="kw">dgGEO_to_SEQNUM</span>(dggs, longitude, latitude)<span class="op">$</span>seqnum,</a>
-<a class="sourceLine" id="cb55-7" data-line-number="7">         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</a>
-<a class="sourceLine" id="cb55-8" data-line-number="8">         <span class="dt">week =</span> <span class="kw">week</span>(observation_date))</a></code></pre></div>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb56-1" data-line-number="1"><span class="co"># sample one checklist per grid cell per week</span></a>
-<a class="sourceLine" id="cb56-2" data-line-number="2"><span class="co"># sample detection/non-detection independently </span></a>
-<a class="sourceLine" id="cb56-3" data-line-number="3">ebird_ss &lt;-<span class="st"> </span>checklist_cell <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb56-4" data-line-number="4"><span class="st">  </span><span class="kw">group_by</span>(species_observed, year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb56-5" data-line-number="5"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb56-6" data-line-number="6"><span class="st">  </span><span class="kw">ungroup</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="encounter.html#cb55-1"></a><span class="co"># generate hexagonal grid with ~ 5 km betweeen cells</span></span>
+<span id="cb55-2"><a href="encounter.html#cb55-2"></a>dggs &lt;-<span class="st"> </span><span class="kw">dgconstruct</span>(<span class="dt">spacing =</span> <span class="dv">5</span>)</span>
+<span id="cb55-3"><a href="encounter.html#cb55-3"></a><span class="co">#&gt; Resolution: 13, Area (km^2): 31.9926151554038, Spacing (km): 5.58632116604266, CLS (km): 6.38233997895802</span></span>
+<span id="cb55-4"><a href="encounter.html#cb55-4"></a><span class="co"># get hexagonal cell id and week number for each checklist</span></span>
+<span id="cb55-5"><a href="encounter.html#cb55-5"></a>checklist_cell &lt;-<span class="st"> </span>ebird_habitat <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb55-6"><a href="encounter.html#cb55-6"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">cell =</span> <span class="kw">dgGEO_to_SEQNUM</span>(dggs, longitude, latitude)<span class="op">$</span>seqnum,</span>
+<span id="cb55-7"><a href="encounter.html#cb55-7"></a>         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</span>
+<span id="cb55-8"><a href="encounter.html#cb55-8"></a>         <span class="dt">week =</span> <span class="kw">week</span>(observation_date))</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r livecode"><code class="sourceCode r"><span id="cb56-1"><a href="encounter.html#cb56-1"></a><span class="co"># sample one checklist per grid cell per week</span></span>
+<span id="cb56-2"><a href="encounter.html#cb56-2"></a><span class="co"># sample detection/non-detection independently </span></span>
+<span id="cb56-3"><a href="encounter.html#cb56-3"></a>ebird_ss &lt;-<span class="st"> </span>checklist_cell <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb56-4"><a href="encounter.html#cb56-4"></a><span class="st">  </span><span class="kw">group_by</span>(species_observed, year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb56-5"><a href="encounter.html#cb56-5"></a><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb56-6"><a href="encounter.html#cb56-6"></a><span class="st">  </span><span class="kw">ungroup</span>()</span></code></pre></div>
 <div class="tip">
 <h2>
 Tip
 </h2>
 <p>For very rare species, a more drastic approach to dealing with class imbalance is needed: only subsampling the non-detections and keeping all the detections. Here’s one way of accomplishing this.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb57-1" data-line-number="1">split_det &lt;-<span class="st"> </span><span class="kw">split</span>(checklist_cell, checklist_cell<span class="op">$</span>species_observed)</a>
-<a class="sourceLine" id="cb57-2" data-line-number="2">ebird_all_det &lt;-<span class="st"> </span>split_det<span class="op">$</span><span class="st">`</span><span class="dt">FALSE</span><span class="st">`</span> <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-3" data-line-number="3"><span class="st">  </span><span class="kw">group_by</span>(year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-4" data-line-number="4"><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-5" data-line-number="5"><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb57-6" data-line-number="6"><span class="st">  </span><span class="kw">bind_rows</span>(split_det<span class="op">$</span><span class="st">`</span><span class="dt">TRUE</span><span class="st">`</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="encounter.html#cb57-1"></a>split_det &lt;-<span class="st"> </span><span class="kw">split</span>(checklist_cell, checklist_cell<span class="op">$</span>species_observed)</span>
+<span id="cb57-2"><a href="encounter.html#cb57-2"></a>ebird_all_det &lt;-<span class="st"> </span>split_det<span class="op">$</span><span class="st">`</span><span class="dt">FALSE</span><span class="st">`</span> <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb57-3"><a href="encounter.html#cb57-3"></a><span class="st">  </span><span class="kw">group_by</span>(year, week, cell) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb57-4"><a href="encounter.html#cb57-4"></a><span class="st">  </span><span class="kw">sample_n</span>(<span class="dt">size =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb57-5"><a href="encounter.html#cb57-5"></a><span class="st">  </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb57-6"><a href="encounter.html#cb57-6"></a><span class="st">  </span><span class="kw">bind_rows</span>(split_det<span class="op">$</span><span class="st">`</span><span class="dt">TRUE</span><span class="st">`</span>)</span></code></pre></div>
 <p>This approach leads to many more detections being kept in the data.</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb58-1" data-line-number="1"><span class="kw">sum</span>(ebird_ss<span class="op">$</span>species_observed)</a>
-<a class="sourceLine" id="cb58-2" data-line-number="2"><span class="co">#&gt; [1] 1425</span></a>
-<a class="sourceLine" id="cb58-3" data-line-number="3"><span class="kw">sum</span>(ebird_all_det<span class="op">$</span>species_observed)</a>
-<a class="sourceLine" id="cb58-4" data-line-number="4"><span class="co">#&gt; [1] 2013</span></a></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="encounter.html#cb58-1"></a><span class="kw">sum</span>(ebird_ss<span class="op">$</span>species_observed)</span>
+<span id="cb58-2"><a href="encounter.html#cb58-2"></a><span class="co">#&gt; [1] 1425</span></span>
+<span id="cb58-3"><a href="encounter.html#cb58-3"></a><span class="kw">sum</span>(ebird_all_det<span class="op">$</span>species_observed)</span>
+<span id="cb58-4"><a href="encounter.html#cb58-4"></a><span class="co">#&gt; [1] 2013</span></span></code></pre></div>
 <p>However, some of the extra detections we have with this approach are in the same 5km cell and the same week, they may not be independent. There are trade-offs to many of these decisions about post-hoc sampling.</p>
 </div>
 </div>
 <p>In preparation for modeling, we’ll select only the the columns that will be used as predictors in the model. We include both habitat predictors, which we expect to influence whether a species is present at a site, and also effort predictors to help control for variation in detectability.</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb59-1" data-line-number="1"><span class="co"># select covariates for model</span></a>
-<a class="sourceLine" id="cb59-2" data-line-number="2">ebird_ss &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb59-3" data-line-number="3"><span class="st">  </span><span class="kw">select</span>(species_observed,</a>
-<a class="sourceLine" id="cb59-4" data-line-number="4">         year, day_of_year,</a>
-<a class="sourceLine" id="cb59-5" data-line-number="5">         time_observations_started, duration_minutes,</a>
-<a class="sourceLine" id="cb59-6" data-line-number="6">         effort_distance_km, number_observers, </a>
-<a class="sourceLine" id="cb59-7" data-line-number="7">         <span class="kw">starts_with</span>(<span class="st">&quot;pland_&quot;</span>),</a>
-<a class="sourceLine" id="cb59-8" data-line-number="8">         <span class="kw">starts_with</span>(<span class="st">&quot;elevation_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb59-9" data-line-number="9"><span class="st">  </span><span class="kw">drop_na</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r livecode"><code class="sourceCode r"><span id="cb59-1"><a href="encounter.html#cb59-1"></a><span class="co"># select covariates for model</span></span>
+<span id="cb59-2"><a href="encounter.html#cb59-2"></a>ebird_ss &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb59-3"><a href="encounter.html#cb59-3"></a><span class="st">  </span><span class="kw">select</span>(species_observed,</span>
+<span id="cb59-4"><a href="encounter.html#cb59-4"></a>         year, day_of_year,</span>
+<span id="cb59-5"><a href="encounter.html#cb59-5"></a>         time_observations_started, duration_minutes,</span>
+<span id="cb59-6"><a href="encounter.html#cb59-6"></a>         effort_distance_km, number_observers, </span>
+<span id="cb59-7"><a href="encounter.html#cb59-7"></a>         <span class="kw">starts_with</span>(<span class="st">&quot;pland_&quot;</span>),</span>
+<span id="cb59-8"><a href="encounter.html#cb59-8"></a>         <span class="kw">starts_with</span>(<span class="st">&quot;elevation_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb59-9"><a href="encounter.html#cb59-9"></a><span class="st">  </span><span class="kw">drop_na</span>()</span></code></pre></div>
 <p>Finally, we’ll hold 20% of the data aside so we have an independent test set, which we can later use to assess the performance of our model.</p>
-<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="co"># split 80/20</span></a>
-<a class="sourceLine" id="cb60-2" data-line-number="2">ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb60-3" data-line-number="3"><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="encounter.html#cb60-1"></a><span class="co"># split 80/20</span></span>
+<span id="cb60-2"><a href="encounter.html#cb60-2"></a>ebird_split &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb60-3"><a href="encounter.html#cb60-3"></a><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</span></code></pre></div>
 <div class="exercise">
 <h2>
 Exercise
@@ -325,59 +327,59 @@ Exercise
 <p>How would you modify the above code to include 25% of data in the test set?</p>
 <button class="solution">Solution</button>
 <div class="solution-content">
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb61-1" data-line-number="1">ebird_split_<span class="dv">25</span> &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb61-2" data-line-number="2"><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.75</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="encounter.html#cb61-1"></a>ebird_split_<span class="dv">25</span> &lt;-<span class="st"> </span>ebird_ss <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb61-2"><a href="encounter.html#cb61-2"></a><span class="st">  </span><span class="kw">split</span>(<span class="kw">if_else</span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(.)) <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.75</span>, <span class="st">&quot;train&quot;</span>, <span class="st">&quot;test&quot;</span>))</span></code></pre></div>
 </div>
 </div>
 </div>
 <div id="encounter-rf" class="section level2">
 <h2><span class="header-section-number">10.2</span> Random forests</h2>
 <p>Random forests are an excellent, general purpose machine learning method suitable for modeling encounter rate in a wide variety of scenarios. To address the issue of class imbalance, we’ll use a <strong>balanced random forest</strong> approach, a modification of the traditional random forest algorithm specifically designed to handle scenarios in which one class (in our case: species detections) is much more common than the other (non-detections). To implement a balanced random forest, we’ll first need to calculate the frequency of detections (the smaller class).</p>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1">detection_freq &lt;-<span class="st"> </span><span class="kw">mean</span>(ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed)</a></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="encounter.html#cb62-1"></a>detection_freq &lt;-<span class="st"> </span><span class="kw">mean</span>(ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed)</span></code></pre></div>
 <p>Now we can use the <a href="https://github.com/imbs-hl/ranger"><code>ranger</code></a> package to fit a random forest model to the eBird data.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb63-1" data-line-number="1"><span class="co"># ranger requires a factor response to do classification</span></a>
-<a class="sourceLine" id="cb63-2" data-line-number="2">ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed &lt;-<span class="st"> </span><span class="kw">factor</span>(ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed)</a>
-<a class="sourceLine" id="cb63-3" data-line-number="3"><span class="co"># grow random forest</span></a>
-<a class="sourceLine" id="cb63-4" data-line-number="4">rf &lt;-<span class="st"> </span><span class="kw">ranger</span>(<span class="dt">formula =</span>  species_observed <span class="op">~</span><span class="st"> </span>., </a>
-<a class="sourceLine" id="cb63-5" data-line-number="5">             <span class="dt">data =</span> ebird_split<span class="op">$</span>train,</a>
-<a class="sourceLine" id="cb63-6" data-line-number="6">             <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,</a>
-<a class="sourceLine" id="cb63-7" data-line-number="7">             <span class="dt">probability =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb63-8" data-line-number="8">             <span class="dt">replace =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb63-9" data-line-number="9">             <span class="dt">sample.fraction =</span> <span class="kw">c</span>(detection_freq, detection_freq))</a></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r livecode"><code class="sourceCode r"><span id="cb63-1"><a href="encounter.html#cb63-1"></a><span class="co"># ranger requires a factor response to do classification</span></span>
+<span id="cb63-2"><a href="encounter.html#cb63-2"></a>ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed &lt;-<span class="st"> </span><span class="kw">factor</span>(ebird_split<span class="op">$</span>train<span class="op">$</span>species_observed)</span>
+<span id="cb63-3"><a href="encounter.html#cb63-3"></a><span class="co"># grow random forest</span></span>
+<span id="cb63-4"><a href="encounter.html#cb63-4"></a>rf &lt;-<span class="st"> </span><span class="kw">ranger</span>(<span class="dt">formula =</span>  species_observed <span class="op">~</span><span class="st"> </span>., </span>
+<span id="cb63-5"><a href="encounter.html#cb63-5"></a>             <span class="dt">data =</span> ebird_split<span class="op">$</span>train,</span>
+<span id="cb63-6"><a href="encounter.html#cb63-6"></a>             <span class="dt">importance =</span> <span class="st">&quot;impurity&quot;</span>,</span>
+<span id="cb63-7"><a href="encounter.html#cb63-7"></a>             <span class="dt">probability =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb63-8"><a href="encounter.html#cb63-8"></a>             <span class="dt">replace =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb63-9"><a href="encounter.html#cb63-9"></a>             <span class="dt">sample.fraction =</span> <span class="kw">c</span>(detection_freq, detection_freq))</span></code></pre></div>
 <div id="encounter-rf-assess" class="section level3">
 <h3><span class="header-section-number">10.2.1</span> Model assessment</h3>
 <p>To assess model quality, we’ll validate the model’s ability to predict the observed patterns of occurrence using independent validation data (i.e. the 20% test data set that we removed earlier). We’ll use a range of predictive performance metrics to compare the predictions to the actual observations. Different performance metrics reveal different aspects of the data and we can choose to emphasise some over others, depending on the specific goals of our analysis. For example, if we want to minimise the number of false negatives (i.e. we don’t want to miss any places where the species actually occurs), we would focus on sensitivity.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb64-1" data-line-number="1"><span class="co"># predict on test data</span></a>
-<a class="sourceLine" id="cb64-2" data-line-number="2">preds &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb64-3" data-line-number="3"><span class="co"># extract probability of detection</span></a>
-<a class="sourceLine" id="cb64-4" data-line-number="4">preds &lt;-<span class="st"> </span>preds<span class="op">$</span>predictions[, <span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb64-5" data-line-number="5">rf_pred_test &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_along</span>(preds),</a>
-<a class="sourceLine" id="cb64-6" data-line-number="6">                           <span class="co"># actual detection/non-detection</span></a>
-<a class="sourceLine" id="cb64-7" data-line-number="7">                           <span class="dt">obs =</span> ebird_split<span class="op">$</span>test<span class="op">$</span>species_observed,</a>
-<a class="sourceLine" id="cb64-8" data-line-number="8">                           <span class="co"># predictions</span></a>
-<a class="sourceLine" id="cb64-9" data-line-number="9">                           <span class="dt">pred =</span> preds) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb64-10" data-line-number="10"><span class="st">  </span><span class="kw">drop_na</span>()</a>
-<a class="sourceLine" id="cb64-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb64-12" data-line-number="12"><span class="co"># mean squared error (mse)</span></a>
-<a class="sourceLine" id="cb64-13" data-line-number="13">mse &lt;-<span class="st"> </span><span class="kw">mean</span>((rf_pred_test<span class="op">$</span>obs <span class="op">-</span><span class="st"> </span>rf_pred_test<span class="op">$</span>pred)<span class="op">^</span><span class="dv">2</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb64-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb64-15" data-line-number="15"><span class="co"># pick threshold to maximize kappa</span></a>
-<a class="sourceLine" id="cb64-16" data-line-number="16">opt_thresh &lt;-<span class="st"> </span><span class="kw">optimal.thresholds</span>(rf_pred_test, <span class="dt">opt.methods =</span> <span class="st">&quot;MaxKappa&quot;</span>)</a>
-<a class="sourceLine" id="cb64-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb64-18" data-line-number="18"><span class="co"># calculate accuracy metrics: auc, kappa, sensitivity, specificity, brier</span></a>
-<a class="sourceLine" id="cb64-19" data-line-number="19">pa_metrics &lt;-<span class="st"> </span><span class="kw">presence.absence.accuracy</span>(rf_pred_test,</a>
-<a class="sourceLine" id="cb64-20" data-line-number="20">                                        <span class="dt">threshold =</span> opt_thresh<span class="op">$</span>pred, </a>
-<a class="sourceLine" id="cb64-21" data-line-number="21">                                        <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb64-22" data-line-number="22">                                        <span class="dt">st.dev =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb64-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb64-24" data-line-number="24"><span class="co"># combine various performance metrics together</span></a>
-<a class="sourceLine" id="cb64-25" data-line-number="25">rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(</a>
-<a class="sourceLine" id="cb64-26" data-line-number="26">  <span class="dt">metric =</span> <span class="kw">c</span>(<span class="st">&quot;mse&quot;</span>, <span class="st">&quot;sensitivity&quot;</span>, <span class="st">&quot;specificity&quot;</span>, <span class="st">&quot;auc&quot;</span>, <span class="st">&quot;kappa&quot;</span>),</a>
-<a class="sourceLine" id="cb64-27" data-line-number="27">  <span class="dt">value =</span> <span class="kw">c</span>(mse, </a>
-<a class="sourceLine" id="cb64-28" data-line-number="28">            pa_metrics<span class="op">$</span>sensitivity, pa_metrics<span class="op">$</span>specificity, </a>
-<a class="sourceLine" id="cb64-29" data-line-number="29">            pa_metrics<span class="op">$</span>AUC, pa_metrics<span class="op">$</span>Kappa)</a>
-<a class="sourceLine" id="cb64-30" data-line-number="30">  )</a>
-<a class="sourceLine" id="cb64-31" data-line-number="31">knitr<span class="op">::</span><span class="kw">kable</span>(rf_assessment, <span class="dt">digits =</span> <span class="dv">3</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="encounter.html#cb64-1"></a><span class="co"># predict on test data</span></span>
+<span id="cb64-2"><a href="encounter.html#cb64-2"></a>preds &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>test, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb64-3"><a href="encounter.html#cb64-3"></a><span class="co"># extract probability of detection</span></span>
+<span id="cb64-4"><a href="encounter.html#cb64-4"></a>preds &lt;-<span class="st"> </span>preds<span class="op">$</span>predictions[, <span class="dv">2</span>]</span>
+<span id="cb64-5"><a href="encounter.html#cb64-5"></a>rf_pred_test &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">id =</span> <span class="kw">seq_along</span>(preds),</span>
+<span id="cb64-6"><a href="encounter.html#cb64-6"></a>                           <span class="co"># actual detection/non-detection</span></span>
+<span id="cb64-7"><a href="encounter.html#cb64-7"></a>                           <span class="dt">obs =</span> ebird_split<span class="op">$</span>test<span class="op">$</span>species_observed,</span>
+<span id="cb64-8"><a href="encounter.html#cb64-8"></a>                           <span class="co"># predictions</span></span>
+<span id="cb64-9"><a href="encounter.html#cb64-9"></a>                           <span class="dt">pred =</span> preds) <span class="op">%&gt;%</span></span>
+<span id="cb64-10"><a href="encounter.html#cb64-10"></a><span class="st">  </span><span class="kw">drop_na</span>()</span>
+<span id="cb64-11"><a href="encounter.html#cb64-11"></a></span>
+<span id="cb64-12"><a href="encounter.html#cb64-12"></a><span class="co"># mean squared error (mse)</span></span>
+<span id="cb64-13"><a href="encounter.html#cb64-13"></a>mse &lt;-<span class="st"> </span><span class="kw">mean</span>((rf_pred_test<span class="op">$</span>obs <span class="op">-</span><span class="st"> </span>rf_pred_test<span class="op">$</span>pred)<span class="op">^</span><span class="dv">2</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb64-14"><a href="encounter.html#cb64-14"></a></span>
+<span id="cb64-15"><a href="encounter.html#cb64-15"></a><span class="co"># pick threshold to maximize kappa</span></span>
+<span id="cb64-16"><a href="encounter.html#cb64-16"></a>opt_thresh &lt;-<span class="st"> </span><span class="kw">optimal.thresholds</span>(rf_pred_test, <span class="dt">opt.methods =</span> <span class="st">&quot;MaxKappa&quot;</span>)</span>
+<span id="cb64-17"><a href="encounter.html#cb64-17"></a></span>
+<span id="cb64-18"><a href="encounter.html#cb64-18"></a><span class="co"># calculate accuracy metrics: auc, kappa, sensitivity, specificity, brier</span></span>
+<span id="cb64-19"><a href="encounter.html#cb64-19"></a>pa_metrics &lt;-<span class="st"> </span><span class="kw">presence.absence.accuracy</span>(rf_pred_test,</span>
+<span id="cb64-20"><a href="encounter.html#cb64-20"></a>                                        <span class="dt">threshold =</span> opt_thresh<span class="op">$</span>pred, </span>
+<span id="cb64-21"><a href="encounter.html#cb64-21"></a>                                        <span class="dt">na.rm =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb64-22"><a href="encounter.html#cb64-22"></a>                                        <span class="dt">st.dev =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb64-23"><a href="encounter.html#cb64-23"></a></span>
+<span id="cb64-24"><a href="encounter.html#cb64-24"></a><span class="co"># combine various performance metrics together</span></span>
+<span id="cb64-25"><a href="encounter.html#cb64-25"></a>rf_assessment &lt;-<span class="st"> </span><span class="kw">tibble</span>(</span>
+<span id="cb64-26"><a href="encounter.html#cb64-26"></a>  <span class="dt">metric =</span> <span class="kw">c</span>(<span class="st">&quot;mse&quot;</span>, <span class="st">&quot;sensitivity&quot;</span>, <span class="st">&quot;specificity&quot;</span>, <span class="st">&quot;auc&quot;</span>, <span class="st">&quot;kappa&quot;</span>),</span>
+<span id="cb64-27"><a href="encounter.html#cb64-27"></a>  <span class="dt">value =</span> <span class="kw">c</span>(mse, </span>
+<span id="cb64-28"><a href="encounter.html#cb64-28"></a>            pa_metrics<span class="op">$</span>sensitivity, pa_metrics<span class="op">$</span>specificity, </span>
+<span id="cb64-29"><a href="encounter.html#cb64-29"></a>            pa_metrics<span class="op">$</span>AUC, pa_metrics<span class="op">$</span>Kappa)</span>
+<span id="cb64-30"><a href="encounter.html#cb64-30"></a>  )</span>
+<span id="cb64-31"><a href="encounter.html#cb64-31"></a>knitr<span class="op">::</span><span class="kw">kable</span>(rf_assessment, <span class="dt">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -416,19 +418,19 @@ Exercise
 <div id="encounter-habitat-pi" class="section level3">
 <h3><span class="header-section-number">10.3.1</span> Predictor importance</h3>
 <p>During the process of fitting a random forest model, some variables are removed at each node of the trees that make up the random forest. <strong>Predictor importance</strong> is based on the mean decrease in accuracy of the model when a given covariate is not used.</p>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb65-1" data-line-number="1">pi &lt;-<span class="st"> </span><span class="kw">enframe</span>(rf<span class="op">$</span>variable.importance, <span class="st">&quot;predictor&quot;</span>, <span class="st">&quot;importance&quot;</span>)</a>
-<a class="sourceLine" id="cb65-2" data-line-number="2"><span class="co"># plots</span></a>
-<a class="sourceLine" id="cb65-3" data-line-number="3"><span class="kw">ggplot</span>(pi) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb65-4" data-line-number="4"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">fct_reorder</span>(predictor, importance), <span class="dt">y =</span> importance) <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-6" data-line-number="6"><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">colour =</span> <span class="st">&quot;#555555&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-7" data-line-number="7"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-8" data-line-number="8"><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-9" data-line-number="9"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, </a>
-<a class="sourceLine" id="cb65-10" data-line-number="10">       <span class="dt">y =</span> <span class="st">&quot;Predictor Importance (Gini Index)&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb65-12" data-line-number="12"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</a>
-<a class="sourceLine" id="cb65-13" data-line-number="13">        <span class="dt">panel.grid.major.x =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;#cccccc&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="encounter.html#cb65-1"></a>pi &lt;-<span class="st"> </span><span class="kw">enframe</span>(rf<span class="op">$</span>variable.importance, <span class="st">&quot;predictor&quot;</span>, <span class="st">&quot;importance&quot;</span>)</span>
+<span id="cb65-2"><a href="encounter.html#cb65-2"></a><span class="co"># plots</span></span>
+<span id="cb65-3"><a href="encounter.html#cb65-3"></a><span class="kw">ggplot</span>(pi) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb65-4"><a href="encounter.html#cb65-4"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">fct_reorder</span>(predictor, importance), <span class="dt">y =</span> importance) <span class="op">+</span></span>
+<span id="cb65-5"><a href="encounter.html#cb65-5"></a><span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span></span>
+<span id="cb65-6"><a href="encounter.html#cb65-6"></a><span class="st">  </span><span class="kw">geom_hline</span>(<span class="dt">yintercept =</span> <span class="dv">0</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">colour =</span> <span class="st">&quot;#555555&quot;</span>) <span class="op">+</span></span>
+<span id="cb65-7"><a href="encounter.html#cb65-7"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">expand =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)) <span class="op">+</span></span>
+<span id="cb65-8"><a href="encounter.html#cb65-8"></a><span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span></span>
+<span id="cb65-9"><a href="encounter.html#cb65-9"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, </span>
+<span id="cb65-10"><a href="encounter.html#cb65-10"></a>       <span class="dt">y =</span> <span class="st">&quot;Predictor Importance (Gini Index)&quot;</span>) <span class="op">+</span></span>
+<span id="cb65-11"><a href="encounter.html#cb65-11"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb65-12"><a href="encounter.html#cb65-12"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</span>
+<span id="cb65-13"><a href="encounter.html#cb65-13"></a>        <span class="dt">panel.grid.major.x =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;#cccccc&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>))</span></code></pre></div>
 <p><img src="ebp-workshop_files/figure-html/encounter-habitat-pi-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 <div class="tip">
 <h2>
@@ -459,33 +461,33 @@ Tip
 <div id="encounter-habitat-pd" class="section level3">
 <h3><span class="header-section-number">10.3.2</span> Partial dependence</h3>
 <p><strong>Partial dependence</strong> plots show the marginal effect of a given predictor on encounter rate averaged across the other predictors. We’ll use the R package <code>edarf</code> to construct partial dependence plots for the most important predictors.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb66-1" data-line-number="1"><span class="co"># top 9 predictors other than date</span></a>
-<a class="sourceLine" id="cb66-2" data-line-number="2">top_pred &lt;-<span class="st"> </span>pi <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-3" data-line-number="3"><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>predictor <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;day_of_year&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-4" data-line-number="4"><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">9</span>, <span class="dt">wt =</span> importance) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-5" data-line-number="5"><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(importance))</a>
-<a class="sourceLine" id="cb66-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb66-7" data-line-number="7"><span class="co"># calculate partial dependence for each predictor</span></a>
-<a class="sourceLine" id="cb66-8" data-line-number="8">pd &lt;-<span class="st"> </span>top_pred <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-9" data-line-number="9"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pd =</span> <span class="kw">map</span>(predictor, partial_dependence, </a>
-<a class="sourceLine" id="cb66-10" data-line-number="10">                  <span class="dt">fit =</span> rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>train),</a>
-<a class="sourceLine" id="cb66-11" data-line-number="11">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, <span class="op">~</span><span class="st"> </span>.[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]),</a>
-<a class="sourceLine" id="cb66-12" data-line-number="12">         <span class="dt">pd =</span> <span class="kw">map</span>(pd, set_names, <span class="dt">nm =</span> <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>,  <span class="st">&quot;encounter_rate&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb66-13" data-line-number="13"><span class="st">  </span><span class="kw">unnest</span>(<span class="dt">cols =</span> pd)</a>
-<a class="sourceLine" id="cb66-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb66-15" data-line-number="15"><span class="co"># plot</span></a>
-<a class="sourceLine" id="cb66-16" data-line-number="16"><span class="kw">ggplot</span>(pd) <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-17" data-line-number="17"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> encounter_rate) <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-18" data-line-number="18"><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-19" data-line-number="19"><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-20" data-line-number="20"><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-21" data-line-number="21"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span><span class="kw">as_factor</span>(predictor), <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-22" data-line-number="22"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Encounter Rate&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-23" data-line-number="23"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-24" data-line-number="24"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb66-25" data-line-number="25"><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</a>
-<a class="sourceLine" id="cb66-26" data-line-number="26">        <span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>),</a>
-<a class="sourceLine" id="cb66-27" data-line-number="27">        <span class="dt">axis.ticks  =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="encounter.html#cb66-1"></a><span class="co"># top 9 predictors other than date</span></span>
+<span id="cb66-2"><a href="encounter.html#cb66-2"></a>top_pred &lt;-<span class="st"> </span>pi <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-3"><a href="encounter.html#cb66-3"></a><span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span>predictor <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;day_of_year&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-4"><a href="encounter.html#cb66-4"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dt">n =</span> <span class="dv">9</span>, <span class="dt">wt =</span> importance) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-5"><a href="encounter.html#cb66-5"></a><span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(importance))</span>
+<span id="cb66-6"><a href="encounter.html#cb66-6"></a></span>
+<span id="cb66-7"><a href="encounter.html#cb66-7"></a><span class="co"># calculate partial dependence for each predictor</span></span>
+<span id="cb66-8"><a href="encounter.html#cb66-8"></a>pd &lt;-<span class="st"> </span>top_pred <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-9"><a href="encounter.html#cb66-9"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pd =</span> <span class="kw">map</span>(predictor, partial_dependence, </span>
+<span id="cb66-10"><a href="encounter.html#cb66-10"></a>                  <span class="dt">fit =</span> rf, <span class="dt">data =</span> ebird_split<span class="op">$</span>train),</span>
+<span id="cb66-11"><a href="encounter.html#cb66-11"></a>         <span class="dt">pd =</span> <span class="kw">map</span>(pd, <span class="op">~</span><span class="st"> </span>.[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>)]),</span>
+<span id="cb66-12"><a href="encounter.html#cb66-12"></a>         <span class="dt">pd =</span> <span class="kw">map</span>(pd, set_names, <span class="dt">nm =</span> <span class="kw">c</span>(<span class="st">&quot;value&quot;</span>,  <span class="st">&quot;encounter_rate&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb66-13"><a href="encounter.html#cb66-13"></a><span class="st">  </span><span class="kw">unnest</span>(<span class="dt">cols =</span> pd)</span>
+<span id="cb66-14"><a href="encounter.html#cb66-14"></a></span>
+<span id="cb66-15"><a href="encounter.html#cb66-15"></a><span class="co"># plot</span></span>
+<span id="cb66-16"><a href="encounter.html#cb66-16"></a><span class="kw">ggplot</span>(pd) <span class="op">+</span></span>
+<span id="cb66-17"><a href="encounter.html#cb66-17"></a><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> value, <span class="dt">y =</span> encounter_rate) <span class="op">+</span></span>
+<span id="cb66-18"><a href="encounter.html#cb66-18"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span></span>
+<span id="cb66-19"><a href="encounter.html#cb66-19"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb66-20"><a href="encounter.html#cb66-20"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">labels =</span> scales<span class="op">::</span>percent) <span class="op">+</span></span>
+<span id="cb66-21"><a href="encounter.html#cb66-21"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span><span class="kw">as_factor</span>(predictor), <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">scales =</span> <span class="st">&quot;free&quot;</span>) <span class="op">+</span></span>
+<span id="cb66-22"><a href="encounter.html#cb66-22"></a><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="ot">NULL</span>, <span class="dt">y =</span> <span class="st">&quot;Encounter Rate&quot;</span>) <span class="op">+</span></span>
+<span id="cb66-23"><a href="encounter.html#cb66-23"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb66-24"><a href="encounter.html#cb66-24"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb66-25"><a href="encounter.html#cb66-25"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid =</span> <span class="kw">element_blank</span>(),</span>
+<span id="cb66-26"><a href="encounter.html#cb66-26"></a>        <span class="dt">axis.line =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>),</span>
+<span id="cb66-27"><a href="encounter.html#cb66-27"></a>        <span class="dt">axis.ticks  =</span> <span class="kw">element_line</span>(<span class="dt">color =</span> <span class="st">&quot;grey60&quot;</span>))</span></code></pre></div>
 <p><img src="ebp-workshop_files/figure-html/encounter-habitat-pd-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 </div>
@@ -493,96 +495,96 @@ Tip
 <h2><span class="header-section-number">10.4</span> Prediction</h2>
 <p>Finally, we can use the random forest model to make a map of Wood Thrush encounter rate in BCR 27! The data package contains a prediction surface consisting of the PLAND habitat covariates summarized on a regular grid of points across BCR 27. We’ll make predictions of encounter rate at these points. However, first we need to bring effort variables into this prediction surface. We’ll make predictions for a <strong>standard eBird checklist</strong>: a 1 km, 1 hour traveling count at the peak time of day for detecting this species.</p>
 <p>To find the time of day with the highest detection probability, we can look for the peak of the partial dependence plot, constraining the search to times of day for which there are enough data to make reasonable predictions (hours with at least 1% of checklists).</p>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb67-1" data-line-number="1"><span class="co"># find peak time of day from partial dependence</span></a>
-<a class="sourceLine" id="cb67-2" data-line-number="2">pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>(rf, </a>
-<a class="sourceLine" id="cb67-3" data-line-number="3">                              <span class="dt">vars =</span> <span class="st">&quot;time_observations_started&quot;</span>, </a>
-<a class="sourceLine" id="cb67-4" data-line-number="4">                              <span class="co"># make estimates at 30 minute intervals</span></a>
-<a class="sourceLine" id="cb67-5" data-line-number="5">                              <span class="co"># use the entire training dataset for estimation</span></a>
-<a class="sourceLine" id="cb67-6" data-line-number="6">                              <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), </a>
-<a class="sourceLine" id="cb67-7" data-line-number="7">                              <span class="dt">data =</span> ebird_split<span class="op">$</span>train) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-8" data-line-number="8"><span class="st">  </span><span class="kw">select</span>(time_observations_started, <span class="dt">encounter_rate =</span> <span class="st">&quot;TRUE&quot;</span>)</a>
-<a class="sourceLine" id="cb67-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb67-10" data-line-number="10"><span class="co"># hours with at least 1% of checklists</span></a>
-<a class="sourceLine" id="cb67-11" data-line-number="11">search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-12" data-line-number="12"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb67-13" data-line-number="13"><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-14" data-line-number="14"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-15" data-line-number="15"><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</a>
-<a class="sourceLine" id="cb67-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb67-17" data-line-number="17"><span class="co"># constrained peak time</span></a>
-<a class="sourceLine" id="cb67-18" data-line-number="18">t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-19" data-line-number="19"><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-20" data-line-number="20"><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb67-21" data-line-number="21"><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</a>
-<a class="sourceLine" id="cb67-22" data-line-number="22">t_peak</a>
-<a class="sourceLine" id="cb67-23" data-line-number="23"><span class="co">#&gt; [1] 5.08</span></a></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="encounter.html#cb67-1"></a><span class="co"># find peak time of day from partial dependence</span></span>
+<span id="cb67-2"><a href="encounter.html#cb67-2"></a>pd_time &lt;-<span class="st"> </span><span class="kw">partial_dependence</span>(rf, </span>
+<span id="cb67-3"><a href="encounter.html#cb67-3"></a>                              <span class="dt">vars =</span> <span class="st">&quot;time_observations_started&quot;</span>, </span>
+<span id="cb67-4"><a href="encounter.html#cb67-4"></a>                              <span class="co"># make estimates at 30 minute intervals</span></span>
+<span id="cb67-5"><a href="encounter.html#cb67-5"></a>                              <span class="co"># use the entire training dataset for estimation</span></span>
+<span id="cb67-6"><a href="encounter.html#cb67-6"></a>                              <span class="dt">n =</span> <span class="kw">c</span>(<span class="dv">24</span> <span class="op">*</span><span class="st"> </span><span class="dv">2</span>, <span class="kw">nrow</span>(ebird_split<span class="op">$</span>train)), </span>
+<span id="cb67-7"><a href="encounter.html#cb67-7"></a>                              <span class="dt">data =</span> ebird_split<span class="op">$</span>train) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-8"><a href="encounter.html#cb67-8"></a><span class="st">  </span><span class="kw">select</span>(time_observations_started, <span class="dt">encounter_rate =</span> <span class="st">&quot;TRUE&quot;</span>)</span>
+<span id="cb67-9"><a href="encounter.html#cb67-9"></a></span>
+<span id="cb67-10"><a href="encounter.html#cb67-10"></a><span class="co"># hours with at least 1% of checklists</span></span>
+<span id="cb67-11"><a href="encounter.html#cb67-11"></a>search_hours &lt;-<span class="st"> </span>ebird_split<span class="op">$</span>train <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-12"><a href="encounter.html#cb67-12"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">hour =</span> <span class="kw">floor</span>(time_observations_started)) <span class="op">%&gt;%</span></span>
+<span id="cb67-13"><a href="encounter.html#cb67-13"></a><span class="st">  </span><span class="kw">count</span>(hour) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-14"><a href="encounter.html#cb67-14"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">pct =</span> n <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(n)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-15"><a href="encounter.html#cb67-15"></a><span class="st">  </span><span class="kw">filter</span>(pct <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.01</span>)</span>
+<span id="cb67-16"><a href="encounter.html#cb67-16"></a></span>
+<span id="cb67-17"><a href="encounter.html#cb67-17"></a><span class="co"># constrained peak time</span></span>
+<span id="cb67-18"><a href="encounter.html#cb67-18"></a>t_peak &lt;-<span class="st"> </span>pd_time <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-19"><a href="encounter.html#cb67-19"></a><span class="st">  </span><span class="kw">filter</span>(<span class="kw">floor</span>(time_observations_started) <span class="op">%in%</span><span class="st"> </span>search_hours<span class="op">$</span>hour) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-20"><a href="encounter.html#cb67-20"></a><span class="st">  </span><span class="kw">top_n</span>(<span class="dv">1</span>, <span class="dt">wt =</span> <span class="kw">desc</span>(time_observations_started)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb67-21"><a href="encounter.html#cb67-21"></a><span class="st">  </span><span class="kw">pull</span>(time_observations_started)</span>
+<span id="cb67-22"><a href="encounter.html#cb67-22"></a>t_peak</span>
+<span id="cb67-23"><a href="encounter.html#cb67-23"></a><span class="co">#&gt; [1] 5.08</span></span></code></pre></div>
 <p>Based on this analysis, the best time for detecting Wood Thrush is at 5:05 AM. Now we can use this time to make predictions.</p>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb68-1" data-line-number="1"><span class="co"># add effort covariates to prediction </span></a>
-<a class="sourceLine" id="cb68-2" data-line-number="2">pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb68-3" data-line-number="3"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2018-06-15&quot;</span>),</a>
-<a class="sourceLine" id="cb68-4" data-line-number="4">         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</a>
-<a class="sourceLine" id="cb68-5" data-line-number="5">         <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date),</a>
-<a class="sourceLine" id="cb68-6" data-line-number="6">         <span class="dt">time_observations_started =</span> t_peak,</a>
-<a class="sourceLine" id="cb68-7" data-line-number="7">         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</a>
-<a class="sourceLine" id="cb68-8" data-line-number="8">         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb68-9" data-line-number="9">         <span class="dt">number_observers =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb68-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb68-11" data-line-number="11"><span class="co"># predict</span></a>
-<a class="sourceLine" id="cb68-12" data-line-number="12">pred_rf &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> pred_surface_eff, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</a>
-<a class="sourceLine" id="cb68-13" data-line-number="13">pred_rf &lt;-<span class="st"> </span>pred_rf<span class="op">$</span>predictions[, <span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb68-14" data-line-number="14"><span class="co"># add to prediction surface</span></a>
-<a class="sourceLine" id="cb68-15" data-line-number="15">pred_er &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface_eff, <span class="dt">encounter_rate =</span> pred_rf) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb68-16" data-line-number="16"><span class="st">  </span><span class="kw">select</span>(latitude, longitude, encounter_rate) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb68-17" data-line-number="17"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">encounter_rate =</span> <span class="kw">pmin</span>(<span class="kw">pmax</span>(encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r livecode"><code class="sourceCode r"><span id="cb68-1"><a href="encounter.html#cb68-1"></a><span class="co"># add effort covariates to prediction </span></span>
+<span id="cb68-2"><a href="encounter.html#cb68-2"></a>pred_surface_eff &lt;-<span class="st"> </span>pred_surface <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-3"><a href="encounter.html#cb68-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">observation_date =</span> <span class="kw">ymd</span>(<span class="st">&quot;2018-06-15&quot;</span>),</span>
+<span id="cb68-4"><a href="encounter.html#cb68-4"></a>         <span class="dt">year =</span> <span class="kw">year</span>(observation_date),</span>
+<span id="cb68-5"><a href="encounter.html#cb68-5"></a>         <span class="dt">day_of_year =</span> <span class="kw">yday</span>(observation_date),</span>
+<span id="cb68-6"><a href="encounter.html#cb68-6"></a>         <span class="dt">time_observations_started =</span> t_peak,</span>
+<span id="cb68-7"><a href="encounter.html#cb68-7"></a>         <span class="dt">duration_minutes =</span> <span class="dv">60</span>,</span>
+<span id="cb68-8"><a href="encounter.html#cb68-8"></a>         <span class="dt">effort_distance_km =</span> <span class="dv">1</span>,</span>
+<span id="cb68-9"><a href="encounter.html#cb68-9"></a>         <span class="dt">number_observers =</span> <span class="dv">1</span>)</span>
+<span id="cb68-10"><a href="encounter.html#cb68-10"></a></span>
+<span id="cb68-11"><a href="encounter.html#cb68-11"></a><span class="co"># predict</span></span>
+<span id="cb68-12"><a href="encounter.html#cb68-12"></a>pred_rf &lt;-<span class="st"> </span><span class="kw">predict</span>(rf, <span class="dt">data =</span> pred_surface_eff, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb68-13"><a href="encounter.html#cb68-13"></a>pred_rf &lt;-<span class="st"> </span>pred_rf<span class="op">$</span>predictions[, <span class="dv">2</span>]</span>
+<span id="cb68-14"><a href="encounter.html#cb68-14"></a><span class="co"># add to prediction surface</span></span>
+<span id="cb68-15"><a href="encounter.html#cb68-15"></a>pred_er &lt;-<span class="st"> </span><span class="kw">bind_cols</span>(pred_surface_eff, <span class="dt">encounter_rate =</span> pred_rf) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-16"><a href="encounter.html#cb68-16"></a><span class="st">  </span><span class="kw">select</span>(latitude, longitude, encounter_rate) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb68-17"><a href="encounter.html#cb68-17"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">encounter_rate =</span> <span class="kw">pmin</span>(<span class="kw">pmax</span>(encounter_rate, <span class="dv">0</span>), <span class="dv">1</span>))</span></code></pre></div>
 <p>Next, we’ll convert this data frame to spatial features using <code>sf</code>, then rasterize the points using the prediction surface raster template.</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r livecode"><code class="sourceCode r"><a class="sourceLine" id="cb69-1" data-line-number="1"><span class="co"># rasterize predictions</span></a>
-<a class="sourceLine" id="cb69-2" data-line-number="2">r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb69-3" data-line-number="3"><span class="st">  </span><span class="co"># convert to spatial features</span></a>
-<a class="sourceLine" id="cb69-4" data-line-number="4"><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb69-5" data-line-number="5"><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb69-6" data-line-number="6"><span class="st">  </span><span class="co"># rasterize</span></a>
-<a class="sourceLine" id="cb69-7" data-line-number="7"><span class="st">  </span><span class="kw">rasterize</span>(r)</a>
-<a class="sourceLine" id="cb69-8" data-line-number="8">r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</a></code></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r livecode"><code class="sourceCode r"><span id="cb69-1"><a href="encounter.html#cb69-1"></a><span class="co"># rasterize predictions</span></span>
+<span id="cb69-2"><a href="encounter.html#cb69-2"></a>r_pred &lt;-<span class="st"> </span>pred_er <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-3"><a href="encounter.html#cb69-3"></a><span class="st">  </span><span class="co"># convert to spatial features</span></span>
+<span id="cb69-4"><a href="encounter.html#cb69-4"></a><span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="dt">crs =</span> <span class="dv">4326</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-5"><a href="encounter.html#cb69-5"></a><span class="st">  </span><span class="kw">st_transform</span>(<span class="dt">crs =</span> <span class="kw">projection</span>(r)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb69-6"><a href="encounter.html#cb69-6"></a><span class="st">  </span><span class="co"># rasterize</span></span>
+<span id="cb69-7"><a href="encounter.html#cb69-7"></a><span class="st">  </span><span class="kw">rasterize</span>(r)</span>
+<span id="cb69-8"><a href="encounter.html#cb69-8"></a>r_pred &lt;-<span class="st"> </span>r_pred[[<span class="op">-</span><span class="dv">1</span>]]</span></code></pre></div>
 <p>Finally, we can map these predictions!</p>
-<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb70-1" data-line-number="1"><span class="co"># project predictions</span></a>
-<a class="sourceLine" id="cb70-2" data-line-number="2">r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</a>
-<a class="sourceLine" id="cb70-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb70-4" data-line-number="4"><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</a>
-<a class="sourceLine" id="cb70-5" data-line-number="5"><span class="co"># set up plot area</span></a>
-<a class="sourceLine" id="cb70-6" data-line-number="6"><span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</a>
-<a class="sourceLine" id="cb70-7" data-line-number="7"><span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb70-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb70-9" data-line-number="9"><span class="co"># encounter rate</span></a>
-<a class="sourceLine" id="cb70-10" data-line-number="10">r_max &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_pred_proj, max)) <span class="op">/</span><span class="st"> </span><span class="dv">10</span></a>
-<a class="sourceLine" id="cb70-11" data-line-number="11">brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.025</span>)</a>
-<a class="sourceLine" id="cb70-12" data-line-number="12">lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.1</span>)</a>
-<a class="sourceLine" id="cb70-13" data-line-number="13"><span class="co"># ebird status and trends color palette</span></a>
-<a class="sourceLine" id="cb70-14" data-line-number="14">pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb70-15" data-line-number="15"><span class="kw">plot</span>(r_pred_proj, </a>
-<a class="sourceLine" id="cb70-16" data-line-number="16">     <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </a>
-<a class="sourceLine" id="cb70-17" data-line-number="17">     <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_pred_proj),</a>
-<a class="sourceLine" id="cb70-18" data-line-number="18">     <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb70-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb70-20" data-line-number="20"><span class="co"># borders</span></a>
-<a class="sourceLine" id="cb70-21" data-line-number="21"><span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb70-22" data-line-number="22"><span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb70-23" data-line-number="23"><span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb70-24" data-line-number="24"><span class="kw">box</span>()</a>
-<a class="sourceLine" id="cb70-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb70-26" data-line-number="26"><span class="co"># legend</span></a>
-<a class="sourceLine" id="cb70-27" data-line-number="27"><span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</a>
-<a class="sourceLine" id="cb70-28" data-line-number="28">title &lt;-<span class="st"> &quot;Wood Thrush Encounter Rate&quot;</span></a>
-<a class="sourceLine" id="cb70-29" data-line-number="29"><span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb70-30" data-line-number="30">           <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks,</a>
-<a class="sourceLine" id="cb70-31" data-line-number="31">           <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</a>
-<a class="sourceLine" id="cb70-32" data-line-number="32">           <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb70-33" data-line-number="33">           <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</a>
-<a class="sourceLine" id="cb70-34" data-line-number="34">                            <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</a>
-<a class="sourceLine" id="cb70-35" data-line-number="35">                            <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</a>
-<a class="sourceLine" id="cb70-36" data-line-number="36">                            <span class="dt">padj =</span> <span class="fl">-1.5</span>),</a>
-<a class="sourceLine" id="cb70-37" data-line-number="37">           <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</a>
-<a class="sourceLine" id="cb70-38" data-line-number="38">                              <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</a>
-<a class="sourceLine" id="cb70-39" data-line-number="39">                              <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="encounter.html#cb70-1"></a><span class="co"># project predictions</span></span>
+<span id="cb70-2"><a href="encounter.html#cb70-2"></a>r_pred_proj &lt;-<span class="st"> </span><span class="kw">projectRaster</span>(r_pred, <span class="dt">crs =</span> map_proj<span class="op">$</span>proj4string, <span class="dt">method =</span> <span class="st">&quot;ngb&quot;</span>)</span>
+<span id="cb70-3"><a href="encounter.html#cb70-3"></a></span>
+<span id="cb70-4"><a href="encounter.html#cb70-4"></a><span class="kw">par</span>(<span class="dt">mar =</span> <span class="kw">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>, <span class="fl">0.25</span>))</span>
+<span id="cb70-5"><a href="encounter.html#cb70-5"></a><span class="co"># set up plot area</span></span>
+<span id="cb70-6"><a href="encounter.html#cb70-6"></a><span class="kw">plot</span>(bcr, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">border =</span> <span class="ot">NA</span>)</span>
+<span id="cb70-7"><a href="encounter.html#cb70-7"></a><span class="kw">plot</span>(ne_land, <span class="dt">col =</span> <span class="st">&quot;#dddddd&quot;</span>, <span class="dt">border =</span> <span class="st">&quot;#888888&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb70-8"><a href="encounter.html#cb70-8"></a></span>
+<span id="cb70-9"><a href="encounter.html#cb70-9"></a><span class="co"># encounter rate</span></span>
+<span id="cb70-10"><a href="encounter.html#cb70-10"></a>r_max &lt;-<span class="st"> </span><span class="kw">ceiling</span>(<span class="dv">10</span> <span class="op">*</span><span class="st"> </span><span class="kw">cellStats</span>(r_pred_proj, max)) <span class="op">/</span><span class="st"> </span><span class="dv">10</span></span>
+<span id="cb70-11"><a href="encounter.html#cb70-11"></a>brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.025</span>)</span>
+<span id="cb70-12"><a href="encounter.html#cb70-12"></a>lbl_brks &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, r_max, <span class="dt">by =</span> <span class="fl">0.1</span>)</span>
+<span id="cb70-13"><a href="encounter.html#cb70-13"></a><span class="co"># ebird status and trends color palette</span></span>
+<span id="cb70-14"><a href="encounter.html#cb70-14"></a>pal &lt;-<span class="st"> </span><span class="kw">abundance_palette</span>(<span class="kw">length</span>(brks) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb70-15"><a href="encounter.html#cb70-15"></a><span class="kw">plot</span>(r_pred_proj, </span>
+<span id="cb70-16"><a href="encounter.html#cb70-16"></a>     <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks, </span>
+<span id="cb70-17"><a href="encounter.html#cb70-17"></a>     <span class="dt">maxpixels =</span> <span class="kw">ncell</span>(r_pred_proj),</span>
+<span id="cb70-18"><a href="encounter.html#cb70-18"></a>     <span class="dt">legend =</span> <span class="ot">FALSE</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb70-19"><a href="encounter.html#cb70-19"></a></span>
+<span id="cb70-20"><a href="encounter.html#cb70-20"></a><span class="co"># borders</span></span>
+<span id="cb70-21"><a href="encounter.html#cb70-21"></a><span class="kw">plot</span>(bcr, <span class="dt">border =</span> <span class="st">&quot;#000000&quot;</span>, <span class="dt">col =</span> <span class="ot">NA</span>, <span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb70-22"><a href="encounter.html#cb70-22"></a><span class="kw">plot</span>(ne_state_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">0.75</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb70-23"><a href="encounter.html#cb70-23"></a><span class="kw">plot</span>(ne_country_lines, <span class="dt">col =</span> <span class="st">&quot;#ffffff&quot;</span>, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb70-24"><a href="encounter.html#cb70-24"></a><span class="kw">box</span>()</span>
+<span id="cb70-25"><a href="encounter.html#cb70-25"></a></span>
+<span id="cb70-26"><a href="encounter.html#cb70-26"></a><span class="co"># legend</span></span>
+<span id="cb70-27"><a href="encounter.html#cb70-27"></a><span class="kw">par</span>(<span class="dt">new =</span> <span class="ot">TRUE</span>, <span class="dt">mar =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb70-28"><a href="encounter.html#cb70-28"></a>title &lt;-<span class="st"> &quot;Wood Thrush Encounter Rate&quot;</span></span>
+<span id="cb70-29"><a href="encounter.html#cb70-29"></a><span class="kw">image.plot</span>(<span class="dt">zlim =</span> <span class="kw">range</span>(brks), <span class="dt">legend.only =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb70-30"><a href="encounter.html#cb70-30"></a>           <span class="dt">col =</span> pal, <span class="dt">breaks =</span> brks,</span>
+<span id="cb70-31"><a href="encounter.html#cb70-31"></a>           <span class="dt">smallplot =</span> <span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.75</span>, <span class="fl">0.06</span>, <span class="fl">0.09</span>),</span>
+<span id="cb70-32"><a href="encounter.html#cb70-32"></a>           <span class="dt">horizontal =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb70-33"><a href="encounter.html#cb70-33"></a>           <span class="dt">axis.args =</span> <span class="kw">list</span>(<span class="dt">at =</span> lbl_brks, <span class="dt">labels =</span> lbl_brks,</span>
+<span id="cb70-34"><a href="encounter.html#cb70-34"></a>                            <span class="dt">fg =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">col.axis =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb70-35"><a href="encounter.html#cb70-35"></a>                            <span class="dt">cex.axis =</span> <span class="fl">0.75</span>, <span class="dt">lwd.ticks =</span> <span class="fl">0.5</span>,</span>
+<span id="cb70-36"><a href="encounter.html#cb70-36"></a>                            <span class="dt">padj =</span> <span class="fl">-1.5</span>),</span>
+<span id="cb70-37"><a href="encounter.html#cb70-37"></a>           <span class="dt">legend.args =</span> <span class="kw">list</span>(<span class="dt">text =</span> title,</span>
+<span id="cb70-38"><a href="encounter.html#cb70-38"></a>                              <span class="dt">side =</span> <span class="dv">3</span>, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>,</span>
+<span id="cb70-39"><a href="encounter.html#cb70-39"></a>                              <span class="dt">cex =</span> <span class="dv">1</span>, <span class="dt">line =</span> <span class="dv">0</span>))</span></code></pre></div>
 <p><img src="ebp-workshop_files/figure-html/encounter-predict-map-1.png" width="\textwidth" style="display: block; margin: auto;" /></p>
 </div>
 <div id="encouter-exercises" class="section level2">

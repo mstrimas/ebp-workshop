@@ -217,7 +217,7 @@ summary(occ_model)
 
 ### Assessment {#occupancy-model-assess}
 
-The MacKenzie and Bailey [-@mackenzieAssessingFitSiteoccupancy2004] goodness-of-fit test can be used to assess the occupancy model fit. Note that to produce accurate results, this process requires simulating about 1,000 bootstrap samples, which can take a long time to run. For the sake of speed, if you want to run the below code, we suggest using `nsim = 5`.
+The MacKenzie and Bailey goodness-of-fit test can be used to assess the occupancy model fit. Note that to produce accurate results, this process requires simulating about 1,000 bootstrap samples, which can take a long time to run. For the sake of speed, if you want to run the below code, we suggest using `nsim = 5`.
 
 ```{r occupancy-model-assess, eval=FALSE, echo=1:2, class.source="dontrun"}
 occ_gof <- mb.gof.test(occ_model, nsim = 1000, plot.hist = FALSE)

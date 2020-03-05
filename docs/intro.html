@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
 <head>
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Lesson 1 Introduction | eBird Best Practices Workshop</title>
   <meta name="description" content="Best practices for using eBird data to estimate species distributions" />
-  <meta name="generator" content="bookdown 0.16 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Lesson 1 Introduction | eBird Best Practices Workshop" />
   <meta property="og:type" content="book" />
@@ -24,7 +24,7 @@
 <meta name="author" content="Matthew Strimas-Mackey, Alison Johnston, Wesley M. Hochachka, Viviana Ruiz-Gutierrez, Orin J. Robinson, Eliot T. Miller, Tom Auer, Steve Kelling, Daniel Fink" />
 
 
-<meta name="date" content="2020-01-16" />
+<meta name="date" content="2020-03-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -54,9 +54,9 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
@@ -65,14 +65,16 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -81,9 +83,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -251,8 +253,8 @@ Checkpoint
 <p>Is your R version at least 3.5.0? Do you need help updating R?</p>
 </div>
 <p>Create a new RStudio project called <code>ebird-best-practices</code>. Next, install all the packages required for this workshop and Part II, by running the following code:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mstrimas/ebppackages&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="intro.html#cb1-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;remotes&quot;</span>)</span>
+<span id="cb1-2"><a href="intro.html#cb1-2"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;mstrimas/ebppackages&quot;</span>)</span></code></pre></div>
 <p>The <code>auk</code> package uses the unix command line tool AWK to access eBird data. AWK comes installed by default on Mac OS and Linux systems, but Windows users will need to install it. To do so, install the <a href="https://cygwin.com/install.html">Cygwin software</a> making sure to use the default install location.</p>
 <div class="checkpoint">
 <h2>
@@ -261,24 +263,24 @@ Checkpoint
 <p>Is AWK installed?</p>
 </div>
 <p>Run the following code to test that <code>auk</code> is installed correctly and AWK is working:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(auk)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">tf &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">system.file</span>(<span class="st">&quot;extdata/ebd-sample.txt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;auk&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw">auk_ebd</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw">auk_species</span>(<span class="dt">species =</span> <span class="kw">c</span>(<span class="st">&quot;Canada Jay&quot;</span>, <span class="st">&quot;Blue Jay&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="st">  </span><span class="kw">auk_country</span>(<span class="dt">country =</span> <span class="kw">c</span>(<span class="st">&quot;US&quot;</span>, <span class="st">&quot;Canada&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="st">  </span><span class="kw">auk_bbox</span>(<span class="dt">bbox =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">100</span>, <span class="dv">37</span>, <span class="dv">-80</span>, <span class="dv">52</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="st">  </span><span class="kw">auk_date</span>(<span class="dt">date =</span> <span class="kw">c</span>(<span class="st">&quot;2012-01-01&quot;</span>, <span class="st">&quot;2012-12-31&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="st">  </span><span class="kw">auk_time</span>(<span class="dt">start_time =</span> <span class="kw">c</span>(<span class="st">&quot;06:00&quot;</span>, <span class="st">&quot;09:00&quot;</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="st">  </span><span class="kw">auk_duration</span>(<span class="dt">duration =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="st">  </span><span class="kw">auk_filter</span>(tf) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="st">  </span><span class="kw">read_ebd</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="st">  </span><span class="kw">pull</span>(common_name) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="st">  </span><span class="kw">message</span>()</a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="kw">unlink</span>(tf)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="intro.html#cb2-1"></a><span class="kw">library</span>(auk)</span>
+<span id="cb2-2"><a href="intro.html#cb2-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb2-3"><a href="intro.html#cb2-3"></a></span>
+<span id="cb2-4"><a href="intro.html#cb2-4"></a>tf &lt;-<span class="st"> </span><span class="kw">tempfile</span>()</span>
+<span id="cb2-5"><a href="intro.html#cb2-5"></a><span class="kw">system.file</span>(<span class="st">&quot;extdata/ebd-sample.txt&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;auk&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-6"><a href="intro.html#cb2-6"></a><span class="st">  </span><span class="kw">auk_ebd</span>() <span class="op">%&gt;%</span></span>
+<span id="cb2-7"><a href="intro.html#cb2-7"></a><span class="st">  </span><span class="kw">auk_species</span>(<span class="dt">species =</span> <span class="kw">c</span>(<span class="st">&quot;Canada Jay&quot;</span>, <span class="st">&quot;Blue Jay&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-8"><a href="intro.html#cb2-8"></a><span class="st">  </span><span class="kw">auk_country</span>(<span class="dt">country =</span> <span class="kw">c</span>(<span class="st">&quot;US&quot;</span>, <span class="st">&quot;Canada&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-9"><a href="intro.html#cb2-9"></a><span class="st">  </span><span class="kw">auk_bbox</span>(<span class="dt">bbox =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">100</span>, <span class="dv">37</span>, <span class="dv">-80</span>, <span class="dv">52</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-10"><a href="intro.html#cb2-10"></a><span class="st">  </span><span class="kw">auk_date</span>(<span class="dt">date =</span> <span class="kw">c</span>(<span class="st">&quot;2012-01-01&quot;</span>, <span class="st">&quot;2012-12-31&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-11"><a href="intro.html#cb2-11"></a><span class="st">  </span><span class="kw">auk_time</span>(<span class="dt">start_time =</span> <span class="kw">c</span>(<span class="st">&quot;06:00&quot;</span>, <span class="st">&quot;09:00&quot;</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-12"><a href="intro.html#cb2-12"></a><span class="st">  </span><span class="kw">auk_duration</span>(<span class="dt">duration =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>)) <span class="op">%&gt;%</span></span>
+<span id="cb2-13"><a href="intro.html#cb2-13"></a><span class="st">  </span><span class="kw">auk_complete</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-14"><a href="intro.html#cb2-14"></a><span class="st">  </span><span class="kw">auk_filter</span>(tf) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-15"><a href="intro.html#cb2-15"></a><span class="st">  </span><span class="kw">read_ebd</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-16"><a href="intro.html#cb2-16"></a><span class="st">  </span><span class="kw">pull</span>(common_name) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb2-17"><a href="intro.html#cb2-17"></a><span class="st">  </span><span class="kw">message</span>()</span>
+<span id="cb2-18"><a href="intro.html#cb2-18"></a><span class="kw">unlink</span>(tf)</span></code></pre></div>
 <p>It should print <code>Blue Jay</code>.</p>
 <div class="checkpoint">
 <h2>
@@ -291,28 +293,28 @@ Checkpoint
 <div id="intro-tidyverse" class="section level2">
 <h2><span class="header-section-number">1.4</span> Tidyverse</h2>
 <p>Throughout this workshop, we’ll be using functions from the Tidyverse. This is an opinionated set of packages for working with data in R. Packages such as <code>dplyr</code>, <code>ggplot2</code>, and <code>purrr</code> are part of the Tidyverse. We’ll try to explain any functions as they come up; however, there’s one important operator from the Tidyverse that needs to be explained up front: the pipe operator <code>%&gt;%</code>. The pipe operator takes the expression to the left of it and “pipes” it into the first argument of the expression on the right.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># without pipe</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">mean</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; [1] 5.5</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co"># with pipe</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="dv">1</span><span class="op">:</span><span class="dv">10</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mean</span>()</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; [1] 5.5</span></a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="intro.html#cb3-1"></a><span class="co"># without pipe</span></span>
+<span id="cb3-2"><a href="intro.html#cb3-2"></a><span class="kw">mean</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span>
+<span id="cb3-3"><a href="intro.html#cb3-3"></a><span class="co">#&gt; [1] 5.5</span></span>
+<span id="cb3-4"><a href="intro.html#cb3-4"></a><span class="co"># with pipe</span></span>
+<span id="cb3-5"><a href="intro.html#cb3-5"></a><span class="dv">1</span><span class="op">:</span><span class="dv">10</span> <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mean</span>()</span>
+<span id="cb3-6"><a href="intro.html#cb3-6"></a><span class="co">#&gt; [1] 5.5</span></span></code></pre></div>
 <p>The value of the pipe operator becomes clear when we have several operations in a row. Using the pipe makes code easier to read and reduces the need for intermediate variables.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># without pipes</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">ran_norm &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">ran_norm_pos &lt;-<span class="st"> </span><span class="kw">abs</span>(ran_norm)</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">ran_norm_sort &lt;-<span class="st"> </span><span class="kw">sort</span>(ran_norm_pos)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">ran_norm_round &lt;-<span class="st"> </span><span class="kw">round</span>(ran_norm_sort, <span class="dt">digits =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">ran_norm_round</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt;  [1] 0.9 1.5 1.6 2.4 2.9 3.1 3.7 4.1 4.2 8.0</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co"># with pipes</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="kw">rnorm</span>(<span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="st">  </span><span class="kw">abs</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="st">  </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt;  [1] 0.9 1.5 1.6 2.4 2.9 3.1 3.7 4.1 4.2 8.0</span></a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="intro.html#cb4-1"></a><span class="co"># without pipes</span></span>
+<span id="cb4-2"><a href="intro.html#cb4-2"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="intro.html#cb4-3"></a>ran_norm &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb4-4"><a href="intro.html#cb4-4"></a>ran_norm_pos &lt;-<span class="st"> </span><span class="kw">abs</span>(ran_norm)</span>
+<span id="cb4-5"><a href="intro.html#cb4-5"></a>ran_norm_sort &lt;-<span class="st"> </span><span class="kw">sort</span>(ran_norm_pos)</span>
+<span id="cb4-6"><a href="intro.html#cb4-6"></a>ran_norm_round &lt;-<span class="st"> </span><span class="kw">round</span>(ran_norm_sort, <span class="dt">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb4-7"><a href="intro.html#cb4-7"></a>ran_norm_round</span>
+<span id="cb4-8"><a href="intro.html#cb4-8"></a><span class="co">#&gt;  [1] 0.9 1.5 1.6 2.4 2.9 3.1 3.7 4.1 4.2 8.0</span></span>
+<span id="cb4-9"><a href="intro.html#cb4-9"></a><span class="co"># with pipes</span></span>
+<span id="cb4-10"><a href="intro.html#cb4-10"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb4-11"><a href="intro.html#cb4-11"></a><span class="kw">rnorm</span>(<span class="dv">10</span>, <span class="dt">sd =</span> <span class="dv">5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-12"><a href="intro.html#cb4-12"></a><span class="st">  </span><span class="kw">abs</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-13"><a href="intro.html#cb4-13"></a><span class="st">  </span><span class="kw">sort</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb4-14"><a href="intro.html#cb4-14"></a><span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb4-15"><a href="intro.html#cb4-15"></a><span class="co">#&gt;  [1] 0.9 1.5 1.6 2.4 2.9 3.1 3.7 4.1 4.2 8.0</span></span></code></pre></div>
 <p>For those that have never used the pipe, it probably looks strange, but if you stick with it, you’ll quickly come to appreciate it.</p>
 <div class="checkpoint">
 <h2>
@@ -325,17 +327,17 @@ Checkpoint
 Exercise
 </h2>
 <p>Rewrite the following code using pipes:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>)), <span class="dv">1</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="intro.html#cb5-1"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="intro.html#cb5-2"></a><span class="kw">round</span>(<span class="kw">log</span>(<span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>)), <span class="dv">1</span>)</span></code></pre></div>
 <button class="solution">
 Solution
 </button>
 <div class="solution-content">
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw">log</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;  [1] -0.5 -0.4 -0.2  0.0 -0.5 -0.1  0.0 -0.2 -0.2 -0.6</span></a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="intro.html#cb6-1"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb6-2"><a href="intro.html#cb6-2"></a><span class="kw">runif</span>(<span class="dv">10</span>, <span class="dt">min =</span> <span class="fl">0.5</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-3"><a href="intro.html#cb6-3"></a><span class="st">  </span><span class="kw">log</span>() <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb6-4"><a href="intro.html#cb6-4"></a><span class="st">  </span><span class="kw">round</span>(<span class="dt">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb6-5"><a href="intro.html#cb6-5"></a><span class="co">#&gt;  [1] -0.5 -0.4 -0.2  0.0 -0.5 -0.1  0.0 -0.2 -0.2 -0.6</span></span></code></pre></div>
 </div>
 </div>
 
